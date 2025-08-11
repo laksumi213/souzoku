@@ -1,25 +1,10 @@
-from flet import (
-    app,
-    Page,
-)
+from flet import Page, app
+
 from app.controllers.controllers import MainController
-import shutil
-
-
-def db_copy():
-    src = '/Users/laksumi/Library/CloudStorage/OneDrive-株式会社プロフィット・ワン/General/py/inheritance/inheritance.db'  # "コピー元のファイルパス"
-    dst = '/Users/laksumi/souzoku/database/'  # "コピー先のファイルパス"
-    try:
-        shutil.copy2(src, dst)
-        print(f"データベースをコピーしました（メタデータ保持）。")
-    except FileNotFoundError:
-        print(f"エラー: {src} が見つかりません。")
-    except Exception as e:
-        print(f"エラーが発生しました: {e}")
+from config.config import DB_FILE  # config.py から DB_FILE をインポート
 
 
 def main(page: Page):
-    # db_copy()
     MainController(page)
     # page.title = '遺言・相続手続きシステム'
     # page.scrollTo = "always"

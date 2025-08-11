@@ -1,13 +1,4 @@
-# tests/test_example.py
+import pprint
+import sys
 
-
-def test_add():
-    result = 2 + 2
-    print(f"The result of 2 + 2 is: {result}")
-    assert result == 4
-
-
-def test_subtract():
-    result = 5 - 2
-    print(f"The result of 5 - 2 is: {result}")
-    assert result == 3
+pprint.pprint(sys.path)
