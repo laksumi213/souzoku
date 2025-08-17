@@ -2,12 +2,38 @@ import asyncio
 
 # from typing import Dict, Any
 import pyautogui
-from flet import (AlertDialog, ButtonStyle, Checkbox, Column, Container,
-                  CrossAxisAlignment, DataCell, DataColumn, DataRow, DataTable,
-                  Divider, Dropdown, ElevatedButton, Icon, IconButton,
-                  MainAxisAlignment, NavigationRail, NavigationRailDestination,
-                  Page, Row, Text, TextAlign, TextField, TextStyle,
-                  VerticalDivider, alignment, border, colors, dropdown, icons)
+from flet import (
+    AlertDialog,
+    ButtonStyle,
+    Checkbox,
+    Column,
+    Container,
+    CrossAxisAlignment,
+    DataCell,
+    DataColumn,
+    DataRow,
+    DataTable,
+    Divider,
+    Dropdown,
+    ElevatedButton,
+    Icon,
+    IconButton,
+    MainAxisAlignment,
+    NavigationRail,
+    NavigationRailDestination,
+    Page,
+    Row,
+    Text,
+    TextAlign,
+    TextField,
+    TextStyle,
+    VerticalDivider,
+    alignment,
+    border,
+    colors,
+    dropdown,
+    icons,
+)
 
 import app.utils as utils
 
@@ -866,104 +892,3 @@ class ProcedureView(BaseView):
                 )
             ),
         ]
-
-
-# class SettingsBody(BaseView):
-#     def __init__(self):
-#         super().__init__()
-#         super().page.session.set('/settings', self)
-#
-#         self.b_name_registration = CustomContainerButton(
-#             text_value='自分の名前登録',
-#             icon=icons.HOW_TO_REG,
-#             on_click=self.clicked_name_registration
-#         )
-#
-#         self.b_staff_registration = CustomContainerButton(
-#             text_value='職員登録',
-#             icon=icons.PERSON_ADD,
-#             on_click=self.clicked_staff_registration
-#         )
-#
-#         self.controls = [
-#             Container(
-#                 content=Column(
-#                     controls=[
-#                         CustomText(value='＜設定＞'),
-#                         CustomText('◯ データ設定', size=20, color=colors.BLACK),
-#                         Row([self.b_name_registration, self.b_staff_registration, ])
-#                     ]
-#                 )
-#             )
-#         ]
-#
-#     def clicked_name_registration(self, e):
-#         def registration(_):
-#             config.set(os.getlogin(), 'family_name', tf_family_name.value)
-#             config.set(os.getlogin(), 'name', tf_name.value)
-#             config.set(os.getlogin(), 'family_name_huri', tf_family_name_huri.value)
-#             config.set(os.getlogin(), 'name_huri', tf_name_huri.value)
-#             config.set(os.getlogin(), 'mail', tf_mail.value + t_mail.value)
-#             with open(utils.get_config_path(), 'w', encoding='CP932', errors='ignore') as f:
-#                 config.write(f)
-#             self.dialog_registration(self)
-#
-#         print('clicked_name_registration:', e)
-#         tf_family_name = CustomTextFieldDialog(label="姓", autofocus=True)
-#         tf_name = CustomTextFieldDialog(label="名")
-#         tf_family_name_huri = CustomTextFieldDialog(label="氏のフリガナ")
-#         tf_name_huri = CustomTextFieldDialog(label="名のフリガナ")
-#         tf_mail = CustomTextFieldDialog(label="メールアドレス", hint_text='@前を入力')
-#         t_mail = CustomTextFieldDialog(value="@tax-info.jp", label="メルアド@以降")
-#
-#         config = utils.read_config()
-#         try:
-#             tf_family_name.value = config.get(os.getlogin(), 'family_name')
-#             tf_name.value = config.get(os.getlogin(), 'name')
-#             tf_family_name_huri.value = config.get(os.getlogin(), 'family_name_huri')
-#             tf_name_huri.value = config.get(os.getlogin(), 'name_huri')
-#             tf_mail.value = config.get(os.getlogin(), 'mail').replace('@tax-info.jp', '')
-#         except Exception as e:
-#             print('read_config error:', e)
-#
-#         eb_registration = ElevatedButton(text="登録", on_click=registration)
-#         eb_cancel = ElevatedButton(text="キャンセル", on_click=self.dialog_close)
-#         # super().page.overlay.append(
-#         #     AlertDialog(
-#         super().page.dialog = AlertDialog(
-#             open=True,
-#             modal=True,
-#             title=Text("自分の名前を登録"),
-#             content=Column(
-#                 [
-#                     Row([tf_family_name, tf_name]),
-#                     Row([tf_family_name_huri, tf_name_huri]),
-#                     Row([tf_mail, t_mail]),
-#                 ],
-#                 width=300,
-#                 height=200,
-#                 tight=True
-#             ),
-#             actions=[
-#                 eb_registration,
-#                 eb_cancel
-#             ],
-#             actions_alignment=MainAxisAlignment.END,
-#         )
-#         # )
-#         super().page.update()
-#
-#     def clicked_staff_registration(self, e):
-#         super().page.session.get('main_body').content = StaffRegistration()
-#
-#
-# class StaffRegistration(BaseView):
-#     def __init__(self):
-#         super().__init__()
-#         super().page.session.set('/StaffRegistration', self)
-#
-#         self.controls = [
-#             CustomText('職員登録'),
-#             InputField(),
-#         ]
-#         super().page.update()
