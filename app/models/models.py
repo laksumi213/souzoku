@@ -26,7 +26,7 @@ class BaseModel(Base):
     def get_result_view_all(cls, page, *args, **kwargs):
         query = select(
             Decedent.code,
-            Decedent.responsible_person.label("担当者"),
+            # Decedent.responsible_person.label("担当者"),
             Decedent.situation.label("状況"),
             Decedent.folder_s_path.label("フォルダ"),
             func.concat(Decedent.username1, "  ", Decedent.username2).label("被相続人"),
@@ -90,7 +90,7 @@ class Decedent(BaseModel):
     def get_customer(cls, page, *args, **kwargs):
         query = select(
             Decedent.code,
-            Decedent.responsible_person.label("担当者"),
+            # Decedent.responsible_person.label("担当者"),
             Decedent.situation.label("状況"),
             Decedent.folder_s_path.label("フォルダ"),
             func.concat(Decedent.username1, "  ", Decedent.username2).label("被相続人"),
@@ -105,9 +105,9 @@ class Decedent(BaseModel):
         query = query.where(Heir.offer == 1)
         # if 'me_rep_person' in kwargs:
 
-        # 自分の担当者
-        if page.session.get("/home").ch_me_rep_person.value:
-            query = query.where(Decedent.responsible_person == "森町")
+        # # 自分の担当者
+        # if page.session.get("/home").ch_me_rep_person.value:
+        #     query = query.where(Decedent.responsible_person == "森町")
 
         # 手続き中
         if page.session.get("/home").ch_contractor.value:
@@ -125,8 +125,8 @@ class Decedent(BaseModel):
                     query = query.where(cls.username1_hurigana.like(f"{value}%"))
                 if key == "被相続人：姓":
                     query = query.where(cls.username1.like(f"%{value}%"))
-                if key == "担当者":
-                    query = query.where(cls.responsible_person == value)
+                # if key == "担当者":
+                #     query = query.where(cls.responsible_person == value)
                 if key == "状況":
                     query = query.where(cls.situation == value)
                 if key == "備考":

@@ -2,38 +2,12 @@ import asyncio
 
 # from typing import Dict, Any
 import pyautogui
-from flet import (
-    AlertDialog,
-    ButtonStyle,
-    Checkbox,
-    Column,
-    Container,
-    CrossAxisAlignment,
-    DataCell,
-    DataColumn,
-    DataRow,
-    DataTable,
-    Divider,
-    Dropdown,
-    ElevatedButton,
-    Icon,
-    IconButton,
-    MainAxisAlignment,
-    NavigationRail,
-    NavigationRailDestination,
-    Page,
-    Row,
-    Text,
-    TextAlign,
-    TextField,
-    TextStyle,
-    VerticalDivider,
-    alignment,
-    border,
-    colors,
-    dropdown,
-    icons,
-)
+from flet import (AlertDialog, ButtonStyle, Checkbox, Column, Container,
+                  CrossAxisAlignment, DataCell, DataColumn, DataRow, DataTable,
+                  Divider, Dropdown, ElevatedButton, Icon, IconButton,
+                  MainAxisAlignment, NavigationRail, NavigationRailDestination,
+                  Page, Row, Text, TextAlign, TextField, TextStyle,
+                  VerticalDivider, alignment, border, colors, dropdown, icons)
 
 import app.utils as utils
 
@@ -803,12 +777,12 @@ class HomeView(BaseView):
                                     alignment=alignment.center_left,
                                 )
                             ),
-                            DataCell(
-                                Container(
-                                    Icon(icons.PERSON_SEARCH_SHARP),
-                                    alignment=alignment.center,
-                                )
-                            ),
+                            # DataCell(
+                            #     Container(
+                            #         Icon(icons.PERSON_SEARCH_SHARP),
+                            #         alignment=alignment.center,
+                            #     )
+                            # ),
                             DataCell(
                                 Container(
                                     Icon(icons.FOLDER), alignment=alignment.center
@@ -855,7 +829,8 @@ class HomeView(BaseView):
                             #         Text(result["担当者"]), alignment=alignment.center
                             #     )
                             # ),
-                            DataCell(Container(Text(""), alignment=alignment.center)),
+                            # DataCell(Container(Text(""), alignment=alignment.center)),
+                            # DataCell(Container(Text(""), alignment=alignment.center)),
                             # DataCell(Container(Text(result['税当者']), alignment=alignment.center)),
                             DataCell(
                                 Container(

@@ -6,7 +6,6 @@ from pyautogui import typewrite
 
 import app.utils as utils
 from app.models.models import *
-from app.views.settings_view import SettingsBody
 from app.views.views import MyLayout
 
 
@@ -164,23 +163,23 @@ def route_change(page: Page, e):
 
     # print(page.controls[0].controls[2].content.controls[0].content)
     # 戻るボタンが非表示の場合は表示する
-    print("eb_return:", page.session.get("eb_return").content.visible)
-    if (
-        not page.session.get("eb_return").content.visible
-        and len(page.session.get("past_route")) > 0
-    ):
-        page.session.get("eb_return").content.visible = True
-
-    # routeを保存
-    past_route = page.session.get("past_route")
-    past_route.append(e.route)
-    page.session.set("past_route", past_route)
-    print("past_route:", page.session.get("past_route"))
-
-    # サイドバーのインデックスを保存（戻るボタンを押したときに使用）
-    page.session.get("past_selected_index")[e.route] = page.session.get(
-        "sideber"
-    ).nav_rail.selected_index
+    # print("eb_return:", page.session.get("eb_return").content.visible)
+    # if (
+    #     not page.session.get("eb_return").content.visible
+    #     and len(page.session.get("past_route")) > 0
+    # ):
+    #     page.session.get("eb_return").content.visible = True
+    #
+    # # routeを保存
+    # past_route = page.session.get("past_route")
+    # past_route.append(e.route)
+    # page.session.set("past_route", past_route)
+    # print("past_route:", page.session.get("past_route"))
+    #
+    # # サイドバーのインデックスを保存（戻るボタンを押したときに使用）
+    # page.session.get("past_selected_index")[e.route] = page.session.get(
+    #     "sideber"
+    # ).nav_rail.selected_index
 
     page.session.get("main_body").content = page.session.get(e.route)
     page.update()
