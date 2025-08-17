@@ -1,9 +1,6 @@
-import os
-
 import flet as ft
 
 from app import MainApp
-from config import DB_FILE  # config.py から DB_FILE をインポート
 
 
 def main(page: ft.Page):

@@ -1,14 +1,11 @@
 from flet import (
     Page,
     Container,
-    Divider,
     NavigationRailDestination,
     NavigationRail,
     icons,
     Row,
     colors,
-    border_radius,
-    alignment,
     CrossAxisAlignment,
     Text
 )

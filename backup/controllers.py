@@ -7,11 +7,9 @@ from flet import (
     CrossAxisAlignment,
     VerticalDivider,
     colors,
-    Text,
     Column,
     Container,
     ElevatedButton,
-    ButtonStyle,
     icons,
 )
 

@@ -1,7 +1,7 @@
 import app.utils as utils
 from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy import create_engine, Column, Integer, String, text, bindparam, select
+from sqlalchemy import create_engine, Column, Integer, String, text, bindparam
 
 # engine = create_engine('sqlite:///' + utils.get_database_path(), echo=True)
 engine = create_engine('sqlite:///' + utils.get_database_path(), echo=False)

@@ -105,7 +105,6 @@ class CustomerTabContent(ft.Column):
                 width=650,
             ),
         ]
-        self.load_customer_data()
 
     def clear_customer_inputs(self):
         """顧客情報入力フィールドをクリアします。"""
@@ -132,7 +131,7 @@ class CustomerTabContent(ft.Column):
                     on_select_changed=lambda e, c=customer: self.select_customer_row(c),
                 )
             )
-        # self.update()  # このコンポーネント内を更新
+        self.update()
 
     def select_customer_row(self, customer: Customer):
         """顧客情報テーブルの行が選択されたときに、入力フィールドにデータを設定します。"""

@@ -1,7 +1,5 @@
 from flet import (
     Page,
-    MainAxisAlignment,
-    CrossAxisAlignment,
     Column,
     Row,
     Text,
