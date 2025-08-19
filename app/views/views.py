@@ -856,7 +856,6 @@ class HomeView(BaseView):
                             #     )
                             # ),
                             # DataCell(Container(Text(""), alignment=alignment.center)),
-                            # DataCell(Container(Text(""), alignment=alignment.center)),
                             # DataCell(Container(Text(result['税当者']), alignment=alignment.center)),
                             DataCell(
                                 Container(
