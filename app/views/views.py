@@ -526,19 +526,19 @@ class MyLayout(BaseView):
         page.scrollTo = "always"
         page.scroll = "always"
 
-        # self.past_route = []
-        # page.session.set("past_route", self.past_route)
+        self.past_route = []
+        page.session.set("past_route", self.past_route)
 
-        # self.eb_return = Container(
-        #     content=ElevatedButton(
-        #         "戻る",
-        #         icon=icons.ARROW_BACK,
-        #         visible=False,
-        #         on_click=controller.return_clicked
-        #     ),
-        #     margin=5,
-        # )
-        # page.session.set('eb_return', self.eb_return)
+        self.eb_return = Container(
+            content=ElevatedButton(
+                "戻る",
+                icon=icons.ARROW_BACK,
+                visible=False,
+                on_click=controller.return_clicked,
+            ),
+            margin=5,
+        )
+        page.session.set("eb_return", self.eb_return)
 
         main_body = Container(content=HomeView())
         page.session.set("main_body", main_body)
@@ -553,7 +553,7 @@ class MyLayout(BaseView):
             Container(
                 Column(
                     [
-                        # self.eb_return,
+                        self.eb_return,
                         main_body,
                     ]
                 )

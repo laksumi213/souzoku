@@ -62,28 +62,28 @@ class MainController(BaseController):
         self.page.session.get("/home").customer_data_table(results)
         self.page.update()
 
-    # def return_clicked(self, _):
-    #     print("")
-    #     print("return_clicked:")
-    #
-    #     # 戻るrouteを取得して削除
-    #     self.page.session.get("past_route").pop()
-    #     key = self.page.session.get("past_route").pop()
-    #     print("past_route:", self.page.session.get("past_route"))
-    #
-    #     # サイドバーのインデックスを設定
-    #     print("past_selected_index:", self.page.session.get("past_selected_index")[key])
-    #     self.page.session.get("sideber").nav_rail.selected_index = (
-    #         self.page.session.get("past_selected_index")[key]
-    #     )
-    #
-    #     # 前のページに戻る
-    #     self.page.go(key)
-    #
-    #     # 過去ルートがホームだけの場合、戻るボタンを非表示
-    #     if len(self.page.session.get("past_route")) == 0:
-    #         self.page.session.get("eb_return").content.visible = False
-    #         self.page.update()
+    def return_clicked(self, _):
+        print("")
+        print("return_clicked:")
+
+        # 戻るrouteを取得して削除
+        self.page.session.get("past_route").pop()
+        key = self.page.session.get("past_route").pop()
+        print("past_route:", self.page.session.get("past_route"))
+
+        # サイドバーのインデックスを設定
+        print("past_selected_index:", self.page.session.get("past_selected_index")[key])
+        self.page.session.get("sideber").nav_rail.selected_index = (
+            self.page.session.get("past_selected_index")[key]
+        )
+
+        # 前のページに戻る
+        self.page.go(key)
+
+        # 過去ルートがホームだけの場合、戻るボタンを非表示
+        if len(self.page.session.get("past_route")) == 0:
+            self.page.session.get("eb_return").content.visible = False
+            self.page.update()
 
     @classmethod
     def get_result_view_all(cls, page, *args, **kwargs):
@@ -163,19 +163,19 @@ def route_change(page: Page, e):
 
     # print(page.controls[0].controls[2].content.controls[0].content)
     # 戻るボタンが非表示の場合は表示する
-    # print("eb_return:", page.session.get("eb_return").content.visible)
-    # if (
-    #     not page.session.get("eb_return").content.visible
-    #     and len(page.session.get("past_route")) > 0
-    # ):
-    #     page.session.get("eb_return").content.visible = True
-    #
-    # # routeを保存
-    # past_route = page.session.get("past_route")
-    # past_route.append(e.route)
-    # page.session.set("past_route", past_route)
-    # print("past_route:", page.session.get("past_route"))
-    #
+    print("eb_return:", page.session.get("eb_return").content.visible)
+    if (
+        not page.session.get("eb_return").content.visible
+        and len(page.session.get("past_route")) > 0
+    ):
+        page.session.get("eb_return").content.visible = True
+
+    # routeを保存
+    past_route = page.session.get("past_route")
+    past_route.append(e.route)
+    page.session.set("past_route", past_route)
+    print("past_route:", page.session.get("past_route"))
+
     # # サイドバーのインデックスを保存（戻るボタンを押したときに使用）
     # page.session.get("past_selected_index")[e.route] = page.session.get(
     #     "sideber"
