@@ -176,11 +176,6 @@ def route_change(page: Page, e):
     page.session.set("past_route", past_route)
     print("past_route:", page.session.get("past_route"))
 
-    # # サイドバーのインデックスを保存（戻るボタンを押したときに使用）
-    # page.session.get("past_selected_index")[e.route] = page.session.get(
-    #     "sideber"
-    # ).nav_rail.selected_index
-
     page.session.get("main_body").content = page.session.get(e.route)
     page.update()
 
