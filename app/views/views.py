@@ -465,43 +465,43 @@ class InputField2(BaseView):
             self.outer_instance.page.update()
 
 
-class SideBer(BaseView):
-    def __init__(self):
-        super().__init__()
-        super().page.session.set("sideber", self)
-
-        self.nav_rail = NavigationRail(
-            selected_index=0,
-            height=super().page.window.height,
-            destinations=[
-                NavigationRailDestination(
-                    icon=icons.ACCOUNT_BOX,
-                    label_content=Text("顧客一覧", color=colors.BLACK),
-                    data="/home",
-                ),
-                NavigationRailDestination(
-                    icon=icons.EDIT_NOTE,
-                    label_content=Text("手続き", color=colors.BLACK),
-                    data="/home/procedure",
-                ),
-                NavigationRailDestination(
-                    icon=icons.LABEL,
-                    label_content=Text("ラベル印刷", color=colors.BLACK),
-                    data="/labelprint",
-                ),
-                NavigationRailDestination(
-                    icon=icons.SETTINGS,
-                    label_content=Text("設定", color=colors.BLACK),
-                    data="/settings",
-                ),
-            ],
-            bgcolor=colors.AMBER_50,
-            on_change=lambda e: super().controller.go_page(
-                self.nav_rail.destinations[self.nav_rail.selected_index].data
-            ),
-        )
-
-        self.controls = [Column(controls=[self.nav_rail])]
+# class SideBer(BaseView):
+#     def __init__(self):
+#         super().__init__()
+#         super().page.session.set("sideber", self)
+#
+#         self.nav_rail = NavigationRail(
+#             selected_index=0,
+#             height=super().page.window.height,
+#             destinations=[
+#                 NavigationRailDestination(
+#                     icon=icons.ACCOUNT_BOX,
+#                     label_content=Text("顧客一覧", color=colors.BLACK),
+#                     data="/home",
+#                 ),
+#                 NavigationRailDestination(
+#                     icon=icons.EDIT_NOTE,
+#                     label_content=Text("手続き", color=colors.BLACK),
+#                     data="/home/procedure",
+#                 ),
+#                 NavigationRailDestination(
+#                     icon=icons.LABEL,
+#                     label_content=Text("ラベル印刷", color=colors.BLACK),
+#                     data="/labelprint",
+#                 ),
+#                 NavigationRailDestination(
+#                     icon=icons.SETTINGS,
+#                     label_content=Text("設定", color=colors.BLACK),
+#                     data="/settings",
+#                 ),
+#             ],
+#             bgcolor=colors.AMBER_50,
+#             on_change=lambda e: super().controller.go_page(
+#                 self.nav_rail.destinations[self.nav_rail.selected_index].data
+#             ),
+#         )
+#
+#         self.controls = [Column(controls=[self.nav_rail])]
         # self.controls = Column([self.nav_rail])
         # self.content = Row(
         #     controls=[
