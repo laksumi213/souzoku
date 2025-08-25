@@ -5,7 +5,9 @@ from flet import Page
 from pyautogui import typewrite
 
 import app.utils as utils
-from app.models.models import *
+
+# from app.models.models import *
+from app.models.models import Decedent, Heir, ResponsiblePerson, Staff
 from app.views.views import MyLayout
 
 
@@ -13,6 +15,18 @@ class BaseController:
     def __init__(self, page: Page):
         super().__init__()
         self.page = page
+
+
+def staff_registration_clicked(items):
+    # 行削除したものをデータから削除
+    # if delete_items
+    print("items:", items)
+    print(items[0].delete_item)
+    # container = items[0].controls[0].controls[0]
+    # content = container.content
+    # for item in content.controls:
+    #     print('item:', item.value, item)
+    # Staff.upsert(content.controls)
 
 
 class MainController(BaseController):
@@ -28,9 +42,9 @@ class MainController(BaseController):
         page.go("/home")
 
     def on_key_down(self, e):
-        # print()
-        # print('on_key_down:', e)
-        # print(self.page.route)
+        print()
+        print("on_key_down:", e)
+        print(self.page.route)
         if e.key == ":" and e.ctrl:
             utils.ime_off()
             typewrite(date.today().strftime("%Y/%m/%d"))
@@ -57,7 +71,7 @@ class MainController(BaseController):
                     control.focus()
 
         self.page.session.get("/home").ch_contractor.value = True
-        self.page.session.get("/home").ch_me_rep_person.value = True
+        # self.page.session.get("/home").ch_me_rep_person.value = True
         results = self.get_result_view_all(page=self.page)
         self.page.session.get("/home").customer_data_table(results)
         self.page.update()
@@ -71,11 +85,11 @@ class MainController(BaseController):
         key = self.page.session.get("past_route").pop()
         print("past_route:", self.page.session.get("past_route"))
 
-        # サイドバーのインデックスを設定
-        print("past_selected_index:", self.page.session.get("past_selected_index")[key])
-        self.page.session.get("sideber").nav_rail.selected_index = (
-            self.page.session.get("past_selected_index")[key]
-        )
+        # # サイドバーのインデックスを設定
+        # print("past_selected_index:", self.page.session.get("past_selected_index")[key])
+        # self.page.session.get("sideber").nav_rail.selected_index = (
+        #     self.page.session.get("past_selected_index")[key]
+        # )
 
         # 前のページに戻る
         self.page.go(key)
@@ -118,18 +132,18 @@ class MainController(BaseController):
     def get_responsible_person_dropdown(cls):
         return ResponsiblePerson.get_responsible_person_dropdown()
 
-    def responsible_person_change(self, e):
-        print()
-        print("responsible_person_change")
-
-        if self.page.session.get("/home").ch_me_rep_person.value:
-            self.page.session.get("/home").ch_me_rep_person.value = False
-
-        if e.control.value == " ":
-            e.control.value = None
-            self.page.session.get("/home").ch_me_rep_person.value = True
-
-        self.search_change(e)
+    # def responsible_person_change(self, e):
+    #     print()
+    #     print("responsible_person_change")
+    #
+    #     if self.page.session.get("/home").ch_me_rep_person.value:
+    #         self.page.session.get("/home").ch_me_rep_person.value = False
+    #
+    #     if e.control.value == " ":
+    #         e.control.value = None
+    #         self.page.session.get("/home").ch_me_rep_person.value = True
+    #
+    #     self.search_change(e)
 
     def contractor_change(self, e):
         if self.page.session.get("/home").ch_contractor.value:
@@ -141,17 +155,6 @@ class MainController(BaseController):
     def get_all_staff(cls, **kwargs):
         results = Staff.get_all_staff()
         return results
-
-    def staff_registration_clicked(self, items):
-        # 行削除したものをデータから削除
-        # if delete_items
-        print("items:", items)
-        print(items[0].delete_item)
-        container = items[0].controls[0].controls[0]
-        content = container.content
-        # for item in content.controls:
-        #     print('item:', item.value, item)
-        # Staff.upsert(content.controls)
 
 
 def route_change(page: Page, e):

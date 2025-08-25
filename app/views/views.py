@@ -23,11 +23,11 @@ from flet import (
     NavigationRailDestination,
     Page,
     Row,
+    SnackBar,
     Text,
     TextAlign,
     TextField,
     TextStyle,
-    VerticalDivider,
     alignment,
     border,
     colors,
@@ -51,6 +51,9 @@ class BaseView(Row):
         self.scroll = "always"
         # self.page.scrollTo = "always"
         # self.page.scroll = 'always'
+
+        # スナックバー (メッセージ表示用)
+        self._page.snack_bar = SnackBar(content=Text(""), open=False)
 
     @property
     def page(self):

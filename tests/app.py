@@ -23,7 +23,7 @@ class MainApp(ft.Column):
         self.db = DatabaseManager()
 
         # スナックバー (メッセージ表示用)
-        self.page.snack_bar = ft.SnackBar(content=ft.Text(""), open=False)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("あ"), open=False)
 
         # 各タブコンテンツのインスタンス化
         # show_message_callback を渡して、タブ内でスナックバーを表示できるようにする
