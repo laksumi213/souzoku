@@ -2,8 +2,10 @@ import asyncio
 
 # from typing import Dict, Any
 import pyautogui
+import pyperclip
 from flet import (
     AlertDialog,
+    AppBar,
     ButtonStyle,
     Checkbox,
     Column,
@@ -21,9 +23,12 @@ from flet import (
     MainAxisAlignment,
     NavigationRail,
     NavigationRailDestination,
+    OutlinedButton,
     Page,
     Row,
     SnackBar,
+    Tab,
+    Tabs,
     Text,
     TextAlign,
     TextField,
@@ -38,7 +43,8 @@ from flet import (
 import app.utils as utils
 
 
-class BaseView(Row):
+# class BaseView(Row):
+class BaseView(Column):
     def __init__(self):
         super().__init__()
         self._controller = None
@@ -51,9 +57,6 @@ class BaseView(Row):
         self.scroll = "always"
         # self.page.scrollTo = "always"
         # self.page.scroll = 'always'
-
-        # スナックバー (メッセージ表示用)
-        self._page.snack_bar = SnackBar(content=Text(""), open=False)
 
     @property
     def page(self):
@@ -543,7 +546,8 @@ class MyLayout(BaseView):
         )
         page.session.set("eb_return", self.eb_return)
 
-        main_body = Container(content=HomeView())
+        # main_body = Container(content=HomeView())
+        main_body = Container(content=MainBody())
         page.session.set("main_body", main_body)
 
         self.controls = [
@@ -578,6 +582,374 @@ class MyLayout(BaseView):
         #     .nav_rail.destinations[page.session.get("sideber").nav_rail.selected_index]
         #     .data
         # )
+
+
+class MainBody(BaseView):
+    def __init__(self):
+        super().__init__()
+        super().page.session.set("/home", self)
+
+        # スナックバー (メッセージ表示用)
+        super().page.snack_bar = SnackBar(content=Text(""), open=False)
+
+        # 手続き中のチェックボックス
+        self.ch_contractor = Checkbox(
+            label="手続き中",
+            value=True,
+            label_style=TextStyle(color=colors.BLACK, size=18),
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 検索した結果の数
+        self.result_count = Text(value="", color=colors.BLACK)
+
+        # 被相続人　姓フィールド
+        self.customer_name_kana_input = CustomTextField(
+            label="被相続人：姓かな",
+            width=200,
+            autofocus=True,
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 被相続人　名フィールド
+        self.customer_name_input = CustomTextField(
+            label="被相続人：姓",
+            width=200,
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 手続きステータス
+        self.dd_progress = CustomDropdown(
+            label="状況",
+            options=[
+                dropdown.Option("見積中"),
+                dropdown.Option("契約待ち"),
+                dropdown.Option("戸籍収集"),
+                dropdown.Option("法定相続情報作成"),
+                dropdown.Option("残高証明書"),
+                dropdown.Option("金融機関手続き"),
+                dropdown.Option("財産評価"),
+                dropdown.Option("分割協議書"),
+                dropdown.Option("登記"),
+                dropdown.Option("完了書類作成"),
+                dropdown.Option("入金待ち"),
+                dropdown.Option("手続終了"),
+                dropdown.Option("キャンセル"),
+            ],
+            width=150,
+            data="decedent",
+            on_change=self.controller.contractor_change,
+        )
+
+        # 備考
+        self.note = CustomTextField(
+            label="備考",
+            width=200,
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 相続人　姓フィールド
+        self.heir_name_kana_input = CustomTextField(
+            label="依頼人：姓かな",
+            width=200,
+            data="heir",
+            on_change=self.controller.search_change,
+        )
+
+        # 相続人　名フィールド
+        self.heir_name_input = CustomTextField(
+            label="依頼人：姓",
+            width=200,
+            data="heir",
+            on_change=self.controller.search_change,
+        )
+
+        # 相続人　電話番号フィールド
+        self.heir_tel_input = CustomTextField(
+            label="電話番号",
+            width=200,
+            data="heir",
+            on_change=self.controller.search_change,
+        )
+
+        self.search_fields = Column(
+            controls=[
+                Row(
+                    [
+                        self.customer_name_kana_input,
+                        self.customer_name_input,
+                        self.dd_progress,
+                        self.note,
+                    ]
+                ),
+                Row(
+                    [
+                        self.heir_name_kana_input,
+                        self.heir_name_input,
+                        self.heir_tel_input,
+                    ]
+                ),
+            ]
+        )
+        super().page.session.set("search_fields", self.search_fields.controls)
+
+        self.dt_decedent = DataTable(
+            [
+                DataColumn(
+                    Text("選択"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("Code"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("状況"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("フォルダ"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("被相続人"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("依頼人"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("更新日"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("内容"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("自宅電話番号"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("携帯電話番号"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("備考"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+            ],
+            data_text_style=TextStyle(color=colors.BLACK),
+            heading_text_style=TextStyle(color=colors.WHITE),
+            heading_row_color=colors.BLUE_GREY_300,
+        )
+
+        results = self.controller.get_result_view_all(page=super().page)
+        self.customer_data_table(results)
+
+        # クリアボタン
+        self.clear_bt = OutlinedButton(
+            icon=icons.CLEAR,
+            text="クリア(C)",
+            style=ButtonStyle(color=colors.BLACK),
+            # style=ButtonStyle(text_style=(TextStyle(size=20))),
+            # color=colors.BLACK,
+            # height=40,
+            # bgcolor=colors.BLUE_200,
+            on_click=self.controller.clear_click,
+        )
+
+        self.tabs1 = Column(
+            controls=[
+                Row(
+                    [
+                        self.clear_bt,
+                        self.ch_contractor,
+                    ]
+                ),
+                Divider(),
+                Row(
+                    [
+                        ElevatedButton(
+                            icon=icons.CREATE,
+                            text="被相続人 新規登録",
+                            color=colors.BLACK,
+                            bgcolor=colors.BLUE_200,
+                        ),
+                        ElevatedButton(
+                            icon=icons.CREATE,
+                            text="相続人 新規登録",
+                            color=colors.BLACK,
+                            bgcolor=colors.BLUE_200,
+                        ),
+                        self.result_count,
+                    ]
+                ),
+                self.dt_decedent,
+            ]
+        )
+
+        self.tabs2 = Container(
+            content=Column(
+                controls=[
+                    Row(
+                        [
+                            ElevatedButton(
+                                "追加",
+                                icon=icons.ADD,
+                            ),
+                            ElevatedButton(
+                                "更新",
+                                icon=icons.UPDATE,
+                            ),
+                        ]
+                    )
+                ]
+            )
+        )
+
+        self.controls = [
+            Container(
+                content=Column(
+                    [
+                        Tabs(
+                            selected_index=0,
+                            animation_duration=300,
+                            tabs=[
+                                Tab(
+                                    text="顧客情報",
+                                    icon=icons.PEOPLE,
+                                    content=self.tabs2,
+                                ),
+                                Tab(
+                                    text="銀行情報",
+                                    icon=icons.ACCOUNT_BALANCE,
+                                    content=self.tabs1,
+                                ),
+                            ],
+                            expand=1,
+                        ),
+                    ]
+                )
+            )
+        ]
+
+        # self.controls = [
+        #     Column(
+        #         controls=[
+        #             self.search_fields,
+        #             Row(
+        #                 [
+        #                     self.clear_bt,
+        #                     self.ch_contractor,
+        #                 ]
+        #             ),
+        #             Divider(),
+        #             Row(
+        #                 [
+        #                     ElevatedButton(
+        #                         icon=icons.CREATE,
+        #                         text="被相続人 新規登録",
+        #                         color=colors.BLACK,
+        #                         bgcolor=colors.BLUE_200,
+        #                     ),
+        #                     ElevatedButton(
+        #                         icon=icons.CREATE,
+        #                         text="相続人 新規登録",
+        #                         color=colors.BLACK,
+        #                         bgcolor=colors.BLUE_200,
+        #                     ),
+        #                     self.result_count,
+        #                 ]
+        #             ),
+        #             self.dt_decedent,
+        #         ]
+        #     )
+        # ]
+
+    def show_message(self, message: str, color=colors.GREEN_500):
+        """スナックバーにメッセージを表示します。"""
+        self._page.snack_bar.content = Text(message)
+        self._page.snack_bar.bgcolor = color
+        self._page.snack_bar.open = True
+        self._page.update()
+
+    def customer_data_table(self, results):
+        # print()
+        # print('customer_data_table:', results)
+        self.dt_decedent.rows = []
+        if results:
+            for result in results:
+                self.dt_decedent.rows.append(
+                    DataRow(
+                        [
+                            DataCell(Icon(icons.TOUCH_APP)),
+                            # DataCell(Icon(icons.TOUCH_APP, color=colors.BLACK)),
+                            DataCell(
+                                Container(
+                                    Text(result["code"]), alignment=alignment.center
+                                ),
+                                data=result["code"],
+                                on_tap=lambda e: pyperclip.copy(e.control.data),
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["状況"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            # DataCell(
+                            #     Container(
+                            #         Icon(icons.PERSON_SEARCH_SHARP),
+                            #         alignment=alignment.center,
+                            #     )
+                            # ),
+                            DataCell(
+                                Container(
+                                    Icon(icons.FOLDER), alignment=alignment.center
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["被相続人"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["依頼人"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["更新日"]), alignment=alignment.center
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["内容"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            # DataCell(Container(Text(result['内容']), alignment=alignment.center_left, width=300)),
+                            DataCell(
+                                Container(
+                                    Text(result["自宅電話番号"]),
+                                    alignment=alignment.center,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["携帯電話番号"]),
+                                    alignment=alignment.center,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["備考"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                        ]
+                    )
+                )
+        self.result_count.value = "検索数：" + str(len(results)) + "件"
+        super().page.update()
 
 
 class HomeView(BaseView):

@@ -162,9 +162,9 @@ pygetwindow==0.0.9
 pygments==2.18.0
     # via pytest
     # via rich
-pyinstaller==6.11.1
+pyinstaller==6.15.0
     # via souzoku
-pyinstaller-hooks-contrib==2024.10
+pyinstaller-hooks-contrib==2025.8
     # via pyinstaller
 pymsgbox==1.0.9
     # via pyautogui
@@ -182,6 +182,7 @@ pypdf2==3.0.1
     # via souzoku
 pyperclip==1.9.0
     # via mouseinfo
+    # via souzoku
 pypng==0.20220715.0
     # via qrcode
 pyrect==0.2.0
