@@ -1,20 +1,59 @@
-import flet as ft
+import requests
+import re
 
-class CustomTextField(ft.UserControl):
-    def __init__(self, config):
-        super().__init__()
-        self.config = config
+def get_zipcode_from_address(address):
+    """
+    住所から郵便番号を取得する関数
 
-    def build(self):
-        return ft.TextField(**self.config)
+    Args:
+        address (str): 検索したい住所（例: "東京都千代田区霞が関"）
 
-def main(page: ft.Page):
-    page.add(
-        CustomTextField({"hint_text": "名前を入力", "width": 300, "border_color": ft.colors.GREEN}),
-        CustomTextField({"label": "メールアドレス", "keyboard_type": ft.KeyboardType.EMAIL}),
-    )
+    Returns:
+        str: 該当する郵便番号、またはNone
+    """
+    url = 'https://zipcoda.net/api'
+    try:
+        response = requests.get(url,  {"address": address})
+        response.raise_for_status() # HTTPエラーが発生した場合に例外を発生させる
+        data = response.json()
 
-ft.app(target=main)
+        if data["items"]:
+            # 該当する郵便番号が見つかった場合
+            return re.sub(r'(\d{3})(\d{4})', r'\1-\2', data["items"][0]["zipcode"])
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"APIリクエストエラー: {e}")
+        return None
+
+# 住所を渡して郵便番号を取得
+address = "千葉県船橋市夏見台1-13-24"
+zipcode = get_zipcode_from_address(address)
+
+if zipcode:
+    print(f"住所「{address}」の郵便番号は {zipcode} です。")
+else:
+    print(f"住所「{address}」の郵便番号は見つかりませんでした。")
+
+
+
+# import flet as ft
+#
+# class CustomTextField(ft.UserControl):
+#     def __init__(self, config):
+#         super().__init__()
+#         self.config = config
+#
+#     def build(self):
+#         return ft.TextField(**self.config)
+#
+# def main(page: ft.Page):
+#     page.add(
+#         CustomTextField({"hint_text": "名前を入力", "width": 300, "border_color": ft.colors.GREEN}),
+#         CustomTextField({"label": "メールアドレス", "keyboard_type": ft.KeyboardType.EMAIL}),
+#     )
+#
+# ft.app(target=main)
 
 # import app.database_utils as database_utils
 # from sqlalchemy import create_engine, Column, Integer, String, text, bindparam, select
