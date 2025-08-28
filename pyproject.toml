@@ -22,10 +22,14 @@ dependencies = [
     "ruff>=0.12.10",
     "openpyxl>=3.1.5",
     "docx>=0.2.4",
-    "pyinstaller>=6.11.1",
+    "pyinstaller>=6.15.0",
     "sqlalchemy>=2.0.36",
     "webdriver-manager>=4.0.2",
+<<<<<<< HEAD
     "requests>=2.32.5",
+=======
+    "pyperclip>=1.9.0",
+>>>>>>> 445923c1a9e1fef3fc2a79adacd02037e52b5f9d
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

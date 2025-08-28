@@ -31,11 +31,11 @@ class MainApp(ft.Column):
         self.bank_tab_content = BankTabContent(self.db, self.show_message)
 
         self.controls = [
-            ft.AppBar(
-                title=ft.Text("顧客・銀行情報管理システム", color=ft.colors.WHITE),
-                bgcolor=ft.colors.BLUE_ACCENT_700,
-                center_title=True,
-            ),
+            # ft.AppBar(
+            #     title=ft.Text("顧客・銀行情報管理システム", color=ft.colors.WHITE),
+            #     bgcolor=ft.colors.BLUE_ACCENT_700,
+            #     center_title=True,
+            # ),
             ft.Tabs(
                 selected_index=0,
                 animation_duration=300,
