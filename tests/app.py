@@ -32,8 +32,8 @@ class MainApp(ft.Column):
 
         self.controls = [
             # ft.AppBar(
-            #     title=ft.Text("顧客・銀行情報管理システム", color=ft.colors.WHITE),
-            #     bgcolor=ft.colors.BLUE_ACCENT_700,
+            #     title=ft.Text("顧客・銀行情報管理システム", color=ft.Colors.WHITE),
+            #     bgcolor=ft.Colors.BLUE_ACCENT_700,
             #     center_title=True,
             # ),
             ft.Tabs(
@@ -42,12 +42,12 @@ class MainApp(ft.Column):
                 tabs=[
                     ft.Tab(
                         text="顧客情報",
-                        icon=ft.icons.PEOPLE,
+                        icon=ft.Icons.PEOPLE,
                         content=self.customer_tab_content,
                     ),
                     ft.Tab(
                         text="銀行情報",
-                        icon=ft.icons.ACCOUNT_BALANCE,
+                        icon=ft.Icons.ACCOUNT_BALANCE,
                         content=self.bank_tab_content,
                     ),
                 ],
@@ -55,7 +55,7 @@ class MainApp(ft.Column):
             ),
         ]
 
-    def show_message(self, message: str, color=ft.colors.GREEN_500):
+    def show_message(self, message: str, color=ft.Colors.GREEN_500):
         """スナックバーにメッセージを表示します。"""
         self.page.snack_bar.content = ft.Text(message)
         self.page.snack_bar.bgcolor = color

@@ -11,6 +11,7 @@
 
 -e file:.
 altgraph==0.17.4
+    # via macholib
     # via pyinstaller
 annotated-types==0.7.0
     # via pydantic
@@ -18,6 +19,8 @@ anyio==4.4.0
     # via httpx
     # via starlette
     # via watchfiles
+appscript==1.3.0
+    # via xlwings
 arrow==1.3.0
     # via cookiecutter
 attrs==24.2.0
@@ -35,8 +38,6 @@ certifi==2024.8.30
     # via httpx
     # via requests
     # via selenium
-cffi==1.17.1
-    # via trio
 chardet==5.2.0
     # via binaryornot
     # via reportlab
@@ -46,25 +47,25 @@ click==8.1.7
     # via black
     # via cookiecutter
     # via uvicorn
-colorama==0.4.6
-    # via click
-    # via pytest
-    # via qrcode
-    # via uvicorn
 cookiecutter==2.6.0
-    # via flet
+    # via flet-cli
 docx==0.2.4
     # via souzoku
 et-xmlfile==1.1.0
     # via openpyxl
-fastapi==0.114.2
-    # via flet
+fastapi==0.116.1
+    # via flet-web
 flake8==7.3.0
-flet==0.24.1
+flet==0.28.3
+    # via flet-cli
+    # via flet-desktop
+    # via flet-web
     # via souzoku
-flet-core==0.24.1
-    # via flet-runtime
-flet-runtime==0.24.1
+flet-cli==0.28.3
+    # via flet
+flet-desktop==0.28.3
+    # via flet
+flet-web==0.28.3
     # via flet
 greenlet==3.1.1
     # via sqlalchemy
@@ -74,10 +75,10 @@ h11==0.14.0
     # via wsproto
 httpcore==1.0.5
     # via httpx
-httptools==0.6.1
+httptools==0.6.4
     # via uvicorn
 httpx==0.27.2
-    # via flet-runtime
+    # via flet
 idna==3.10
     # via anyio
     # via httpx
@@ -88,14 +89,17 @@ iniconfig==2.1.0
 isort==6.0.1
 jaconv==0.4.0
     # via souzoku
-jinja2==3.1.4
+jinja2==3.1.6
     # via cookiecutter
 lxml==5.3.0
+    # via appscript
     # via docx
     # via pandas-datareader
-markdown-it-py==3.0.0
+macholib==1.16.3
+    # via pyinstaller
+markdown-it-py==4.0.0
     # via rich
-markupsafe==2.1.5
+markupsafe==3.0.2
     # via jinja2
 mccabe==0.7.0
     # via flake8
@@ -109,22 +113,23 @@ mypy==1.17.1
 mypy-extensions==1.1.0
     # via black
     # via mypy
-numpy==2.0.2
+numpy==2.3.2
     # via pandas
+    # via souzoku
 oauthlib==3.2.2
-    # via flet-runtime
+    # via flet
 openpyxl==3.1.5
     # via souzoku
 outcome==1.3.0.post0
     # via trio
 packaging==23.2
     # via black
-    # via flet
+    # via flet-cli
     # via pyinstaller
     # via pyinstaller-hooks-contrib
     # via pytest
     # via webdriver-manager
-pandas==2.2.2
+pandas==2.3.2
     # via pandas-datareader
     # via souzoku
 pandas-datareader==0.10.0
@@ -136,8 +141,6 @@ pdf2image==1.17.0
     # via souzoku
 pdfminer==20191125
     # via souzoku
-pefile==2023.2.7
-    # via pyinstaller
 pillow==10.4.0
     # via docx
     # via pdf2image
@@ -146,17 +149,17 @@ platformdirs==4.3.8
     # via black
 pluggy==1.6.0
     # via pytest
+psutil==7.0.0
+    # via xlwings
 pyautogui==0.9.54
     # via souzoku
 pycodestyle==2.14.0
     # via flake8
-pycparser==2.22
-    # via cffi
 pycryptodome==3.20.0
     # via pdfminer
-pydantic==2.9.1
+pydantic==2.11.7
     # via fastapi
-pydantic-core==2.23.3
+pydantic-core==2.33.2
     # via pydantic
 pyflakes==3.4.0
     # via flake8
@@ -170,6 +173,14 @@ pyinstaller==6.15.0
 pyinstaller-hooks-contrib==2025.8
     # via pyinstaller
 pymsgbox==1.0.9
+    # via pyautogui
+pyobjc-core==11.1
+    # via pyautogui
+    # via pyobjc-framework-cocoa
+    # via pyobjc-framework-quartz
+pyobjc-framework-cocoa==11.1
+    # via pyobjc-framework-quartz
+pyobjc-framework-quartz==11.1
     # via pyautogui
 pypdf==4.3.1
     # via souzoku
@@ -199,17 +210,13 @@ pytweening==1.2.0
     # via pyautogui
 pytz==2024.2
     # via pandas
-pywin32==311
-    # via xlwings
-pywin32-ctypes==0.2.3
-    # via pyinstaller
 pyyaml==6.0.2
     # via cookiecutter
     # via uvicorn
 qrcode==7.4.2
-    # via flet
+    # via flet-cli
 repath==0.9.0
-    # via flet-core
+    # via flet
 reportlab==4.2.2
     # via souzoku
 requests==2.32.5
@@ -217,8 +224,10 @@ requests==2.32.5
     # via pandas-datareader
     # via souzoku
     # via webdriver-manager
-rich==13.8.1
+rich==14.1.0
     # via cookiecutter
+rubicon-objc==0.5.2
+    # via mouseinfo
 ruff==0.12.10
     # via souzoku
 selenium==4.24.0
@@ -239,18 +248,20 @@ sortedcontainers==2.4.0
     # via trio
 soupsieve==2.6
     # via beautifulsoup4
-sqlalchemy==2.0.36
+sqlalchemy==2.0.43
     # via souzoku
-starlette==0.38.5
+starlette==0.47.3
     # via fastapi
 text-unidecode==1.3
     # via python-slugify
+toml==0.10.2
+    # via flet-cli
 trio==0.26.2
     # via selenium
     # via trio-websocket
 trio-websocket==0.11.1
     # via selenium
-types-python-dateutil==2.9.0.20240906
+types-python-dateutil==2.9.0.20250822
     # via arrow
 typing-extensions==4.12.2
     # via fastapi
@@ -260,22 +271,28 @@ typing-extensions==4.12.2
     # via qrcode
     # via selenium
     # via sqlalchemy
+    # via starlette
+    # via typing-inspection
+typing-inspection==0.4.1
+    # via pydantic
 tzdata==2024.1
     # via pandas
 urllib3==2.2.3
     # via requests
     # via selenium
-uvicorn==0.30.6
-    # via flet
+uvicorn==0.35.0
+    # via flet-web
+uvloop==0.21.0
+    # via uvicorn
 watchdog==4.0.2
-    # via flet
-watchfiles==0.24.0
+    # via flet-cli
+watchfiles==1.1.0
     # via uvicorn
 webdriver-manager==4.0.2
     # via souzoku
 websocket-client==1.8.0
     # via selenium
-websockets==13.0.1
+websockets==15.0.1
     # via uvicorn
 wsproto==1.2.0
     # via trio-websocket
