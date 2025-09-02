@@ -16,7 +16,7 @@ from flet import (
     DataRow,
     DataTable,
     Divider,
-    Dropdown,
+    DropdownM2,
     ElevatedButton,
     Icon,
     IconButton,
@@ -35,9 +35,9 @@ from flet import (
     TextStyle,
     alignment,
     border,
-    colors,
+    Colors,
     dropdown,
-    icons,
+    Icons,
 )
 
 import app.utils as utils
@@ -98,7 +98,7 @@ class BaseView(Column):
 class CustomText(Text):
     def __init__(self, value: str = "", size=30, *args, **kwargs):
         super().__init__(value=value, size=size, *args, **kwargs)
-        self.color = colors.BLACK
+        self.color = Colors.BLACK
 
     @classmethod
     def create_self(cls, config=None):
@@ -113,10 +113,10 @@ class CustomTextField(TextField):
     def __init__(
         self,
         label: str = "",
-        label_style=TextStyle(color=colors.BLACK),
+        label_style=TextStyle(color=Colors.BLACK),
         # hint_text: str = "",
-        color=colors.BLACK,
-        focused_border_color=colors.CYAN,
+        color=Colors.BLACK,
+        focused_border_color=Colors.CYAN,
         password: bool = False,
         on_change=None,
         on_focus=None,
@@ -143,9 +143,9 @@ class CustomTextField(TextField):
         self._on_blur = on_blur
         self.hint_text = hinttext
         self.format = format
-        # self.label_style = TextStyle(color=colors.BLACK)
-        # self.color = colors.BLACK
-        # self.focused_border_color = colors.CYAN
+        # self.label_style = TextStyle(color=Colors.BLACK)
+        # self.color = Colors.BLACK
+        # self.focused_border_color = Colors.CYAN
 
     def _on_change(self, e):
         if self._on_change_callback:
@@ -196,11 +196,11 @@ class CustomTextField(TextField):
 class CustomTextFieldDialog(CustomTextField):
     def __init__(
         self,
-        label_style=TextStyle(color=colors.WHITE),
+        label_style=TextStyle(color=Colors.WHITE),
         width=150,
-        color=colors.WHITE,
-        border_color=colors.WHITE,
-        focused_border_color=colors.CYAN,
+        color=Colors.WHITE,
+        border_color=Colors.WHITE,
+        focused_border_color=Colors.CYAN,
         *args,
         **kwargs,
     ):
@@ -220,7 +220,7 @@ class CustomContainerButton(Container):
         self,
         icon: str = "",
         text_value: str = "",
-        border=border.all(2, colors.with_opacity(0.0, colors.CYAN)),
+        border=border.all(2, Colors.with_opacity(0.0, Colors.CYAN)),
         on_hover=None,
         *args,
         **kwargs,
@@ -236,7 +236,7 @@ class CustomContainerButton(Container):
             controls=[
                 Container(
                     Icon(self.icon, size=45),
-                    border=border.all(2, colors.BLACK),
+                    border=border.all(2, Colors.BLACK),
                     padding=10,
                     on_hover=self._on_hover,
                 ),
@@ -244,7 +244,7 @@ class CustomContainerButton(Container):
                     value=self.text_value,
                     size=14,
                     text_align=TextAlign.CENTER,
-                    color=colors.BLACK,
+                    color=Colors.BLACK,
                 ),
             ],
             alignment=MainAxisAlignment.CENTER,
@@ -256,15 +256,16 @@ class CustomContainerButton(Container):
         self.update()
 
 
-class CustomDropdown(Dropdown):
+class CustomDropdown(DropdownM2):
     def __init__(
         self,
-        color=colors.BLACK,
-        bgcolor=colors.AMBER_50,
-        text_style=TextStyle(color=colors.BLACK),
-        label_style=TextStyle(color=colors.BLACK),
-        focused_color=colors.BLACK,
-        focused_border_color=colors.CYAN,
+        color=Colors.BLACK,
+        bgcolor=Colors.AMBER_50,
+        text_style=TextStyle(color=Colors.BLACK),
+        label_style=TextStyle(color=Colors.BLACK),
+        focused_color=Colors.BLACK,
+        # focused_border_color=Colors.BLACK,
+        focused_border_color=Colors.CYAN,
         *args,
         **kwargs,
     ):
@@ -297,12 +298,12 @@ class InputField(BaseView):
         # 行削除ボタン
         self.ib_delete = IconButton(
             icons.DELETE_OUTLINE,
-            icon_color=colors.BLACK,
+            icon_color=Colors.BLACK,
         )
 
         # 行追加ボタン
         self.eb_add = ElevatedButton(
-            content=Container(Row([Icon(icons.ADD), Text(value="行追加")])),
+            content=Container(Row([Icon(Icons.ADD), Text(value="行追加")])),
             on_click=lambda e: self.row_add_clicked(),
         )
 
@@ -399,14 +400,14 @@ class InputField2(BaseView):
 
         # 行追加ボタン
         self.b_row_add = ElevatedButton(
-            content=Container(Row([Icon(icons.ADD), Text(value="行追加")])),
+            content=Container(Row([Icon(Icons.ADD), Text(value="行追加")])),
             on_click=lambda e: self.InnerClass(self),
         )
 
         # # 行削除ボタン
         # self.ib_delete = IconButton(
         #     icons.DELETE_OUTLINE,
-        #     icon_color=colors.BLACK,
+        #     icon_color=Colors.BLACK,
         #     on_click=lambda e: self.row_delete_clicked
         # )
 
@@ -426,7 +427,7 @@ class InputField2(BaseView):
             # 行削除ボタン
             self.ib_delete = IconButton(
                 icons.DELETE_OUTLINE,
-                icon_color=colors.BLACK,
+                icon_color=Colors.BLACK,
             )
 
             for items in self.outer_instance.items:
@@ -481,27 +482,27 @@ class SideBer(BaseView):
             height=super().page.window.height,
             destinations=[
                 NavigationRailDestination(
-                    icon=icons.ACCOUNT_BOX,
-                    label_content=Text("顧客一覧", color=colors.BLACK),
+                    icon=Icons.ACCOUNT_BOX,
+                    label_content=Text("顧客一覧", color=Colors.BLACK),
                     data="/home",
                 ),
                 NavigationRailDestination(
-                    icon=icons.EDIT_NOTE,
-                    label_content=Text("手続き", color=colors.BLACK),
+                    icon=Icons.EDIT_NOTE,
+                    label_content=Text("手続き", color=Colors.BLACK),
                     data="/home/procedure",
                 ),
                 NavigationRailDestination(
-                    icon=icons.LABEL,
-                    label_content=Text("ラベル印刷", color=colors.BLACK),
+                    icon=Icons.LABEL,
+                    label_content=Text("ラベル印刷", color=Colors.BLACK),
                     data="/labelprint",
                 ),
                 NavigationRailDestination(
-                    icon=icons.SETTINGS,
-                    label_content=Text("設定", color=colors.BLACK),
+                    icon=Icons.SETTINGS,
+                    label_content=Text("設定", color=Colors.BLACK),
                     data="/settings",
                 ),
             ],
-            bgcolor=colors.AMBER_50,
+            bgcolor=Colors.AMBER_50,
             on_change=lambda e: super().controller.go_page(
                 self.nav_rail.destinations[self.nav_rail.selected_index].data
             ),
@@ -524,7 +525,7 @@ class MyLayout(BaseView):
         BaseView.page = page
         BaseView.controller = controller
         page.title = "遺言・相続手続きシステム"
-        page.bgcolor = colors.AMBER_50
+        page.bgcolor = Colors.AMBER_50
         page.window.top = 0
         page.window.left = 0
         page.window.height = pyautogui.size().height
@@ -532,13 +533,16 @@ class MyLayout(BaseView):
         page.scrollTo = "always"
         page.scroll = "always"
 
+        # スナックバー (メッセージ表示用)
+        super().page.snack_bar = SnackBar(content=Text(""), open=False)
+
         self.past_route = []
         page.session.set("past_route", self.past_route)
 
         self.eb_return = Container(
             content=ElevatedButton(
                 "戻る",
-                icon=icons.ARROW_BACK,
+                icon=Icons.ARROW_BACK,
                 visible=False,
                 on_click=controller.return_clicked,
             ),
@@ -547,24 +551,39 @@ class MyLayout(BaseView):
         page.session.set("eb_return", self.eb_return)
 
         # main_body = Container(content=HomeView())
-        main_body = Container(content=MainBody())
-        page.session.set("main_body", main_body)
+        self.main_body = TabSearch(super().page.snack_bar)
+        page.session.set("main_body", self.main_body)
 
+        self.bank_body = TabBank(super().page.snack_bar)
+        page.session.set("bank_body", self.bank_body)
+
+        # https://flet.dev/docs/controls/tabs/
         self.controls = [
-            # Container(SideBer()),
-            # Container(height=800, content=VerticalDivider(thickness=1, color=colors.BLACK)),
-            # Container(
-            #     height=page.window.height,
-            #     content=VerticalDivider(thickness=1, color=colors.BLACK),
-            # ),
-            Container(
-                Column(
-                    [
-                        self.eb_return,
-                        main_body,
-                    ]
-                )
-            ),
+            Column(
+                [
+                    self.eb_return,
+                    Tabs(
+                        selected_index=0,
+                        animation_duration=300,
+                        label_color=Colors.BLACK,
+                        divider_color=Colors.BLACK,
+                        unselected_label_color=Colors.BLACK,
+                        indicator_color=Colors.RED,
+                        tabs=[
+                            Tab(
+                                text="顧客情報",
+                                icon=Icons.PEOPLE,
+                                content=self.main_body,
+                            ),
+                            Tab(
+                                text="銀行",
+                                icon=Icons.ACCOUNT_BALANCE,
+                                content=self.bank_body,
+                            ),
+                        ],
+                    ),
+                ]
+            )
         ]
 
         # サイドバーのselected_indexを保存
@@ -589,20 +608,17 @@ class MainBody(BaseView):
         super().__init__()
         super().page.session.set("/home", self)
 
-        # スナックバー (メッセージ表示用)
-        super().page.snack_bar = SnackBar(content=Text(""), open=False)
-
         # 手続き中のチェックボックス
         self.ch_contractor = Checkbox(
             label="手続き中",
             value=True,
-            label_style=TextStyle(color=colors.BLACK, size=18),
+            label_style=TextStyle(color=Colors.BLACK, size=18),
             data="decedent",
             on_change=self.controller.search_change,
         )
 
         # 検索した結果の数
-        self.result_count = Text(value="", color=colors.BLACK)
+        self.result_count = Text(value="", color=Colors.BLACK)
 
         # 被相続人　姓フィールド
         self.customer_name_kana_input = CustomTextField(
@@ -733,9 +749,9 @@ class MainBody(BaseView):
                     Text("備考"), heading_row_alignment=MainAxisAlignment.CENTER
                 ),
             ],
-            data_text_style=TextStyle(color=colors.BLACK),
-            heading_text_style=TextStyle(color=colors.WHITE),
-            heading_row_color=colors.BLUE_GREY_300,
+            data_text_style=TextStyle(color=Colors.BLACK),
+            heading_text_style=TextStyle(color=Colors.WHITE),
+            heading_row_color=Colors.BLUE_GREY_300,
         )
 
         results = self.controller.get_result_view_all(page=super().page)
@@ -743,44 +759,46 @@ class MainBody(BaseView):
 
         # クリアボタン
         self.clear_bt = OutlinedButton(
-            icon=icons.CLEAR,
+            icon=Icons.CLEAR,
             text="クリア(C)",
-            style=ButtonStyle(color=colors.BLACK),
+            style=ButtonStyle(color=Colors.BLACK),
             # style=ButtonStyle(text_style=(TextStyle(size=20))),
-            # color=colors.BLACK,
+            # color=Colors.BLACK,
             # height=40,
-            # bgcolor=colors.BLUE_200,
+            # bgcolor=Colors.BLUE_200,
             on_click=self.controller.clear_click,
         )
 
-        self.tabs1 = Column(
-            controls=[
-                Row(
-                    [
-                        self.clear_bt,
-                        self.ch_contractor,
-                    ]
-                ),
-                Divider(),
-                Row(
-                    [
-                        ElevatedButton(
-                            icon=icons.CREATE,
-                            text="被相続人 新規登録",
-                            color=colors.BLACK,
-                            bgcolor=colors.BLUE_200,
-                        ),
-                        ElevatedButton(
-                            icon=icons.CREATE,
-                            text="相続人 新規登録",
-                            color=colors.BLACK,
-                            bgcolor=colors.BLUE_200,
-                        ),
-                        self.result_count,
-                    ]
-                ),
-                self.dt_decedent,
-            ]
+        self.tabs1 = Container(
+            content=Column(
+                controls=[
+                    Row(
+                        [
+                            self.clear_bt,
+                            self.ch_contractor,
+                        ]
+                    ),
+                    Divider(),
+                    Row(
+                        [
+                            ElevatedButton(
+                                icon=Icons.CREATE,
+                                text="被相続人 新規登録",
+                                color=Colors.BLACK,
+                                bgcolor=Colors.BLUE_200,
+                            ),
+                            ElevatedButton(
+                                icon=Icons.CREATE,
+                                text="相続人 新規登録",
+                                color=Colors.BLACK,
+                                bgcolor=Colors.BLUE_200,
+                            ),
+                            self.result_count,
+                        ]
+                    ),
+                    self.dt_decedent,
+                ]
+            ),
         )
 
         self.tabs2 = Container(
@@ -790,16 +808,21 @@ class MainBody(BaseView):
                         [
                             ElevatedButton(
                                 "追加",
-                                icon=icons.ADD,
+                                icon=Icons.ADD,
                             ),
                             ElevatedButton(
                                 "更新",
-                                icon=icons.UPDATE,
+                                icon=Icons.UPDATE,
                             ),
                         ]
                     )
                 ]
-            )
+            ),
+            padding=20,
+            margin=20,
+            border_radius=10,
+            border=border.all(1, Colors.GREY_300),
+            width=650,
         )
 
         self.controls = [
@@ -812,12 +835,12 @@ class MainBody(BaseView):
                             tabs=[
                                 Tab(
                                     text="顧客情報",
-                                    icon=icons.PEOPLE,
+                                    icon=Icons.PEOPLE,
                                     content=self.tabs2,
                                 ),
                                 Tab(
                                     text="銀行情報",
-                                    icon=icons.ACCOUNT_BALANCE,
+                                    icon=Icons.ACCOUNT_BALANCE,
                                     content=self.tabs1,
                                 ),
                             ],
@@ -842,16 +865,16 @@ class MainBody(BaseView):
         #             Row(
         #                 [
         #                     ElevatedButton(
-        #                         icon=icons.CREATE,
+        #                         icon=Icons.CREATE,
         #                         text="被相続人 新規登録",
-        #                         color=colors.BLACK,
-        #                         bgcolor=colors.BLUE_200,
+        #                         color=Colors.BLACK,
+        #                         bgcolor=Colors.BLUE_200,
         #                     ),
         #                     ElevatedButton(
-        #                         icon=icons.CREATE,
+        #                         icon=Icons.CREATE,
         #                         text="相続人 新規登録",
-        #                         color=colors.BLACK,
-        #                         bgcolor=colors.BLUE_200,
+        #                         color=Colors.BLACK,
+        #                         bgcolor=Colors.BLUE_200,
         #                     ),
         #                     self.result_count,
         #                 ]
@@ -861,7 +884,7 @@ class MainBody(BaseView):
         #     )
         # ]
 
-    def show_message(self, message: str, color=colors.GREEN_500):
+    def show_message(self, message: str, color=Colors.GREEN_500):
         """スナックバーにメッセージを表示します。"""
         self._page.snack_bar.content = Text(message)
         self._page.snack_bar.bgcolor = color
@@ -877,8 +900,8 @@ class MainBody(BaseView):
                 self.dt_decedent.rows.append(
                     DataRow(
                         [
-                            DataCell(Icon(icons.TOUCH_APP)),
-                            # DataCell(Icon(icons.TOUCH_APP, color=colors.BLACK)),
+                            DataCell(Icon(Icons.TOUCH_APP)),
+                            # DataCell(Icon(Icons.TOUCH_APP, color=Colors.BLACK)),
                             DataCell(
                                 Container(
                                     Text(result["code"]), alignment=alignment.center
@@ -894,13 +917,13 @@ class MainBody(BaseView):
                             ),
                             # DataCell(
                             #     Container(
-                            #         Icon(icons.PERSON_SEARCH_SHARP),
+                            #         Icon(Icons.PERSON_SEARCH_SHARP),
                             #         alignment=alignment.center,
                             #     )
                             # ),
                             DataCell(
                                 Container(
-                                    Icon(icons.FOLDER), alignment=alignment.center
+                                    Icon(Icons.FOLDER), alignment=alignment.center
                                 )
                             ),
                             DataCell(
@@ -960,16 +983,16 @@ class HomeView(BaseView):
         self.ch_contractor = Checkbox(
             label="手続き中",
             value=True,
-            label_style=TextStyle(color=colors.BLACK, size=18),
+            label_style=TextStyle(color=Colors.BLACK, size=18),
             data="decedent",
             on_change=self.controller.search_change,
         )
 
         # self.ch_me_rep_person = Checkbox(label='自分の担当者', value=True,
-        #                                  label_style=TextStyle(color=colors.BLACK, size=18),
+        #                                  label_style=TextStyle(color=Colors.BLACK, size=18),
         #                                  data='decedent', on_change=self.controller.search_change)
 
-        self.result_count = Text(value="", color=colors.BLACK)
+        self.result_count = Text(value="", color=Colors.BLACK)
 
         # self.dd_responsible_person = CustomDropdown(
         #     label="担当者",
@@ -1103,9 +1126,9 @@ class HomeView(BaseView):
                     Text("備考"), heading_row_alignment=MainAxisAlignment.CENTER
                 ),
             ],
-            data_text_style=TextStyle(color=colors.BLACK),
-            heading_text_style=TextStyle(color=colors.WHITE),
-            heading_row_color=colors.BLUE_GREY_300,
+            data_text_style=TextStyle(color=Colors.BLACK),
+            heading_text_style=TextStyle(color=Colors.WHITE),
+            heading_row_color=Colors.BLUE_GREY_300,
         )
 
         # results = self.controller.get_result_view_all()
@@ -1121,12 +1144,12 @@ class HomeView(BaseView):
                     Row(
                         [
                             ElevatedButton(
-                                icon=icons.CLEAR,
+                                icon=Icons.CLEAR,
                                 text="クリア(C)",
                                 style=ButtonStyle(text_style=(TextStyle(size=20))),
-                                color=colors.BLACK,
+                                color=Colors.BLACK,
                                 height=40,
-                                bgcolor=colors.BLUE_200,
+                                bgcolor=Colors.BLUE_200,
                                 on_click=self.controller.clear_click,
                             ),
                             self.ch_contractor,
@@ -1137,16 +1160,16 @@ class HomeView(BaseView):
                     Row(
                         [
                             ElevatedButton(
-                                icon=icons.CREATE,
+                                icon=Icons.CREATE,
                                 text="被相続人 新規登録",
-                                color=colors.BLACK,
-                                bgcolor=colors.BLUE_200,
+                                color=Colors.BLACK,
+                                bgcolor=Colors.BLUE_200,
                             ),
                             ElevatedButton(
-                                icon=icons.CREATE,
+                                icon=Icons.CREATE,
                                 text="相続人 新規登録",
-                                color=colors.BLACK,
-                                bgcolor=colors.BLUE_200,
+                                color=Colors.BLACK,
+                                bgcolor=Colors.BLUE_200,
                             ),
                             self.result_count,
                         ]
@@ -1165,8 +1188,8 @@ class HomeView(BaseView):
                 self.dt_decedent.rows.append(
                     DataRow(
                         [
-                            DataCell(Icon(icons.TOUCH_APP)),
-                            # DataCell(Icon(icons.TOUCH_APP, color=colors.BLACK)),
+                            DataCell(Icon(Icons.TOUCH_APP)),
+                            # DataCell(Icon(Icons.TOUCH_APP, color=Colors.BLACK)),
                             DataCell(
                                 Container(
                                     Text(result["code"]), alignment=alignment.center
@@ -1180,13 +1203,13 @@ class HomeView(BaseView):
                             ),
                             # DataCell(
                             #     Container(
-                            #         Icon(icons.PERSON_SEARCH_SHARP),
+                            #         Icon(Icons.PERSON_SEARCH_SHARP),
                             #         alignment=alignment.center,
                             #     )
                             # ),
                             DataCell(
                                 Container(
-                                    Icon(icons.FOLDER), alignment=alignment.center
+                                    Icon(Icons.FOLDER), alignment=alignment.center
                                 )
                             ),
                             DataCell(
@@ -1250,19 +1273,293 @@ class ProcedureView(BaseView):
         super().__init__()
 
         self.b_heir = CustomContainerButton(
-            text_value="相続人登録", icon=icons.PERSON_ADD
+            text_value="相続人登録", icon=Icons.PERSON_ADD
         )
         # self.b_heir.content.controls[1].value = '相続人登録'
-        # self.b_heir.content.controls[0].content = Icon(icons.PERSON_ADD, size=45)
+        # self.b_heir.content.controls[0].content = Icon(Icons.PERSON_ADD, size=45)
 
         self.controls = [
             Text(value="＜手続き＞"),
             Container(
                 content=Column(
                     controls=[
-                        Text("◯ 契約後の手続き", size=20, color=colors.BLACK),
+                        Text("◯ 契約後の手続き", size=20, color=Colors.BLACK),
                         self.b_heir,
                     ]
                 )
             ),
         ]
+
+
+class TabSearch(BaseView):
+    def __init__(self, show_message_callback):
+        super().__init__()
+        self.show_message_callback = show_message_callback
+        self.spacing = 20
+        super().page.session.set("/home", self)
+
+        # 検索した結果の数
+        self.result_count = Text(value="", color=Colors.BLACK)
+
+        # 被相続人　姓フィールド
+        self.customer_name_kana_input = CustomTextField(
+            label="被相続人：姓かな",
+            width=200,
+            autofocus=True,
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 被相続人　名フィールド
+        self.customer_name_input = CustomTextField(
+            label="被相続人：姓",
+            width=200,
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 手続きステータス
+        self.dd_progress = CustomDropdown(
+            label="状況",
+            options=[
+                dropdown.Option("見積中"),
+                dropdown.Option("契約待ち"),
+                dropdown.Option("戸籍収集"),
+                dropdown.Option("法定相続情報作成"),
+                dropdown.Option("残高証明書"),
+                dropdown.Option("金融機関手続き"),
+                dropdown.Option("財産評価"),
+                dropdown.Option("分割協議書"),
+                dropdown.Option("登記"),
+                dropdown.Option("完了書類作成"),
+                dropdown.Option("入金待ち"),
+                dropdown.Option("手続終了"),
+                dropdown.Option("キャンセル"),
+            ],
+            width=150,
+            data="decedent",
+            on_change=self.controller.contractor_change,
+        )
+
+        # 備考
+        self.note = CustomTextField(
+            label="備考",
+            width=200,
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        # 相続人　姓フィールド
+        self.heir_name_kana_input = CustomTextField(
+            label="依頼人：姓かな",
+            width=200,
+            data="heir",
+            on_change=self.controller.search_change,
+        )
+
+        # 相続人　名フィールド
+        self.heir_name_input = CustomTextField(
+            label="依頼人：姓",
+            width=200,
+            data="heir",
+            on_change=self.controller.search_change,
+        )
+
+        # 相続人　電話番号フィールド
+        self.heir_tel_input = CustomTextField(
+            label="電話番号",
+            width=200,
+            data="heir",
+            on_change=self.controller.search_change,
+        )
+
+        # 手続き中のチェックボックス
+        self.ch_contractor = Checkbox(
+            label="手続き中",
+            value=True,
+            label_style=TextStyle(color=Colors.BLACK, size=18),
+            data="decedent",
+            on_change=self.controller.search_change,
+        )
+
+        self.search_fields = Container(
+                content=Column(
+                    [
+                        Row(
+                            [
+                                self.customer_name_kana_input,
+                                self.customer_name_input,
+                                self.dd_progress,
+                                self.note
+                            ]
+                        ),
+                        Row(
+                            [
+                                self.heir_name_kana_input,
+                                self.heir_name_input,
+                                self.heir_tel_input,
+                            ]
+                        ),
+                        Row(
+                            [
+                                self.ch_contractor
+                            ]
+                        )
+                    ]
+                ),
+                padding=20,
+                margin=20,
+                border_radius=10,
+                border=border.all(1, Colors.BLACK),
+            )
+
+        self.dt_decedent = DataTable(
+            [
+                DataColumn(
+                    Text("選択"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("Code"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("状況"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("フォルダ"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("被相続人"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("依頼人"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("更新日"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("内容"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("自宅電話番号"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("携帯電話番号"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+                DataColumn(
+                    Text("備考"), heading_row_alignment=MainAxisAlignment.CENTER
+                ),
+            ],
+            data_text_style=TextStyle(color=Colors.BLACK),
+            heading_text_style=TextStyle(color=Colors.WHITE),
+            heading_row_color=Colors.BLUE_GREY_300,
+        )
+
+        results = self.controller.get_result_view_all(page=super().page)
+        self.customer_data_table(results)
+
+        # クリアボタン
+        self.clear_bt = OutlinedButton(
+            icon=Icons.CLEAR,
+            text="クリア(C)",
+            style=ButtonStyle(color=Colors.BLACK),
+            # style=ButtonStyle(text_style=(TextStyle(size=20))),
+            # color=Colors.BLACK,
+            # height=40,
+            # bgcolor=Colors.BLUE_200,
+            on_click=self.controller.clear_click,
+        )
+
+        self.controls = Container(
+            content=[
+                self.search_fields
+            ]
+        )
+
+    def customer_data_table(self, results):
+        # print()
+        # print('customer_data_table:', results)
+        self.dt_decedent.rows = []
+        if results:
+            for result in results:
+                self.dt_decedent.rows.append(
+                    DataRow(
+                        [
+                            DataCell(Icon(Icons.TOUCH_APP)),
+                            # DataCell(Icon(Icons.TOUCH_APP, color=Colors.BLACK)),
+                            DataCell(
+                                Container(
+                                    Text(result["code"]), alignment=alignment.center
+                                ),
+                                data=result["code"],
+                                on_tap=lambda e: pyperclip.copy(e.control.data),
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["状況"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            # DataCell(
+                            #     Container(
+                            #         Icon(Icons.PERSON_SEARCH_SHARP),
+                            #         alignment=alignment.center,
+                            #     )
+                            # ),
+                            DataCell(
+                                Container(
+                                    Icon(Icons.FOLDER), alignment=alignment.center
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["被相続人"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["依頼人"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["更新日"]), alignment=alignment.center
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["内容"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                            # DataCell(Container(Text(result['内容']), alignment=alignment.center_left, width=300)),
+                            DataCell(
+                                Container(
+                                    Text(result["自宅電話番号"]),
+                                    alignment=alignment.center,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["携帯電話番号"]),
+                                    alignment=alignment.center,
+                                )
+                            ),
+                            DataCell(
+                                Container(
+                                    Text(result["備考"]),
+                                    alignment=alignment.center_left,
+                                )
+                            ),
+                        ]
+                    )
+                )
+        self.result_count.value = "検索数：" + str(len(results)) + "件"
+        super().page.update()
+
+class TabBank(BaseView):
+    def __init__(self, show_message_callback):
+        super().__init__()
+        self.show_message_callback = show_message_callback
+        self.spacing = 20

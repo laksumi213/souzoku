@@ -39,14 +39,14 @@ class CustomerTabContent(ft.Column):
                 ft.DataColumn(ft.Text("電話番号")),
             ],
             rows=[],
-            heading_row_color=ft.colors.BLUE_GREY_100,
-            horizontal_lines=ft.BorderSide(1, ft.colors.BLACK12),
-            vertical_lines=ft.BorderSide(1, ft.colors.BLACK12),
+            heading_row_color=ft.Colors.BLUE_GREY_100,
+            horizontal_lines=ft.BorderSide(1, ft.Colors.BLACK12),
+            vertical_lines=ft.BorderSide(1, ft.Colors.BLACK12),
             show_checkbox_column=False,
             data_row_min_height=40,
             data_row_max_height=40,
             width=600,
-            border=ft.border.all(1, ft.colors.BLUE_GREY_200),
+            border=ft.border.all(1, ft.Colors.BLUE_GREY_200),
             border_radius=ft.border_radius.all(10),
         )
 
@@ -62,22 +62,22 @@ class CustomerTabContent(ft.Column):
                             [
                                 ft.ElevatedButton(
                                     "追加",
-                                    icon=ft.icons.ADD,
+                                    icon=ft.Icons.ADD,
                                     on_click=self.add_customer,
                                 ),
                                 ft.ElevatedButton(
                                     "更新",
-                                    icon=ft.icons.UPDATE,
+                                    icon=ft.Icons.UPDATE,
                                     on_click=self.update_customer_data,
                                 ),
                                 ft.ElevatedButton(
                                     "削除",
-                                    icon=ft.icons.DELETE,
+                                    icon=ft.Icons.DELETE,
                                     on_click=self.delete_customer_data,
                                 ),
                                 ft.OutlinedButton(
                                     "クリア",
-                                    icon=ft.icons.CLEAR,
+                                    icon=ft.Icons.CLEAR,
                                     on_click=self.clear_customer_data_fields,
                                 ),
                             ],
@@ -91,7 +91,7 @@ class CustomerTabContent(ft.Column):
                 padding=20,
                 margin=20,
                 border_radius=10,
-                border=ft.border.all(1, ft.colors.GREY_300),
+                border=ft.border.all(1, ft.Colors.GREY_300),
                 width=650,
             ),
             ft.Text("顧客リスト", size=20, weight=ft.FontWeight.BOLD),
@@ -100,7 +100,7 @@ class CustomerTabContent(ft.Column):
                 alignment=ft.alignment.center,
                 padding=10,
                 border_radius=10,
-                border=ft.border.all(1, ft.colors.GREY_300),
+                border=ft.border.all(1, ft.Colors.GREY_300),
                 height=300,
                 width=650,
             ),
@@ -150,7 +150,7 @@ class CustomerTabContent(ft.Column):
         phone = self.customer_phone_input.value
 
         if not customer_id or not name:
-            self.show_message("顧客IDと氏名は必須です。", ft.colors.RED_500)
+            self.show_message("顧客IDと氏名は必須です。", ft.Colors.RED_500)
             return
 
         new_customer = Customer(customer_id, name, address, phone)
@@ -159,7 +159,7 @@ class CustomerTabContent(ft.Column):
             self.clear_customer_inputs()
             self.load_customer_data()
         else:
-            self.show_message("顧客IDが既に存在します。", ft.colors.RED_500)
+            self.show_message("顧客IDが既に存在します。", ft.Colors.RED_500)
 
     def update_customer_data(self, e):
         """顧客情報を更新します。"""
@@ -169,10 +169,10 @@ class CustomerTabContent(ft.Column):
         phone = self.customer_phone_input.value
 
         if not customer_id:
-            self.show_message("更新する顧客を選択してください。", ft.colors.RED_500)
+            self.show_message("更新する顧客を選択してください。", ft.Colors.RED_500)
             return
         if not name:
-            self.show_message("氏名は必須です。", ft.colors.RED_500)
+            self.show_message("氏名は必須です。", ft.Colors.RED_500)
             return
 
         updated_customer = Customer(customer_id, name, address, phone)
@@ -182,14 +182,14 @@ class CustomerTabContent(ft.Column):
             self.load_customer_data()
         else:
             self.show_message(
-                "顧客情報が見つからないか、更新に失敗しました。", ft.colors.RED_500
+                "顧客情報が見つからないか、更新に失敗しました。", ft.Colors.RED_500
             )
 
     def delete_customer_data(self, e):
         """顧客情報を削除します。"""
         customer_id = self.customer_id_input.value
         if not customer_id:
-            self.show_message("削除する顧客を選択してください。", ft.colors.RED_500)
+            self.show_message("削除する顧客を選択してください。", ft.Colors.RED_500)
             return
 
         if self.db.delete_customer(customer_id):
@@ -198,7 +198,7 @@ class CustomerTabContent(ft.Column):
             self.load_customer_data()
         else:
             self.show_message(
-                "顧客情報が見つからないか、削除に失敗しました。", ft.colors.RED_500
+                "顧客情報が見つからないか、削除に失敗しました。", ft.Colors.RED_500
             )
 
     def clear_customer_data_fields(self, e):
@@ -241,14 +241,14 @@ class BankTabContent(ft.Column):
                 ft.DataColumn(ft.Text("支店名")),
             ],
             rows=[],
-            heading_row_color=ft.colors.BLUE_GREY_100,
-            horizontal_lines=ft.BorderSide(1, ft.colors.BLACK12),
-            vertical_lines=ft.BorderSide(1, ft.colors.BLACK12),
+            heading_row_color=ft.Colors.BLUE_GREY_100,
+            horizontal_lines=ft.BorderSide(1, ft.Colors.BLACK12),
+            vertical_lines=ft.BorderSide(1, ft.Colors.BLACK12),
             show_checkbox_column=False,
             data_row_min_height=40,
             data_row_max_height=40,
             width=600,
-            border=ft.border.all(1, ft.colors.BLUE_GREY_200),
+            border=ft.border.all(1, ft.Colors.BLUE_GREY_200),
             border_radius=ft.border_radius.all(10),
         )
 
@@ -261,21 +261,21 @@ class BankTabContent(ft.Column):
                         ft.Row(
                             [
                                 ft.ElevatedButton(
-                                    "追加", icon=ft.icons.ADD, on_click=self.add_bank
+                                    "追加", icon=ft.Icons.ADD, on_click=self.add_bank
                                 ),
                                 ft.ElevatedButton(
                                     "更新",
-                                    icon=ft.icons.UPDATE,
+                                    icon=ft.Icons.UPDATE,
                                     on_click=self.update_bank_data,
                                 ),
                                 ft.ElevatedButton(
                                     "削除",
-                                    icon=ft.icons.DELETE,
+                                    icon=ft.Icons.DELETE,
                                     on_click=self.delete_bank_data,
                                 ),
                                 ft.OutlinedButton(
                                     "クリア",
-                                    icon=ft.icons.CLEAR,
+                                    icon=ft.Icons.CLEAR,
                                     on_click=self.clear_bank_data_fields,
                                 ),
                             ],
@@ -289,7 +289,7 @@ class BankTabContent(ft.Column):
                 padding=20,
                 margin=20,
                 border_radius=10,
-                border=ft.border.all(1, ft.colors.GREY_300),
+                border=ft.border.all(1, ft.Colors.GREY_300),
                 width=650,
             ),
             ft.Text("銀行リスト", size=20, weight=ft.FontWeight.BOLD),
@@ -298,7 +298,7 @@ class BankTabContent(ft.Column):
                 alignment=ft.alignment.center,
                 padding=10,
                 border_radius=10,
-                border=ft.border.all(1, ft.colors.GREY_300),
+                border=ft.border.all(1, ft.Colors.GREY_300),
                 height=300,
                 width=650,
             ),
@@ -349,7 +349,7 @@ class BankTabContent(ft.Column):
         branch = self.bank_branch_input.value
 
         if not bank_id or not bank_name:
-            self.show_message("銀行IDと銀行名は必須です。", ft.colors.RED_500)
+            self.show_message("銀行IDと銀行名は必須です。", ft.Colors.RED_500)
             return
 
         new_bank = Bank(bank_id, bank_name, account_number, branch)
@@ -358,7 +358,7 @@ class BankTabContent(ft.Column):
             self.clear_bank_inputs()
             self.load_bank_data()
         else:
-            self.show_message("銀行IDが既に存在します。", ft.colors.RED_500)
+            self.show_message("銀行IDが既に存在します。", ft.Colors.RED_500)
 
     def update_bank_data(self, e):
         """銀行情報を更新します。"""
@@ -368,10 +368,10 @@ class BankTabContent(ft.Column):
         branch = self.bank_branch_input.value
 
         if not bank_id:
-            self.show_message("更新する銀行を選択してください。", ft.colors.RED_500)
+            self.show_message("更新する銀行を選択してください。", ft.Colors.RED_500)
             return
         if not bank_name:
-            self.show_message("銀行名は必須です。", ft.colors.RED_500)
+            self.show_message("銀行名は必須です。", ft.Colors.RED_500)
             return
 
         updated_bank = Bank(bank_id, bank_name, account_number, branch)
@@ -381,14 +381,14 @@ class BankTabContent(ft.Column):
             self.load_bank_data()
         else:
             self.show_message(
-                "銀行情報が見つからないか、更新に失敗しました。", ft.colors.RED_500
+                "銀行情報が見つからないか、更新に失敗しました。", ft.Colors.RED_500
             )
 
     def delete_bank_data(self, e):
         """銀行情報を削除します。"""
         bank_id = self.bank_id_input.value
         if not bank_id:
-            self.show_message("削除する銀行を選択してください。", ft.colors.RED_500)
+            self.show_message("削除する銀行を選択してください。", ft.Colors.RED_500)
             return
 
         if self.db.delete_bank(bank_id):
@@ -397,7 +397,7 @@ class BankTabContent(ft.Column):
             self.load_bank_data()
         else:
             self.show_message(
-                "銀行情報が見つからないか、削除に失敗しました。", ft.colors.RED_500
+                "銀行情報が見つからないか、削除に失敗しました。", ft.Colors.RED_500
             )
 
     def clear_bank_data_fields(self, e):
