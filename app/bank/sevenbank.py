@@ -61,8 +61,8 @@ class Sevenbank:
         self.proc.web_open(url)
 
         self.proc.driver.find_element(By.NAME, 'Inheritance_Represents_Attorney').click()
-        self.proc.driver.find_element(By.NAME, 'LastName_Kanji_Attorney').send_keys('行政書士法人チェスター')
-        self.proc.driver.find_element(By.NAME, 'LastName_Kana_Attorney').send_keys('ギョウセイショシホウジンチェスター')
+        self.proc.driver.find_element(By.NAME, 'LastName_Kanji_Attorney').send_keys('行政書士法人チェスター　担当：森町')
+        self.proc.driver.find_element(By.NAME, 'LastName_Kana_Attorney').send_keys('ギョウセイショシホウジンチェスタータントウモリマチ')
 
         self.proc.driver.find_element(By.NAME, 'Postal_Code1').send_keys('103')
         self.proc.driver.find_element(By.NAME, 'Postal_Code2').send_keys('0028')

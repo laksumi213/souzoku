@@ -106,13 +106,18 @@ class JibunBank:
         self.proc.driver.find_element(By.NAME, 'inquiry_115').send_keys('東京都中央区八重洲')
         self.proc.driver.find_element(By.NAME, 'inquiry_116').send_keys('1-7-20-八重洲口会館2階')
 
+        self.proc.driver.find_element(By.NAME, 'inquiry_124_1').send_keys('エーユージブン')
+        self.proc.driver.find_element(By.NAME, 'inquiry_124_2').send_keys('アカ')
+        self.proc.driver.find_element(By.NAME, 'inquiry_124_4').send_keys('1234567')
+        self.proc.driver.find_element(By.NAME, 'inquiry_124_5').send_keys('ジブン　タロウ')
+
 
         # 3.相続方法など
         self.proc.driver.find_element(By.NAME, 'inquiry_117_1').click()
         self.proc.driver.find_element(By.NAME, 'inquiry_117_2').click()
         self.proc.driver.find_element(By.NAME, 'inquiry_117_3').click()
-        self.proc.driver.find_element(By.NAME, 'inquiry_118_1').click()
-        self.proc.driver.find_element(By.NAME, 'inquiry_118_2').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="inquiry_item118"]/label[2]/input').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="inquiry_item118"]/span[3]/div[2]/label[2]/input').click()
 
 
 def main():
