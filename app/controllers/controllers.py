@@ -1,7 +1,7 @@
 import asyncio
 from datetime import date
 
-from flet import Page
+from flet import Page, TextField
 from pyautogui import typewrite
 
 import app.utils as utils
@@ -42,9 +42,9 @@ class MainController(BaseController):
         page.go("/home")
 
     def on_key_down(self, e):
-        print()
-        print("on_key_down:", e)
-        print(self.page.route)
+        # print()
+        # print("on_key_down:", e)
+        # print(self.page.route)
         if e.key == ":" and e.ctrl:
             utils.ime_off()
             typewrite(date.today().strftime("%Y/%m/%d"))
@@ -62,18 +62,21 @@ class MainController(BaseController):
         print()
         print("clear_click")
 
-        for count in range(len(self.page.session.get("/home").search_fields.controls)):
-            for control in (
-                self.page.session.get("/home").search_fields.controls[count].controls
-            ):
-                control.value = ""
-                if control.label == "被相続人：姓かな":
-                    control.focus()
-
         self.page.session.get("/home").ch_contractor.value = True
+        self.page.session.get("/home").customer_name_kana_input.focus()
         # self.page.session.get("/home").ch_me_rep_person.value = True
         results = self.get_result_view_all(page=self.page)
         self.page.session.get("/home").customer_data_table(results)
+
+        for count in range(len(self.page.session.get("/home").search_fields.content.controls)):
+            for control in (
+                    self.page.session.get("/home").search_fields.content.controls[count].controls
+            ):
+                if isinstance(control, TextField) and control.value:
+                    control.value = ""
+                    # if control.label == "被相続人：姓かな":
+                    #     control.focus()
+                    #     self.page.update()
         self.page.update()
 
     def return_clicked(self, _):
@@ -105,8 +108,8 @@ class MainController(BaseController):
         return results
 
     def search_change(self, e):
-        # print()
-        # print('search_change:', e)
+        print()
+        print('search_change:', e)
         my_dict = {}
         results = None
         i = 0
@@ -114,12 +117,15 @@ class MainController(BaseController):
             i = 0
         elif e.control.data == "heir":
             i = 1
-
-        for control in (
-            self.page.session.get("/home").search_fields.controls[i].controls
-        ):
-            if control.value:
-                my_dict[control.label] = control.value
+        # breakpoint()
+        for count in range(len(self.page.session.get("/home").search_fields.content.controls)):
+            for control in (
+                self.page.session.get("/home").search_fields.content.controls[count].controls
+            ):
+                # breakpoint()
+                if isinstance(control, TextField) and control.value:
+                    # print('control:', control)
+                    my_dict[control.label] = control.value
 
         if e.control.data == "decedent":
             results = Decedent.get_customer(dict=my_dict, page=self.page)
@@ -127,6 +133,22 @@ class MainController(BaseController):
             results = Heir.get_customer(dict=my_dict, page=self.page)
 
         self.page.session.get("/home").customer_data_table(results)
+
+        # for control in [(
+            # self.page.session.get("/home").search_fields.controls[i].controls
+        #     self.page.session.get("/home").search_fields.content.controls[0].controls[i]
+        # )]:
+        #     print('control:', control)
+        #     if control.value:
+        #         my_dict[control.label] = control.value
+        #
+        #         print('my_dict[control.label] :', my_dict[control.label] )
+        #     if e.control.data == "decedent":
+        #         results = Decedent.get_customer(dict=my_dict, page=self.page)
+        #     elif e.control.data == "heir":
+        #         results = Heir.get_customer(dict=my_dict, page=self.page)
+        #
+        # self.page.session.get("/home").customer_data_table(results)
 
     @classmethod
     def get_responsible_person_dropdown(cls):
@@ -183,6 +205,6 @@ def route_change(page: Page, e):
     page.update()
 
     if e.route == "/home":
-        page.session.get("main_body").content.tf_kana.focus()
+        page.session.get("main_body").content.customer_name_kana_input.focus()
 
     page.update()

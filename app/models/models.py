@@ -186,8 +186,8 @@ class Heir(BaseModel):
         query = query.join(Heir, Heir.code == Decedent.code)
         query = query.where(Heir.offer == 1)
         query = query.order_by(Heir.updated_date.asc())
-        if page.session.get("/home").ch_me_rep_person.value:
-            query = query.where(Decedent.responsible_person == "森町")
+        # if page.session.get("/home").ch_me_rep_person.value:
+        #     query = query.where(Decedent.responsible_person == "森町")
         if page.session.get("/home").ch_contractor.value:
             query = query.where(
                 and_(
