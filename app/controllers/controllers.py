@@ -2,7 +2,7 @@ import asyncio
 from datetime import date
 
 from flet import Page, TextField
-from pyautogui import typewrite
+from pyautogui import typewrite, hotkey
 
 import app.utils as utils
 
@@ -33,6 +33,7 @@ class MainController(BaseController):
     def __init__(self, page: Page):
         super().__init__(page)
         page.on_keyboard_event = self.on_key_down
+        self.shift_tab_bool = True
 
         # MyLayout(page, self)
         page.add(MyLayout(page, self))
@@ -48,6 +49,18 @@ class MainController(BaseController):
         if e.key == ":" and e.ctrl:
             utils.ime_off()
             typewrite(date.today().strftime("%Y/%m/%d"))
+
+        if e.key == 'Tab' and e.shift and self.shift_tab_bool:
+            # print('e.key == tab and e.shift')
+            self.shift_tab_bool = False
+            hotkey('shift', 'tab')
+            hotkey('tab')
+        elif e.key == 'Tab' and e.shift and not self.shift_tab_bool:
+            # print('self.shift_tab_bool = True')
+            self.shift_tab_bool = True
+
+        # if e.key == 'Tab' and not e.shift:
+        #     print('e.key == Tab')
 
         if self.page.route == "/home":
             if (e.key == "c" or e.key == "C") and e.alt:

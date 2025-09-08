@@ -551,6 +551,8 @@ class MyLayout(BaseView):
         )
         page.session.set("eb_return", self.eb_return)
 
+        self.main_tab = TabSearch(super().page.snack_bar)
+
         # main_body = Container(content=HomeView())
         self.main_body = Tabs(
             selected_index=0,
@@ -563,13 +565,13 @@ class MyLayout(BaseView):
                 Tab(
                     text="顧客情報",
                     icon=Icons.PEOPLE,
-                    content=self.main_body,
+                    content=self.main_tab,
                 )
             ],
         )
         page.session.set("main_body", self.main_body)
 
-        self.main_tab = TabSearch(super().page.snack_bar)
+        # self.main_tab = TabSearch(super().page.snack_bar)
 
         # self.bank_body = TabBank(super().page.snack_bar)
         # page.session.set("bank_body", self.bank_body)
