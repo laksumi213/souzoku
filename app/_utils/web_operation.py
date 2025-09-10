@@ -3,7 +3,6 @@ import os
 from time import sleep
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 # from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -76,19 +75,50 @@ class Web:
         Web.driver = self.driver
 
     def web_operation(self, url):
+        try:
+            print('driver.window_handles:', self.driver.window_handles)
+        except Exception as e:
+            print('web_open Exception:', e)
+            options = webdriver.ChromeOptions()
+            options.add_experimental_option("excludeSwitches", ['enable-automation', 'enable-logging']) # chromeは自動テスト ソフトウェアによって制御されています。を非表示
+            options.add_argument("--remote-debugging-port=9222")
+            if os.name == 'nt':
+                options.add_argument(f"--user-data-dir={os.path.expanduser('~')}/chrome_user_data")
+            else:
+                options.add_argument(f"--user-data-dir={os.environ['HOME']}/chrome_user_data")
+            # options.add_argument("--profile-directory=Profile 6")
+            options.add_experimental_option('detach', True)
+            self.driver = webdriver.Chrome(options=options)
+            print('driver.window_handles:', self.driver.window_handles)
+
         for driver in self.driver.window_handles:
             print('driver:', driver)
             self.driver.switch_to.window(driver)
             print('self.driver.title:', self.driver.title)
             if self.driver.current_url == url:
+                print('url:', url)
+
+
+
+                # # CSSセレクタを使って、type="checkbox"のすべての<input>要素を取得
+                # checkboxes = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="checkbox"]')
+                #
+                # # 取得したチェックボックスをループで処理
+                # for checkbox in checkboxes:
+                #     print(f"Name: {checkbox.get_attribute('name')}")
+                #     print(f"Value: {checkbox.get_attribute('value')}")
+                #     print(f"Is Selected: {checkbox.is_selected()}")
+                #     print("-" * 20)
+
+                # self.driver.find_element(By.XPATH, '//*[@id="checkBtn"]').click()
                 # self.driver.minimize_window()
                 # self.driver.maximize_window()
-                element = self.driver.find_element(By.XPATH, "/html/body/main/div[3]/div/div[3]/figure")
+                # element = self.driver.find_element(By.XPATH, "/html/body/main/div[3]/div/div[3]/figure")
                 # actions = ActionChains(self.driver)
                 # actions.move_to_element(element)
                 # actions.perform()
-                sleep(1)
-                element.click()
+                # sleep(1)
+                # element.click()
                 break
 
 

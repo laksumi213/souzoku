@@ -1,21 +1,14 @@
 # 楽天証券
-import flet as ft
 # from zengin import BankSearch
 # from pdf_create import PdfCreate
-from datetime import datetime
 import jaconv
-import mojimoji
 import re
-import os.path
 from app._utils.web_operation import Web
 import app.utils as utils
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
-import asyncio
-from webdriver_manager.chrome import ChromeDriverManager
 
 
 class RakutenSec:
@@ -103,8 +96,8 @@ class RakutenSec:
         # self.proc.driver.find_element(By.ID, 'agentName').send_keys(f'故　{name[0]}{name[1]}様　相続人　{name_kana[0]}{name_kana[1]}様　相続人代理人　行政書士法人チェスター　代表社員　清水　茜作')
         self.proc.driver.find_element(By.ID, 'agentNameKana').send_keys(f'コ　{name_kana[0]}{name_kana[1]}サマ　ソウゾクニン　{heir_kana[0]}{heir_kana[1]}サマ　ソウゾクニンダイリニン　ギョウセイショシホウジンチェスター')
         # self.proc.driver.find_element(By.ID, 'agentNameKana').send_keys(f'コ　{name_kana[0]}{name_kana[1]}サマ　ソウゾクニン　{heir_kana[0]}{heir_kana[1]}サマ　ソウゾクニンダイリニン　ギョウセイショシホウジンチェスター　ダイヒョウシャイン　シミズ　センサク')
-        self.proc.driver.find_element(By.ID, 'agentChargeName').send_keys('事務担当　森町翼')
-        self.proc.driver.find_element(By.ID, 'agentChargeNameKana').send_keys('ジムタントウモリマチツバサ')
+        self.proc.driver.find_element(By.ID, 'agentChargeName').send_keys(f'森町翼({self.code})')
+        self.proc.driver.find_element(By.ID, 'agentChargeNameKana').send_keys('モリマチツバサ')
         self.proc.driver.find_element(By.ID, 'agentPostCode1').send_keys('103')
         self.proc.driver.find_element(By.ID, 'agentPostCode2').send_keys('0028')
         time.sleep(1)

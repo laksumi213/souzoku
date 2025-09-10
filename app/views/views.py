@@ -6,7 +6,6 @@ import pyperclip
 import subprocess
 from flet import (
     AlertDialog,
-    AppBar,
     ButtonStyle,
     Checkbox,
     Column,
@@ -16,7 +15,6 @@ from flet import (
     DataColumn,
     DataRow,
     DataTable,
-    Divider,
     DropdownM2,
     ElevatedButton,
     Icon,
@@ -1346,7 +1344,7 @@ class TabSearch(BaseView):
                 dropdown.Option("手続終了"),
                 dropdown.Option("キャンセル"),
             ],
-            width=150,
+            width=200,
             data="decedent",
             on_change=self.controller.contractor_change,
         )

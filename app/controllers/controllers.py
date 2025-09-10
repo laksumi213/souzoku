@@ -1,7 +1,7 @@
 import asyncio
 from datetime import date
 
-from flet import Page, TextField
+from flet import Page, TextField, DropdownM2
 from pyautogui import typewrite, hotkey
 
 import app.utils as utils
@@ -85,11 +85,13 @@ class MainController(BaseController):
             for control in (
                     self.page.session.get("/home").search_fields.content.controls[count].controls
             ):
-                if isinstance(control, TextField) and control.value:
+                if isinstance(control, TextField) or isinstance(control, DropdownM2) and control.value:
                     control.value = ""
-                    # if control.label == "被相続人：姓かな":
-                    #     control.focus()
-                    #     self.page.update()
+
+                # if isinstance(control, DropdownM2) and control.value:
+                #     print('isinstance(control, DropdownM2):', isinstance(control, DropdownM2))
+                #     control.value = ""
+
         self.page.update()
 
     def return_clicked(self, _):

@@ -1,18 +1,12 @@
 # auじぶん銀行
-import flet as ft
 # from zengin import BankSearch
 # from pdf_create import PdfCreate
-from datetime import datetime
 import jaconv
-import mojimoji
 import re
-import os.path
 from app._utils.web_operation import Web
 import app.utils as utils
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
 import time
 
 
