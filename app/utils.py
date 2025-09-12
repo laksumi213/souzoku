@@ -2,16 +2,16 @@ import os
 from pathlib import Path
 import platform
 import configparser
-import datetime
+from datetime import datetime
 import re
 import requests
 
 WAREKI_START = {
-    '令和': datetime.datetime(2019, 5, 1),
-    '平成': datetime.datetime(1989, 1, 8),
-    '昭和': datetime.datetime(1926, 12, 25),
-    '大正': datetime.datetime(1912, 1, 1),
-    '明治': datetime.datetime(1868, 1, 1)
+    '令和': datetime(2019, 5, 1),
+    '平成': datetime(1989, 1, 8),
+    '昭和': datetime(1926, 12, 25),
+    '大正': datetime(1912, 1, 1),
+    '明治': datetime(1868, 1, 1)
 }
 
 if platform.system() == 'Windows':
@@ -80,7 +80,7 @@ def convert_to_wareki2(s):
         y = int(dt[0])
         m = int(dt[1])
         d = int(dt[2])
-        y_m_d = datetime.datetime(y, m, d)
+        y_m_d = datetime(y, m, d)
         if WAREKI_START['令和'] <= y_m_d:
             reiwa_year = WAREKI_START['令和'].year
             era_year = y_m_d.year
@@ -143,3 +143,59 @@ def get_zipcode_from_address(address):
     except requests.exceptions.RequestException as e:
         print(f"APIリクエストエラー: {e}")
         return None
+
+
+def zipcode_to_address(zipcode):
+    URL = 'https://zipcloud.ibsnet.co.jp/api/search'
+
+    if '-' in str(zipcode):
+        zipcode = int(zipcode.replace('-', ''))
+
+    res = requests.get(URL, params={'zipcode': zipcode})
+    res = res.json()
+    try:
+        address = [res['results'][0]['address1'], res['results'][0]['address2'], res['results'][0]['address3']]
+    except Exception as e:
+        print(e)
+        address = None
+    # print(address)
+    return address
+
+
+def convert_seireki(wareki_s, e):
+    era = {
+        'r': '令和',
+        'h': '平成',
+        's': '昭和',
+        't': '大正',
+        'm': '明治'
+    }
+
+    era_dic = {
+        "明治": 1868,
+        "大正": 1912,
+        "昭和": 1926,
+        "平成": 1989,
+        "令和": 2019
+    }
+
+    tmp = re.findall('[0-9]+', wareki_s)
+
+    if len(tmp) == 2:
+        e.control.value = f'{datetime.now().strftime("%Y")}/{tmp[0]}/{tmp[1]}'
+        return
+
+    try:
+        if wareki_s[0] == 'r' or wareki_s[0] == 'h' or wareki_s[0] == 's' or wareki_s[0] == 't' or wareki_s[0] == 'm':
+            wareki = era[wareki_s[0]] + tmp[0]
+        else:
+            wareki = wareki_s
+    except Exception as e:
+        wareki = wareki_s
+        print(e)
+
+    s = re.match(r'(明治|大正|昭和|平成|令和)([0-9]+|元)', str(wareki))
+    if s is None:
+        return wareki_s
+    y = int(s.group(2)) if s.group(2) != '元' else 1
+    e.control.value = f'{era_dic[s.group(1)] + y - 1}/{tmp[1]}/{tmp[2]}'

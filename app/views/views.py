@@ -117,6 +117,7 @@ class CustomTextField(TextField):
         color=Colors.BLACK,
         focused_border_color=Colors.CYAN,
         password: bool = False,
+        width=200,
         on_change=None,
         on_focus=None,
         on_blur=None,
@@ -129,6 +130,7 @@ class CustomTextField(TextField):
             label=label,
             label_style=label_style,
             color=color,
+            width=width,
             focused_border_color=focused_border_color,
             password=password,
             on_change=self._on_change,
@@ -260,6 +262,7 @@ class CustomDropdown(DropdownM2):
         self,
         color=Colors.BLACK,
         bgcolor=Colors.AMBER_50,
+        width=200,
         text_style=TextStyle(color=Colors.BLACK),
         label_style=TextStyle(color=Colors.BLACK),
         focused_color=Colors.BLACK,
@@ -271,6 +274,7 @@ class CustomDropdown(DropdownM2):
         super().__init__(
             color=color,
             bgcolor=bgcolor,
+            width=width,
             text_style=text_style,
             label_style=label_style,
             focused_color=focused_color,
@@ -1268,10 +1272,144 @@ class MyLayout(BaseView):
 #         self.result_count.value = "検索数：" + str(len(results)) + "件"
 #         super().page.update()
 
-
 class CustomerRegistration(BaseView):
-    def __init__(self):
+    def __init__(self,
+                 page: Page,
+                 tb_name1=None,
+                 tb_name2=None,
+                 tb_name1_huri=None,
+                 tb_name2_huri=None,
+                 tb_zipcode=None,
+                 tb_address1=None,
+                 tb_address2=None,
+                 tb_address3=None,
+                 tb_address4=None,
+                 tb_building=None,
+                 birthday=None,
+                 deathday=None,
+                 tb_code=None,
+                 dd_code=None,
+                 card1=None,
+                 card2=None,
+                 b_delete=None
+                 ):
         super().__init__()
+
+        self.tb_name1 = CustomTextField(label='姓', autofocus=True)
+        self.tb_name2 = CustomTextField(label='名')
+        self.tb_name1_huri = CustomTextField(label='姓ふりがな')
+        self.tb_name2_huri = CustomTextField(label='名ふりがな')
+        self.birthday = CustomTextField(label='生年月日', hint_text='1900/1/1', width=120,
+                                        on_blur=lambda e: utils.convert_seireki(self.birthday.value, e))
+        self.deathday = CustomTextField(label='死亡日', hint_text='1900/1/1', width=120,
+                                        on_blur=lambda e: utils.convert_seireki(self.deathday.value, e))
+        self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,
+                                          on_blur=self.zipcode_change)
+        self.tb_address1 = CustomTextField(label='都道府県', hint_text='東京都', width=150)
+        self.tb_address2 = CustomTextField(label='市区町村', hint_text='町田市', width=150)
+        self.tb_address3 = CustomTextField(label='町域名', hint_text='森野', width=150)
+        self.tb_address4 = CustomTextField(label='番地', hint_text='1-22-5', width=280)
+        self.tb_building = CustomTextField(label='建物名', hint_text='町田310五十子ビル3階', width=889)
+        self.note = CustomTextField(label='備考', width=500, multiline=True)
+        self.tb_code = CustomTextField(label='コード', hint_text='E00200', width=200)
+        self.dd_code = DropdownM2(label='コード・氏名選択', width=200, on_change=self.change_dd_code)
+        # self.set_dd_code()
+        self.b_delete = ElevatedButton(
+            content=Container(
+                content=Row(
+                    controls=[
+                        Icon(icons.SEARCH),
+                        Text(value="顧客削除", size=20),
+                    ]
+                )
+            ),
+            height=50,
+            on_click=self.delete_clicked
+        )
+
+    # def change_date(self, e):
+    #     if e.control.data == 'birthday':
+    #         self.birthday.value = str(e.control.value)[:10].replace('-', '/')
+    #     elif e.control.data == 'deathday':
+    #         self.deathday.value = str(e.control.value)[:10].replace('-', '/')
+    #     self.body.update()
+    # 
+    # def date_picker_dismissed(self, e):
+    #     print('date_picker_dismissed', e)
+    #     # print(f"Date picker dismissed, value is {self.date_picker_birthday.value}")
+    # 
+    # def clicked(self, e):
+    #     pass
+    # 
+    def set_dd_code(self):
+        pass
+    #     sql = 'SELECT code, username1 || " " || username2 FROM customer ORDER BY code DESC'
+    #     record = GlobalValues.get_db(sql)
+    #     # print('record: ', record)
+    #     self.dd_code.options.append(dropdown.Option("-"))
+    #     [self.dd_code.options.append(dropdown.Option(f'{i[0]} {i[1]}')) for i in record]
+    # 
+    # def change_dd_code(self, e):
+    #     pass
+    # 
+    def zipcode_change(self, e):
+        self.tb_address4.focus()
+        self.update()
+    #     zipcode_address = zipcode_to_address(e.control.value)
+    #     if zipcode_address:
+    #         self.tb_address1.value = zipcode_address[0]
+    #         self.tb_address2.value = zipcode_address[1]
+    #         self.tb_address3.value = zipcode_address[2]
+    #     else:
+    #         self.tb_address1.value = ''
+    #         self.tb_address2.value = ''
+    #         self.tb_address3.value = ''
+    #     self.update()
+    # 
+    # def delete_clicked(self, e):
+    #     def close_dlg(e):
+    #         page.dialog.open = False
+    #         page.update()
+    # 
+    #     def delete_customer(_):
+    #         def close_dlg(e):
+    #             page.dialog.open = False
+    #             page.update()
+    # 
+    #         sql = 'delete from customer where code = ?'
+    #         GlobalValues.set_db(sql, tuple([self.tb_code.value]))
+    #         page.dialog = AlertDialog(
+    #             open=True,
+    #             modal=True,
+    #             title=Text("顧客削除完了"),
+    #             content=Text('顧客の削除が完了しました。'),
+    #             actions=[ElevatedButton(text="OK", on_click=close_dlg)],
+    #             actions_alignment="end",
+    #         )
+    #         page.update()
+    #         [self.body.controls.pop() for _ in range(len(self.body.controls))]
+    #         self.body.controls.append(RegistrationCustomer())
+    #         self.body.update()
+    # 
+    #     page = GlobalValues.my_page
+    #     page.dialog = AlertDialog(
+    #         open=True,
+    #         modal=True,
+    #         title=Text("顧客削除"),
+    #         content=Text('顧客を削除してよいでしょうか？'),
+    #         actions=[ElevatedButton(text="OK", on_click=delete_customer), ElevatedButton(text="キャンセル", on_click=close_dlg)],
+    #         actions_alignment="end",
+    #     )
+    #     page.update()
+
+        # ret = MessageForefront('顧客削除', f'{self.tb_name1.value}　{self.tb_name2.value}の情報をデータベースから削除しますが良いでしょうか？', 'okcancel')
+        # if ret:
+        #     sql = 'delete from customer where code = ?'
+        #     GlobalValues.set_db(sql, tuple([self.tb_code.value]))
+        #     messagebox.showinfo('顧客削除', '削除が完了しました。')
+        #     [self.body.controls.pop() for _ in range(len(self.body.controls))]
+        #     self.body.controls.append(RegistrationCustomer())
+        #     self.body.update()
 
 
 class ProcedureView(BaseView):
@@ -1312,7 +1450,7 @@ class TabSearch(BaseView):
         # 被相続人　かなフィールド
         self.customer_name_kana_input = CustomTextField(
             label="被相続人：姓かな",
-            width=200,
+            # width=200,
             autofocus=True,
             data="decedent",
             on_change=self.controller.search_change,
@@ -1321,7 +1459,6 @@ class TabSearch(BaseView):
         # 被相続人　姓フィールド
         self.customer_name_input = CustomTextField(
             label="被相続人：姓",
-            width=200,
             data="decedent",
             on_change=self.controller.search_change,
         )
@@ -1344,7 +1481,7 @@ class TabSearch(BaseView):
                 dropdown.Option("手続終了"),
                 dropdown.Option("キャンセル"),
             ],
-            width=200,
+            # width=200,
             data="decedent",
             on_change=self.controller.contractor_change,
         )
@@ -1352,7 +1489,6 @@ class TabSearch(BaseView):
         # 備考
         self.note = CustomTextField(
             label="備考",
-            width=200,
             data="decedent",
             on_change=self.controller.search_change,
         )
@@ -1360,7 +1496,6 @@ class TabSearch(BaseView):
         # 相続人　かなフィールド
         self.heir_name_kana_input = CustomTextField(
             label="依頼人：姓かな",
-            width=200,
             data="heir",
             on_change=self.controller.search_change,
         )
@@ -1368,7 +1503,6 @@ class TabSearch(BaseView):
         # 相続人　性フィールド
         self.heir_name_input = CustomTextField(
             label="依頼人：姓",
-            width=200,
             data="heir",
             on_change=self.controller.search_change,
         )
@@ -1376,7 +1510,6 @@ class TabSearch(BaseView):
         # 相続人　電話番号フィールド
         self.heir_tel_input = CustomTextField(
             label="電話番号",
-            width=200,
             data="heir",
             on_change=self.controller.search_change,
         )
@@ -1513,6 +1646,9 @@ class TabSearch(BaseView):
                         text="被相続人 新規登録",
                         color=Colors.BLACK,
                         bgcolor=Colors.BLUE_200,
+                        # on_click=lambda e: self.controller.staff_registration_clicked(
+                        #     self.input_field.controls
+                        # ),
                     ),
                     ElevatedButton(
                         icon=Icons.CREATE,

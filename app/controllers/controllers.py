@@ -223,3 +223,5 @@ def route_change(page: Page, e):
         page.session.get("main_body").content.customer_name_kana_input.focus()
 
     page.update()
+
+
