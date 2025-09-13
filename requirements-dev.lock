@@ -293,5 +293,5 @@ wsproto==1.2.0
     # via trio-websocket
 xlwings==0.32.2
     # via souzoku
-zengin-code==1.1.0.20240904
+zengin-code==1.1.0.20250825
     # via souzoku

@@ -5,6 +5,8 @@ import configparser
 from datetime import datetime
 import re
 import requests
+from zengin_code import Bank
+import mojimoji
 
 WAREKI_START = {
     '令和': datetime(2019, 5, 1),
@@ -199,3 +201,56 @@ def convert_seireki(wareki_s, e):
         return wareki_s
     y = int(s.group(2)) if s.group(2) != '元' else 1
     e.control.value = f'{era_dic[s.group(1)] + y - 1}/{tmp[1]}/{tmp[2]}'
+
+def bank_search(name=None, code=None):
+    banks = {}
+    name = mojimoji.han_to_zen(name).strip().replace('銀行', '')
+
+    # 銀行名とコードで検索
+    if name and code:
+        name = name.strip()
+        code = str(code).strip()
+        for bank_code in Bank.all:
+            bank = Bank[bank_code]
+            if ((bank.name.startswith(name) or bank.hira.startswith(name) or bank.roma.startswith(
+                    mojimoji.zen_to_han(name)))
+                    and (bank.code.startswith(mojimoji.zen_to_han(code)))):
+                banks[bank.name] = bank_code
+                print('# 銀行名とコードで検索')
+
+    # 銀行名で検索
+    elif name:
+        name = mojimoji.han_to_zen(name).strip().replace('銀行', '')
+        # print('name:', name)
+        for bank_code in Bank.all:
+            bank = Bank[bank_code]
+            # print('bank_code:', bank_code, bank.name)
+            if (bank.name.startswith(name) or
+                    bank.hira.startswith(name) or
+                    bank.roma.startswith(mojimoji.zen_to_han(name))):
+                # print('bank_code:', bank_code, bank.name)
+                banks[bank.name] = bank_code
+                # 銀行名の「銀行」や「信金」などを取得
+                # gincode = Gincode
+                # bank_name = gincode.get_gincode(bank_code)[2]
+                # banks[bank_name] = bank_code
+
+    # コードで検索
+    elif code:
+        # 銀行名の「銀行」や「信金」などを取得
+        gincode = Gincode
+        code = str(code).strip()
+        bank_name = gincode.get_gincode(code)[2]
+        print('gincode.get_gincode(bank_code):', gincode.get_gincode(code))
+        banks[bank_name] = code
+
+    return banks.items()
+
+def branch_code_search(bank_code, branch_name):
+    branch_name = branch_name.strip()
+    branch_name = branch_name.replace('支店', '')
+    bank = Bank[bank_code]
+    for branch_code in bank.branches:
+        # 検索する支店名と一致する場合、支店コードを返す
+        if bank.branches[branch_code].name == branch_name:
+            return branch_code

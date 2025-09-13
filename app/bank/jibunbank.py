@@ -62,12 +62,12 @@ class JibunBank:
         self.proc.web_open(url)
 
         # 1.被相続人情報（亡くなられたお客さま）
-        self.proc.driver.find_element(By.NAME, 'inquiry_101').send_keys(self.deathday[0] + self.deathday[1] + self.deathday[2])
+        self.proc.driver.find_element(By.NAME, 'inquiry_101').send_keys(self.deathday[0].zfill(4) + self.deathday[1].zfill(2) + self.deathday[2].zfill(2))
         self.proc.driver.find_element(By.NAME, 'inquiry_102_1').send_keys(name[0])
         self.proc.driver.find_element(By.NAME, 'inquiry_102_2').send_keys(name[1])
         self.proc.driver.find_element(By.NAME, 'inquiry_103_1').send_keys(name_kana[0])
         self.proc.driver.find_element(By.NAME, 'inquiry_103_2').send_keys(name_kana[1])
-        self.proc.driver.find_element(By.NAME, 'inquiry_104').send_keys(self.birthday[0] + self.birthday[1] + self.birthday[2])
+        self.proc.driver.find_element(By.NAME, 'inquiry_104').send_keys(self.birthday[0].zfill(4) + self.birthday[1].zfill(2) + self.birthday[2].zfill(2))
         self.proc.driver.find_element(By.NAME, 'inquiry_4_1').send_keys('090')
         self.proc.driver.find_element(By.NAME, 'inquiry_4_2').send_keys('9999')
         self.proc.driver.find_element(By.NAME, 'inquiry_4_3').send_keys('9999')
@@ -79,14 +79,16 @@ class JibunBank:
         time.sleep(1)
         if match:
             self.proc.driver.find_element(By.NAME, 'inquiry_105').send_keys(number)
-        self.proc.driver.find_element(By.NAME, 'inquiry_108').click()
-        self.proc.driver.find_element(By.NAME, 'inquiry_109').click()
+        # self.proc.driver.find_element(By.NAME, 'inquiry_108').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="inquiry_item108"]/label[3]').click()
+        # self.proc.driver.find_element(By.NAME, 'inquiry_109').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="inquiry_item109"]/label[3]').click()
 
         # 2.相続人情報（含む代理人）
         self.proc.driver.find_element(By.NAME, 'inquiry_110_1').send_keys('行政書士法人チェスター')
-        self.proc.driver.find_element(By.NAME, 'inquiry_110_2').send_keys('担当：森町')
+        self.proc.driver.find_element(By.NAME, 'inquiry_110_2').send_keys(f'森町({self.code})')
         self.proc.driver.find_element(By.NAME, 'inquiry_111_1').send_keys('ギョウセイショシホウジンチェスター')
-        self.proc.driver.find_element(By.NAME, 'inquiry_111_2').send_keys('タントウ：モリマチ')
+        self.proc.driver.find_element(By.NAME, 'inquiry_111_2').send_keys('モリマチ')
         self.proc.driver.find_element(By.NAME, 'inquiry_112').send_keys('相続人代理人')
         self.proc.driver.find_element(By.NAME, 'inquiry_113_1').send_keys('050')
         self.proc.driver.find_element(By.NAME, 'inquiry_113_2').send_keys('6864')

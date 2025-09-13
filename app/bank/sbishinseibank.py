@@ -8,7 +8,8 @@ from app._utils.web_operation import Web
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
-import time
+from time import sleep
+from pyautogui import typewrite, hotkey, position, press, moveTo
 
 
 class Sbishinseibank:
@@ -22,18 +23,17 @@ class Sbishinseibank:
         self.birthday = None
         self.address = None
         self.passed_away_date = None
-
-
-    def account_freezing(self):
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
         self.bank_account_number = ''
         self.birthday = re.findall('[0-9]+', '1958/9/18')
         self.address = '千葉県船橋市夏見台1-13-24'
+        self.passed_away_date = re.findall('[0-9]+', '2025-06-27')
+
+    def account_freezing(self):
         pattern = '(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村)市|.+?郡(?:玉村|大町|.+?)[町村]|.+?市.+?区|.+?[市区町村])(.+)'
         address = re.findall(pattern, self.address)[0]
-        self.passed_away_date = re.findall('[0-9]+', '2025-06-27')
 
         # name = re.findall(r'^(.*?)[ 　](.*)$', self.customer_name)[0]
         # print('氏名', name)
@@ -71,9 +71,38 @@ class Sbishinseibank:
         self.proc.driver.find_element(By.ID, '00N0K00000LYk1t').click()
 
 
+    def reservation(self):
+        self.proc = Web()
+        url = 'https://webforms.sbishinseibank.co.jp/reserve/input?type=inv_sfc&lid=temp_bran_btn_03&h=form&intcid=temp_bran_btn_03'
+        self.proc.web_open(url)
+        self.proc.driver.find_element(By.XPATH, '//*[@id="counselingReservation"]/div[2]/div/div[2]/div[1]/label').click()
+        sleep(.1)
+        self.proc.driver.find_element(By.XPATH, '//*[@id="counselingReservation"]/div[4]/div[2]/div[2]/div/p[1]/label').click()
+
+        sleep(1)
+        element = self.proc.driver.find_element(By.XPATH, '//*[@id="counselingReservation"]/div[6]/h3')
+        self.proc.driver.execute_script("arguments[0].scrollIntoView();", element)
+
+        self.proc.driver.find_element(By.ID, 'lastNameKanji').send_keys('行政書士法人チェスター')
+        self.proc.driver.find_element(By.ID, 'firstNameKanji').send_keys(f'森町翼（{mojimoji.han_to_zen(self.code)}）')
+        self.proc.driver.find_element(By.ID, 'lastNameKatakana').send_keys('ギョウセイショシホウジンチェスター')
+        self.proc.driver.find_element(By.ID, 'firstNameKatakana').send_keys('モリマチツバサ')
+        self.proc.driver.find_element(By.ID, 'phoneNumber').send_keys('05068647034')
+        self.proc.driver.find_element(By.ID, 'bankAccountNumber').send_keys('0000000000')
+        self.proc.driver.find_element(By.ID, 'email').send_keys('t.morimachi_gy@chester-tax.com')
+        self.proc.driver.find_element(By.XPATH, '//*[@id="consultation"]/label[5]').click()
+        self.proc.driver.find_element(By.NAME, 'consultDetail').send_keys(f'残高証明書の発行　被相続人：{self.customer_name}({self.customer_name_kana})　生年月日：{self.birthday[0]}/{self.birthday[1].zfill(2)}/{self.birthday[2].zfill(2)}')
+        # self.proc.driver.find_element(By.XPATH, '//*[@id="counselingReservation"]/div[13]/div/div/div/div/label/span').click()
+
+        sleep(1)
+        element = self.proc.driver.find_element(By.XPATH, '//*[@id="counselingReservation"]/div[6]/h3')
+        self.proc.driver.execute_script("arguments[0].scrollIntoView();", element)
+
+
 def main():
     proc = Sbishinseibank()
-    proc.account_freezing()
+    # proc.account_freezing()
+    proc.reservation()  # 来店予約
 
 if __name__ == '__main__':
     main()
