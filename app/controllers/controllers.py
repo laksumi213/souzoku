@@ -94,6 +94,16 @@ class MainController(BaseController):
 
         self.page.update()
 
+    def home_clicked(self, _):
+        print("")
+        print("home_clicked:")
+        # print('len(self.page.session.get("past_route")):', len(self.page.session.get("past_route")), self.page.session.get("past_route"))
+        self.page.session.get("past_route").clear()
+        self.page.session.get("eb_return").content.visible = False
+        # print('len(self.page.session.get("past_route")):', len(self.page.session.get("past_route")),
+        #       self.page.session.get("past_route"))
+        self.page.go('/home')
+
     def return_clicked(self, _):
         print("")
         print("return_clicked:")
@@ -102,6 +112,7 @@ class MainController(BaseController):
         self.page.session.get("past_route").pop()
         key = self.page.session.get("past_route").pop()
         print("past_route:", self.page.session.get("past_route"))
+        self.page.go('/home')
 
         # # サイドバーのインデックスを設定
         # print("past_selected_index:", self.page.session.get("past_selected_index")[key])
@@ -201,6 +212,11 @@ def route_change(page: Page, e):
     # if e.route == "/home" or e.route == "/settings":
     if e.route == "/home":
         asyncio.new_event_loop().run_in_executor(None, utils.ime_on)
+        page.session.get("eb_home").content.visible = False
+        page.update()
+    else:
+        page.session.get("eb_home").content.visible = True
+        page.update()
 
     # print(page.controls[0].controls[2].content.controls[0].content)
     # 戻るボタンが非表示の場合は表示する

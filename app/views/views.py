@@ -545,6 +545,17 @@ class MyLayout(BaseView):
 
         page.session.set('/customer_registration', CustomerRegistration())
 
+        self.eb_home = Container(
+            content=ElevatedButton(
+                "ホームへ",
+                icon=Icons.HOME,
+                visible=False,
+                on_click=controller.home_clicked,
+            ),
+            margin=5,
+        )
+        page.session.set("eb_home", self.eb_home)
+
         self.eb_return = Container(
             content=ElevatedButton(
                 "戻る",
@@ -566,39 +577,10 @@ class MyLayout(BaseView):
 
         self.controls = [
             Column([
-                self.page.session.get('eb_return'),
+                Row([self.page.session.get('eb_home'),self.page.session.get('eb_return'),]),
                 self.main_body
             ])
         ]
-
-
-        
-
-
-        # self.main_tab = TabSearch(super().page.snack_bar)
-
-
-        # https://flet.dev/docs/controls/tabs/
-        # self.controls = [
-        #     self.eb_return,
-        #     self.main_body,
-        # ]
-
-        # サイドバーのselected_indexを保存
-        # self.past_selected_index = {
-        #     page.session.get("sideber")
-        #     .nav_rail.destinations[page.session.get("sideber").nav_rail.selected_index]
-        #     .data: page.session.get("sideber")
-        #     .nav_rail.selected_index
-        # }
-        # page.session.set("past_selected_index", self.past_selected_index)
-        #
-        # # サイドバーのボタンを押したときの動きを登録
-        # page.session.get("sideber").nav_rail.on_change = lambda e: page.go(
-        #     page.session.get("sideber")
-        #     .nav_rail.destinations[page.session.get("sideber").nav_rail.selected_index]
-        #     .data
-        # )
 
     # def show_message(self, message: str, color=Colors.GREEN_500):
     #     """スナックバーにメッセージを表示します。"""
@@ -606,14 +588,17 @@ class MyLayout(BaseView):
     #     self._page.snack_bar.bgcolor = color
     #     self._page.snack_bar.open = True
     #     self._page.update()
+
+
 class HomeBody(BaseView):
     def __init__(self):
         super().__init__()
-        self.home_tab = TabSearch(super().page.snack_bar)
+        # self.home_tab = TabSearch(super().page.snack_bar)
+        self.home_tab = TabSearch()
 
         self.controls = [
             Tabs(
-                # selected_index=0,
+                selected_index=0,
                 animation_duration=300,
                 label_color=Colors.BLACK,
                 divider_color=Colors.BLACK,
@@ -628,7 +613,7 @@ class HomeBody(BaseView):
                     Tab(
                         text="設定",
                         icon=Icons.SETTINGS,
-                        # content=self.home_tab,
+                        # content=self.settings_tab,
                     ),
                 ],
             )
@@ -661,9 +646,9 @@ class HeirsTab(BaseView):
         ]
 
 
-class CustomerRegistration(BaseView):
+class Registration(BaseView):
     def __init__(self,
-                 # page: Page,
+                 # show_message_callback,
                  tb_name1=None,
                  tb_name2=None,
                  tb_name1_huri=None,
@@ -683,10 +668,9 @@ class CustomerRegistration(BaseView):
                  b_delete=None
                  ):
         super().__init__()
-        super().page.snack_bar = SnackBar(content=Text(""), open=False)
-        super().page.session.set("/customer_registration", self)
+        # self.show_message_callback = show_message_callback
+        # super().page.snack_bar = SnackBar(content=Text(""), open=False)
 
-        self.new_heir_tab_content = None
         self.tb_name1 = CustomTextField(label='姓', autofocus=True)
         self.tb_name2 = CustomTextField(label='名')
         self.tb_name1_huri = CustomTextField(label='姓ふりがな')
@@ -698,20 +682,19 @@ class CustomerRegistration(BaseView):
         self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,
                                           on_blur=self.zipcode_change)
         self.tb_address1 = CustomTextField(label='都道府県', hint_text='東京都', width=150)
-        self.tb_address2 = CustomTextField(label='市区町村', hint_text='町田市', width=150)
-        self.tb_address3 = CustomTextField(label='町域名', hint_text='森野', width=150)
-        self.tb_address4 = CustomTextField(label='番地', hint_text='1-22-5', width=280)
-        self.tb_building = CustomTextField(label='建物名', hint_text='町田310五十子ビル3階', width=889)
+        self.tb_address2 = CustomTextField(label='市区町村', hint_text='中央区', width=150)
+        self.tb_address3 = CustomTextField(label='町域名', hint_text='八重洲', width=150)
+        self.tb_address4 = CustomTextField(label='番地', hint_text='1-7-20', width=280)
+        self.tb_building = CustomTextField(label='建物名', hint_text='八重洲口会館2階', width=889)
         self.note = CustomTextField(label='備考', width=500, multiline=True)
-        self.tb_code = CustomTextField(label='コード', hint_text='E00200', width=200)
-        self.dd_code = DropdownM2(label='コード・氏名選択', width=200)
-        # self.dd_code = DropdownM2(label='コード・氏名選択', width=200, on_change=self.change_dd_code)
+        self.tb_code = CustomTextField(label='コード', hint_text='G0000')
+        self.dd_code = DropdownM2(label='コード・氏名選択', on_change=self.change_dd_code)
         # self.set_dd_code()
         self.b_delete = ElevatedButton(
             content=Container(
                 content=Row(
                     controls=[
-                        Icon(Icons.SEARCH),
+                        Icon(Icons.REMOVE),
                         Text(value="顧客削除", size=20),
                     ]
                 )
@@ -720,29 +703,82 @@ class CustomerRegistration(BaseView):
             # on_click=self.delete_clicked
         )
 
+    def change_date(self, e):
+        if e.control.data == 'birthday':
+            self.birthday.value = str(e.control.value)[:10].replace('-', '/')
+        elif e.control.data == 'deathday':
+            self.deathday.value = str(e.control.value)[:10].replace('-', '/')
+        self.body.update()
+
+
+class CustomerRegistration(Registration):
+    def __init__(self,
+                 tb_name1=None,
+                 tb_name2=None,
+                 tb_name1_huri=None,
+                 tb_name2_huri=None,
+                 tb_zipcode=None,
+                 tb_address1=None,
+                 tb_address2=None,
+                 tb_address3=None,
+                 tb_address4=None,
+                 tb_building=None,
+                 birthday=None,
+                 deathday=None,
+                 tb_code=None,
+                 dd_code=None,
+                 card1=None,
+                 card2=None,
+                 b_delete=None
+                 ):
+        super().__init__()
+        super().page.session.set("/customer_registration", self)
+
+        # self.new_heir_tab_content = None
+        # self.tb_name1 = CustomTextField(label='姓', autofocus=True)
+        # self.tb_name2 = CustomTextField(label='名')
+        # self.tb_name1_huri = CustomTextField(label='姓ふりがな')
+        # self.tb_name2_huri = CustomTextField(label='名ふりがな')
+        # self.birthday = CustomTextField(label='生年月日', hint_text='1900/1/1', width=120,
+        #                                 on_blur=lambda e: utils.convert_seireki(self.birthday.value, e))
+        # self.deathday = CustomTextField(label='死亡日', hint_text='1900/1/1', width=120,
+        #                                 on_blur=lambda e: utils.convert_seireki(self.deathday.value, e))
+        # self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,
+        #                                   on_blur=self.zipcode_change)
+        # self.tb_address1 = CustomTextField(label='都道府県', hint_text='東京都', width=150)
+        # self.tb_address2 = CustomTextField(label='市区町村', hint_text='町田市', width=150)
+        # self.tb_address3 = CustomTextField(label='町域名', hint_text='森野', width=150)
+        # self.tb_address4 = CustomTextField(label='番地', hint_text='1-22-5', width=280)
+        # self.tb_building = CustomTextField(label='建物名', hint_text='町田310五十子ビル3階', width=889)
+        # self.note = CustomTextField(label='備考', width=500, multiline=True)
+        # self.tb_code = CustomTextField(label='コード', hint_text='E00200', width=200)
+        # self.dd_code = DropdownM2(label='コード・氏名選択', width=200)
+        # # self.dd_code = DropdownM2(label='コード・氏名選択', width=200, on_change=self.change_dd_code)
+        # # self.set_dd_code()
+        # self.b_delete = ElevatedButton(
+        #     content=Container(
+        #         content=Row(
+        #             controls=[
+        #                 Icon(Icons.SEARCH),
+        #                 Text(value="顧客削除", size=20),
+        #             ]
+        #         )
+        #     ),
+        #     height=50,
+        #     # on_click=self.delete_clicked
+        # )
+
         self.customer = Column(
             controls=[
                 Container(
                     content=Column(
                         controls=[
-                            Row([
-                                self.tb_code, self.dd_code, self.b_delete,
-                            ]),
-                            Row([
-                                self.tb_name1, self.tb_name2,
-                            ]),
-                            Row([
-                                self.tb_name1_huri, self.tb_name2_huri,
-                            ]),
-                            Row([
-                                self.birthday, self.deathday,
-                            ]),
-                            Row([
-                                self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4
-                            ]),
-                            Row([
-                                self.tb_building
-                            ]),
+                            Row([self.tb_code, self.dd_code, self.b_delete,]),
+                            Row([self.tb_name1, self.tb_name2,]),
+                            Row([self.tb_name1_huri, self.tb_name2_huri,]),
+                            Row([self.birthday, self.deathday,]),
+                            Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
+                            Row([self.tb_building]),
                             # Row([self.tb_domicile, self.b_address_copy]),
                             # self.old_address1,
                             # self.old_address2,
@@ -777,14 +813,12 @@ class CustomerRegistration(BaseView):
         # 動的に追加される相続人タブを格納するリスト
         self.heirs_tabs = []
 
-        self.add_tab_button = Tab(
-            text="追加",
+        self.add_tab_button = Tab(text="相続人を追加",)
             # on_change=self.add_heir_tab,
             # content=ElevatedButton(text="相続人を追加", on_click=self.add_heir_tab),
-        )
+        # )
 
         self.my_tab = Tabs(
-            # tabs=[deceased_tab] + self.heirs_tabs + [self.add_tab_button],  # 被相続人タブを先頭に固定
             tabs=[],
             expand=1,
             animation_duration=300,
@@ -796,39 +830,6 @@ class CustomerRegistration(BaseView):
             # on_change=self.tabs_changed,
         )
 
-        # self.my_tab = Tabs(
-        #     # selected_index=0,
-        #     animation_duration=300,
-        #     label_color=Colors.BLACK,
-        #     divider_color=Colors.BLACK,
-        #     unselected_label_color=Colors.BLACK,
-        #     indicator_color=Colors.RED,
-        #     on_change=self.tabs_changed,
-        #     tabs=[
-        #         Tab(
-        #             text="顧客情報",
-        #             icon=Icons.PEOPLE,
-        #             content=self.customer,
-        #         ),
-        #         Tab(
-        #             text="被相続人情報",
-        #             icon=Icons.PEOPLE,
-        #             # content=self.home_tab,
-        #         ),
-        #         Tab(
-        #             text="代表相続人情報",
-        #             icon=Icons.PEOPLE,
-        #             # content=self.home_tab,
-        #         ),
-        #         # Tab(
-        #         #     text="相続人を追加",
-        #         #     icon=Icons.CREATE,
-        #         #     # content=self.home_tab,
-        #         # ),
-        #         self.new_tab,
-        #     ],
-        # )
-
         self.controls = [
             self.my_tab
         ]
@@ -836,7 +837,6 @@ class CustomerRegistration(BaseView):
         # 初期表示時にタブを構築
         self.rebuild_tabs()
         
-
     def rebuild_tabs(self):
         print('rebuild_tabs')
         # 固定タブと動的タブを結合して、新しいリストを作成
@@ -853,26 +853,17 @@ class CustomerRegistration(BaseView):
         super().page.update()
 
     def add_heir_tab(self, e):
-        print('add_heir_tab', e)
         current_tab_index = e.control.selected_index
         print(f"タブが切り替わりました。現在のインデックス: {current_tab_index}")
         print(f"選択されたタブのテキスト: {e.control.tabs[current_tab_index].text}")
-        # if e.control.tabs[current_tab_index].text == '相続人を追加':
-        if e.control.tabs[current_tab_index].text == '追加':
+        if e.control.tabs[current_tab_index].text == '相続人を追加':
             self.new_heir_tab_content = HeirsTab()
-            # print('new_heir_tab_content:', self.new_heir_tab_content.control[0].controls[0].label)
             new_tab = Tab(
                 text=f"相続人 {current_tab_index - 1}",
                 # content=HeirsTab(),
                 content=self.new_heir_tab_content,
-                # content=Column([CustomTextField(label='姓', autofocus=True)]),
             )
             self.heirs_tabs.append(new_tab)
-            # self.heirs_tabs.append(Tab(
-            #     text=f"相続人 {current_tab_index - 1}",
-            #     # content=HeirsTab(),
-            #     content=HeirsTab(),
-            # ))
             self.rebuild_tabs()
 
             self.my_tab.selected_index = len(self.my_tab.tabs) - 1
@@ -968,58 +959,22 @@ class CustomerRegistration(BaseView):
     #     self.dd_code.options.append(dropdown.Option("-"))
     #     [self.dd_code.options.append(dropdown.Option(f'{i[0]} {i[1]}')) for i in record]
     # 
-    # def change_dd_code(self, e):
-    #     pass
-    # 
+    def change_dd_code(self, e):
+        pass
+
     def zipcode_change(self, e):
         self.tb_address4.focus()
         self.update()
-    #     zipcode_address = zipcode_to_address(e.control.value)
-    #     if zipcode_address:
-    #         self.tb_address1.value = zipcode_address[0]
-    #         self.tb_address2.value = zipcode_address[1]
-    #         self.tb_address3.value = zipcode_address[2]
-    #     else:
-    #         self.tb_address1.value = ''
-    #         self.tb_address2.value = ''
-    #         self.tb_address3.value = ''
-    #     self.update()
-    # 
-    # def delete_clicked(self, e):
-    #     def close_dlg(e):
-    #         page.dialog.open = False
-    #         page.update()
-    # 
-    #     def delete_customer(_):
-    #         def close_dlg(e):
-    #             page.dialog.open = False
-    #             page.update()
-    # 
-    #         sql = 'delete from customer where code = ?'
-    #         GlobalValues.set_db(sql, tuple([self.tb_code.value]))
-    #         page.dialog = AlertDialog(
-    #             open=True,
-    #             modal=True,
-    #             title=Text("顧客削除完了"),
-    #             content=Text('顧客の削除が完了しました。'),
-    #             actions=[ElevatedButton(text="OK", on_click=close_dlg)],
-    #             actions_alignment="end",
-    #         )
-    #         page.update()
-    #         [self.body.controls.pop() for _ in range(len(self.body.controls))]
-    #         self.body.controls.append(RegistrationCustomer())
-    #         self.body.update()
-    # 
-    #     page = GlobalValues.my_page
-    #     page.dialog = AlertDialog(
-    #         open=True,
-    #         modal=True,
-    #         title=Text("顧客削除"),
-    #         content=Text('顧客を削除してよいでしょうか？'),
-    #         actions=[ElevatedButton(text="OK", on_click=delete_customer), ElevatedButton(text="キャンセル", on_click=close_dlg)],
-    #         actions_alignment="end",
-    #     )
-    #     page.update()
+        zipcode_address = utils.zipcode_to_address(e.control.value)
+        if zipcode_address:
+            self.tb_address1.value = zipcode_address[0]
+            self.tb_address2.value = zipcode_address[1]
+            self.tb_address3.value = zipcode_address[2]
+        else:
+            self.tb_address1.value = ''
+            self.tb_address2.value = ''
+            self.tb_address3.value = ''
+        self.update()
 
         # ret = MessageForefront('顧客削除', f'{self.tb_name1.value}　{self.tb_name2.value}の情報をデータベースから削除しますが良いでしょうか？', 'okcancel')
         # if ret:
@@ -1055,9 +1010,10 @@ class ProcedureView(BaseView):
 
 
 class TabSearch(BaseView):
-    def __init__(self, show_message_callback):
+    # def __init__(self, show_message_callback):
+    def __init__(self):
         super().__init__()
-        self.show_message_callback = show_message_callback
+        # self.show_message_callback = show_message_callback
         self.spacing = 20
         super().page.session.set("/home", self)
 
