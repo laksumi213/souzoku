@@ -1,6 +1,4 @@
 # 横浜銀行
-# from zengin import BankSearch
-# from pdf_create import PdfCreate
 import jaconv
 import mojimoji
 import re

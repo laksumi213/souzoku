@@ -1,6 +1,4 @@
 # SBI新生銀行
-# from zengin import BankSearch
-# from pdf_create import PdfCreate
 import jaconv
 import mojimoji
 import re
@@ -65,7 +63,7 @@ class Sbishinseibank:
         self.proc.driver.find_element(By.NAME, 'phone').send_keys('050-6864-7034')
         self.proc.driver.find_element(By.ID, '00N0K00000JEq7R').send_keys('1030028')
         self.proc.driver.find_element(By.ID, 'zipbutton').click()
-        time.sleep(0.5)
+        sleep(0.5)
         self.proc.driver.find_element(By.ID, '00N0K00000JEq7M').send_keys(mojimoji.han_to_zen('一丁目7-20 八重洲口会館2階'))
         self.proc.driver.find_element(By.ID, '00N0K00000JEq7Q').send_keys('森町　翼（' + mojimoji.han_to_zen(self.code) +'）')
         self.proc.driver.find_element(By.ID, '00N0K00000LYk1t').click()

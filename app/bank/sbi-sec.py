@@ -1,5 +1,4 @@
 # SBI証券
-# from zengin import BankSearch
 from app.controllers.pdf_create import PdfCreate
 import jaconv
 import re
@@ -169,13 +168,13 @@ class SbiSec:
 
         output_path = r'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\G1967宇野美穂様（フルサポートプラン）\07.申請書類\01.残証申請書類'
         path1 = os.path.join(output_path, f'【{self.code}】{self._heir_name[0]}様_SBI証券_個人情報に関する開示等請求書.pdf')
-        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.getcwd()), 'pdf', 'SBI証券_個人情報に関する開示等請求書.pdf'), page=2, open_bool=True)
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.getcwd()), './assets/pdf', 'SBI証券_個人情報に関する開示等請求書.pdf'), page=2, open_bool=True)
 
         # 4ページ目
         pdf = PdfCreate(pagesize='A4')
         pdf.draw_rect(21, 66.9, 199.2, 74.5, linewidth=3, colors='RED')
         path2 = os.path.join(output_path, f'【{self.code}】{self._heir_name[0]}様_SBI証券_個人情報に関する開示等請求書2.pdf')
-        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.getcwd()), 'pdf', 'SBI証券_個人情報に関する開示等請求書.pdf'), page=4, open_bool=False)
+        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.getcwd()), './assets/pdf', 'SBI証券_個人情報に関する開示等請求書.pdf'), page=4, open_bool=False)
 
         # 6ページ目
         pdf = PdfCreate(pagesize='A4')
@@ -183,7 +182,7 @@ class SbiSec:
         pdf.draw_string(132, 213, f'{self.bank_number[0]}-{self.bank_number[1]}ｷﾞｮｳｾｲｼｮｼﾎｳｼﾞﾝﾁｪｽﾀｰ', size=13, colors='#FF0000')
         # pdf.draw_string(132, 213, f'口座番号：{self.bank_number[0]}-{self.bank_number[1]}', size=13, colors='#FF0000')
         path3 = os.path.join(output_path, f'【{self.code}】{self._heir_name[0]}様_SBI証券_個人情報に関する開示等請求書3.pdf')
-        pdf.pdf_save(path3, os.path.join(os.path.dirname(os.getcwd()), 'pdf', 'SBI証券_個人情報に関する開示等請求書.pdf'), page=6, open_bool=False)
+        pdf.pdf_save(path3, os.path.join(os.path.dirname(os.getcwd()), './assets/pdf', 'SBI証券_個人情報に関する開示等請求書.pdf'), page=6, open_bool=False)
 
         # pdf.pdf_marge(os.path.join(output_path, f'【{self.code}】{self._heir_name[0]}様_SBI証券_個人情報に関する開示等請求書.pdf'), path1, path2, path3)
         pdf.pdf_marge(os.path.join(output_path, f'【{self.code}】{self._heir_name[0]}様_SBI証券_【行チェ】証明書費用振込申請アプリ用.pdf'), path2, path3)

@@ -1,6 +1,4 @@
 # 楽天証券
-# from zengin import BankSearch
-# from pdf_create import PdfCreate
 import jaconv
 import re
 from app._utils.web_operation import Web

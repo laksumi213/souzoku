@@ -198,7 +198,8 @@ def route_change(page: Page, e):
     print()
     print("route_change", e.route)
 
-    if e.route == "/home" or e.route == "/settings":
+    # if e.route == "/home" or e.route == "/settings":
+    if e.route == "/home":
         asyncio.new_event_loop().run_in_executor(None, utils.ime_on)
 
     # print(page.controls[0].controls[2].content.controls[0].content)
@@ -219,8 +220,8 @@ def route_change(page: Page, e):
     page.session.get("main_body").content = page.session.get(e.route)
     page.update()
 
-    if e.route == "/home":
-        page.session.get("main_body").content.customer_name_kana_input.focus()
+    # if e.route == "/home":
+    #     page.session.get("main_body").content.customer_name_kana_input.focus()
 
     page.update()
 
