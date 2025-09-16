@@ -694,7 +694,7 @@ class Registration(BaseView):
             content=Container(
                 content=Row(
                     controls=[
-                        Icon(Icons.REMOVE),
+                        Icon(Icons.DELETE),
                         Text(value="顧客削除", size=20),
                     ]
                 )
@@ -801,13 +801,14 @@ class CustomerRegistration(Registration):
 
         self.deceased_tab = Tab(
             text="被相続人",
-            content=Column(
-                [
-                    Text("被相続人の情報", size=18),
-                    TextField(label="氏名"),
-                    TextField(label="死亡年月日"),
-                ]
-            ),
+            content=self.customer,
+            # content=Column(
+            #     [
+            #         Text("被相続人の情報", size=18),
+            #         TextField(label="氏名"),
+            #         TextField(label="死亡年月日"),
+            #     ]
+            # ),
         )
 
         # 動的に追加される相続人タブを格納するリスト
@@ -836,7 +837,7 @@ class CustomerRegistration(Registration):
 
         # 初期表示時にタブを構築
         self.rebuild_tabs()
-        
+
     def rebuild_tabs(self):
         print('rebuild_tabs')
         # 固定タブと動的タブを結合して、新しいリストを作成
@@ -943,14 +944,14 @@ class CustomerRegistration(Registration):
     #     elif e.control.data == 'deathday':
     #         self.deathday.value = str(e.control.value)[:10].replace('-', '/')
     #     self.body.update()
-    # 
+    #
     # def date_picker_dismissed(self, e):
     #     print('date_picker_dismissed', e)
     #     # print(f"Date picker dismissed, value is {self.date_picker_birthday.value}")
-    # 
+    #
     # def clicked(self, e):
     #     pass
-    # 
+    #
     def set_dd_code(self):
         pass
     #     sql = 'SELECT code, username1 || " " || username2 FROM customer ORDER BY code DESC'
@@ -958,7 +959,7 @@ class CustomerRegistration(Registration):
     #     # print('record: ', record)
     #     self.dd_code.options.append(dropdown.Option("-"))
     #     [self.dd_code.options.append(dropdown.Option(f'{i[0]} {i[1]}')) for i in record]
-    # 
+    #
     def change_dd_code(self, e):
         pass
 
@@ -986,6 +987,179 @@ class CustomerRegistration(Registration):
         #     self.body.update()
 
 
+class RegistrationHeir(Registration):
+    def __init__(self,
+                 heir_id=None,
+                 tb_name1=None,
+                 tb_name2=None,
+                 tb_name1_huri=None,
+                 tb_name2_huri=None,
+                 tb_zipcode=None,
+                 tb_address1=None,
+                 tb_address2=None,
+                 tb_address3=None,
+                 tb_address4=None,
+                 tb_building=None,
+                 birthday=None,
+                 deathday=None,
+                 tb_code=None,
+                 dd_code=None):
+        super().__init__(tb_name1,
+                         tb_name2,
+                         tb_name1_huri,
+                         tb_name2_huri,
+                         tb_zipcode,
+                         tb_address1,
+                         tb_address2,
+                         tb_address3,
+                         tb_address4,
+                         tb_building,
+                         birthday,
+                         deathday,
+                         tb_code,
+                         dd_code),
+        self.info = CustomText('＜相続人　登録・修正＞', size=24)
+        self.tb_code.label = '被相続人コード'
+        self.dd_code.label = '被相続人選択'
+        self.tf_heir_id = CustomTextField(label='相続人コード', hint_text='新規登録は空欄',
+                                          on_blur=self.change_tf_heir_id)
+        self.tf_heir_id.value = heir_id
+        # print('self.tf_heir_id.value:', self.tf_heir_id.value)
+        self.dd_heir_id = DropdownM2(label='相続人氏名選択', on_change=self.change_dd_heir_id)
+        self.ch_offer = Checkbox(label='依頼人')
+        self.ch_transfer = Checkbox(label='振込者')
+        self.legal_heir = CustomText('相続人チェック', visible=False)
+        self.inheritance_form = CustomText(visible=False)
+        self.contact_home = CustomTextField(label='連絡先(自宅) ※ハイフンあり')
+        self.contact_phone = CustomTextField(label='連絡先(携帯) ※ハイフンあり')
+        self.mail = TextField(label='連絡先(メール)', width=899)
+        self.b_delete = ElevatedButton(
+            content=Container(
+                content=Row(
+                    controls=[
+                        Icon(Icons.SEARCH),
+                        CustomText(value="顧客削除", size=20),
+                    ]
+                )
+            ),
+            height=50,
+            on_click=self.delete_clicked
+        )
+        self.relationship = DropdownM2(
+            label='続柄',
+            width=130,
+            options=[
+                dropdown.Option('妻'),
+                dropdown.Option('夫'),
+                dropdown.Option('父'),
+                dropdown.Option('母'),
+                dropdown.Option('長男'),
+                dropdown.Option('長女'),
+                dropdown.Option('二男'),
+                dropdown.Option('二女'),
+                dropdown.Option('三男'),
+                dropdown.Option('三女'),
+                dropdown.Option('四男'),
+                dropdown.Option('四女'),
+                dropdown.Option('五男'),
+                dropdown.Option('五女'),
+                dropdown.Option('兄弟1'),
+                dropdown.Option('姉妹1'),
+                dropdown.Option('兄弟2'),
+                dropdown.Option('姉妹2'),
+                dropdown.Option('兄弟3'),
+                dropdown.Option('姉妹3'),
+                dropdown.Option('兄弟4'),
+                dropdown.Option('姉妹4'),
+                dropdown.Option('兄弟5'),
+                dropdown.Option('姉妹5'),
+                dropdown.Option('孫'),
+                dropdown.Option('甥'),
+                dropdown.Option('姪'),
+                dropdown.Option('養子'),
+                dropdown.Option('義兄'),
+                dropdown.Option('義弟'),
+                dropdown.Option('義姉'),
+                dropdown.Option('義妹'),
+                dropdown.Option('祖父_父'),
+                dropdown.Option('祖父_母'),
+                dropdown.Option('祖母_父'),
+                dropdown.Option('祖母_母'),
+                dropdown.Option('元夫'),
+                dropdown.Option('元妻'),
+                dropdown.Option('元妻の子'),
+                dropdown.Option('父の元妻'),
+                dropdown.Option('母の元夫'),
+                dropdown.Option('子の夫'),
+                dropdown.Option('子の妻'),
+            ],
+            on_change=self.change_relationship
+        )
+
+        self.relationship2 = DropdownM2(
+            label='親の続柄',
+            width=130,
+            options=[
+                dropdown.Option('父'),
+                dropdown.Option('母'),
+                dropdown.Option('長男'),
+                dropdown.Option('長女'),
+                dropdown.Option('二男'),
+                dropdown.Option('二女'),
+                dropdown.Option('三男'),
+                dropdown.Option('三女'),
+                dropdown.Option('四男'),
+                dropdown.Option('四女'),
+                dropdown.Option('五男'),
+                dropdown.Option('五女'),
+                dropdown.Option('兄弟1'),
+                dropdown.Option('姉妹1'),
+                dropdown.Option('兄弟2'),
+                dropdown.Option('姉妹2'),
+                dropdown.Option('兄弟3'),
+                dropdown.Option('姉妹3'),
+                dropdown.Option('兄弟4'),
+                dropdown.Option('姉妹4'),
+                dropdown.Option('兄弟5'),
+                dropdown.Option('姉妹5'),
+            ],
+            visible=False
+        )
+
+        self.situation = DropdownM2(
+            label='状態',
+            width=130,
+            options=[
+                dropdown.Option(' '),
+                dropdown.Option('死亡'),
+                dropdown.Option('海外居住'),
+                dropdown.Option('相続放棄'),
+                dropdown.Option('成年被後見人'),
+                dropdown.Option('相続人外')
+            ],
+            value=' ',
+        )
+        self.note = TextField(label='内容', width=769, multiline=True)
+        self.updated_date = TextField(label='更新日', hint_text='1900/1/1', width=120,
+                                      on_blur=lambda e: utils.convert_seireki(self.updated_date.value, e))
+
+        self.controls =[
+            Row([self.info,]),
+            Row([self.tb_code, self.dd_code, self.b_delete, self.legal_heir, self.inheritance_form]),
+            Row([self.tf_heir_id, self.dd_heir_id]),
+            Row([self.tb_name1, self.tb_name2, self.ch_offer, self.ch_transfer]),
+            Row([self.tb_name1_huri, self.tb_name2_huri,]),
+            Row([self.relationship, self.relationship2, self.situation,]),
+            Row([self.contact_home, self.contact_phone,]),
+            self.mail,
+            Row([self.birthday, self.deathday,]),
+            Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
+            Row([self.tb_building]),
+            Row([self.updated_date, self.note]),
+            ElevatedButton("登録", icon=Icons.SAVE, on_click=self.registration),
+        ]
+
+        
 class ProcedureView(BaseView):
     def __init__(self):
         super().__init__()
