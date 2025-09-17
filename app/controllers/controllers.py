@@ -204,6 +204,11 @@ class MainController(BaseController):
         results = Staff.get_all_staff()
         return results
 
+    def customer_registration(self, e, data):
+        # print('customer_registration:', e)
+        print('self.b_Registration.data:', data)
+        print(self.page.session.get(data).folder.value)
+
 
 def route_change(page: Page, e):
     print()

@@ -285,9 +285,55 @@ class CustomDropdown(DropdownM2):
         )
 
     def add_options(self, data):
-        self.options = None
+        # self.options = None
         for item in data:
             self.options.append(dropdown.Option(*item.values()))
+
+
+class CustomElevatedButton(ElevatedButton):
+    def __init__(
+            self,
+            icon: str = "",
+            text_value: str = '',
+            text_size=20,
+            height=40,
+            data='',
+            on_click=None,
+            # on_hover=None,
+            *args,
+            **kwargs
+    ):
+        super().__init__(
+            height=height,
+            data=data,
+            on_click=self._on_click,
+            on_hover=self._on_hover,
+            *args,
+            **kwargs
+        )
+
+        self._on_click_callback = on_click
+
+        self.content = Container(
+            content=Row(
+                controls=[
+                    Icon(icon),
+                    Text(value=text_value, size=text_size),
+                ]
+            ),
+            height=height,
+            data=data
+        )
+
+    def _on_click(self, e):
+        print('_on_click:')
+        print('self.data:', self.data)
+        if self._on_click_callback:
+            self._on_click_callback(e, self.data)
+
+    def _on_hover(self, e):
+        e.control.bgcolor = "GREY" if e.data == "true" else "AMBER_50"
+        self.update()
 
 
 class InputField(BaseView):
@@ -690,18 +736,21 @@ class Registration(BaseView):
         self.tb_code = CustomTextField(label='コード', hint_text='G0000')
         self.dd_code = DropdownM2(label='コード・氏名選択', on_change=self.change_dd_code)
         # self.set_dd_code()
-        self.b_delete = ElevatedButton(
-            content=Container(
-                content=Row(
-                    controls=[
-                        Icon(Icons.DELETE),
-                        Text(value="顧客削除", size=20),
-                    ]
-                )
-            ),
-            height=50,
-            # on_click=self.delete_clicked
-        )
+        # self.b_delete = ElevatedButton(
+        #     content=Container(
+        #         content=Row(
+        #             controls=[
+        #                 Icon(Icons.DELETE),
+        #                 Text(value="顧客削除", size=20),
+        #             ]
+        #         )
+        #     ),
+        #     height=50,
+        #     # on_click=self.delete_clicked
+        # )
+        self.b_delete = CustomElevatedButton(icon=Icons.DELETE, text_value='顧客削除')
+        self.b_Registration = CustomElevatedButton(text_value="登録", icon=Icons.SAVE,
+                                                   on_click=self.controller.customer_registration)
 
     def change_date(self, e):
         if e.control.data == 'birthday':
@@ -734,39 +783,46 @@ class CustomerRegistration(Registration):
         super().__init__()
         super().page.session.set("/customer_registration", self)
 
-        # self.new_heir_tab_content = None
-        # self.tb_name1 = CustomTextField(label='姓', autofocus=True)
-        # self.tb_name2 = CustomTextField(label='名')
-        # self.tb_name1_huri = CustomTextField(label='姓ふりがな')
-        # self.tb_name2_huri = CustomTextField(label='名ふりがな')
-        # self.birthday = CustomTextField(label='生年月日', hint_text='1900/1/1', width=120,
-        #                                 on_blur=lambda e: utils.convert_seireki(self.birthday.value, e))
-        # self.deathday = CustomTextField(label='死亡日', hint_text='1900/1/1', width=120,
-        #                                 on_blur=lambda e: utils.convert_seireki(self.deathday.value, e))
-        # self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,
-        #                                   on_blur=self.zipcode_change)
-        # self.tb_address1 = CustomTextField(label='都道府県', hint_text='東京都', width=150)
-        # self.tb_address2 = CustomTextField(label='市区町村', hint_text='町田市', width=150)
-        # self.tb_address3 = CustomTextField(label='町域名', hint_text='森野', width=150)
-        # self.tb_address4 = CustomTextField(label='番地', hint_text='1-22-5', width=280)
-        # self.tb_building = CustomTextField(label='建物名', hint_text='町田310五十子ビル3階', width=889)
-        # self.note = CustomTextField(label='備考', width=500, multiline=True)
+        self.tb_domicile = CustomTextField(label='本籍', width=700)
+        self.b_address_copy = CustomElevatedButton(icon=Icons.COPY, text_value='住所をコピー')
+        self.old_address1 = CustomTextField(label='旧住所1', width=889)
+        self.old_address2 = CustomTextField(label='旧住所2', width=889)
+        self.old_address3 = CustomTextField(label='旧住所3', width=889)
+        self.folder = CustomTextField(label='フォルダーパス', width=889)
+
+        self.dd_will = CustomDropdown(label='遺言書有無', width=130, options=[dropdown.Option('有'), dropdown.Option('無')])
+
+        # 手続きステータス
+        self.dd_progress = CustomDropdown(
+            label="状況",
+            options=[
+                dropdown.Option("見積中"),
+                dropdown.Option("契約待ち"),
+                dropdown.Option("戸籍収集"),
+                dropdown.Option("法定相続情報作成"),
+                dropdown.Option("残高証明書"),
+                dropdown.Option("金融機関手続き"),
+                dropdown.Option("財産評価"),
+                dropdown.Option("分割協議書"),
+                dropdown.Option("登記"),
+                dropdown.Option("完了書類作成"),
+                dropdown.Option("入金待ち"),
+                dropdown.Option("手続終了"),
+                dropdown.Option("キャンセル"),
+            ],
+            data="decedent",
+            # on_change=self.controller.contractor_change,
+        )
+
+        # print('self.b_Registration1:', self.b_Registration.data)
+        # self.b_Registration.data = "decedent"
+        self.b_Registration.data = "/customer_registration"
+        # print('self.b_Registration2:', self.b_Registration.data)
+
         # self.tb_code = CustomTextField(label='コード', hint_text='E00200', width=200)
         # self.dd_code = DropdownM2(label='コード・氏名選択', width=200)
         # # self.dd_code = DropdownM2(label='コード・氏名選択', width=200, on_change=self.change_dd_code)
         # # self.set_dd_code()
-        # self.b_delete = ElevatedButton(
-        #     content=Container(
-        #         content=Row(
-        #             controls=[
-        #                 Icon(Icons.SEARCH),
-        #                 Text(value="顧客削除", size=20),
-        #             ]
-        #         )
-        #     ),
-        #     height=50,
-        #     # on_click=self.delete_clicked
-        # )
 
         self.customer = Column(
             controls=[
@@ -779,22 +835,24 @@ class CustomerRegistration(Registration):
                             Row([self.birthday, self.deathday,]),
                             Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
                             Row([self.tb_building]),
-                            # Row([self.tb_domicile, self.b_address_copy]),
-                            # self.old_address1,
-                            # self.old_address2,
-                            # self.old_address3,
+                            Row([self.tb_domicile, self.b_address_copy]),
+                            self.old_address1,
+                            self.old_address2,
+                            self.old_address3,
+                            self.folder,
                             # self.folder_a_path,
                             # self.folder_s_path,
-                            # Row([self.dd_will, self.dd_responsible_person, self.dd_progress]),
+                            Row([self.dd_will, self.dd_progress]),
                             self.note,
-                            ElevatedButton("登録", icon=Icons.SAVE),
+                            Row([self.b_Registration]),
+                            # ElevatedButton("登録", icon=Icons.SAVE),
                             # ElevatedButton("登録", icon=Icons.SAVE, on_click=self.registration),
                         ],
                     ),
                     padding=10,
                     margin=10,
-                    border_radius=10,
-                    border=border.all(1, Colors.BLACK),
+                    # border_radius=10,
+                    # border=border.all(1, Colors.BLACK),
                 )
             ]
         )
@@ -990,34 +1048,37 @@ class CustomerRegistration(Registration):
 class RegistrationHeir(Registration):
     def __init__(self,
                  heir_id=None,
-                 tb_name1=None,
-                 tb_name2=None,
-                 tb_name1_huri=None,
-                 tb_name2_huri=None,
-                 tb_zipcode=None,
-                 tb_address1=None,
-                 tb_address2=None,
-                 tb_address3=None,
-                 tb_address4=None,
-                 tb_building=None,
-                 birthday=None,
-                 deathday=None,
-                 tb_code=None,
-                 dd_code=None):
-        super().__init__(tb_name1,
-                         tb_name2,
-                         tb_name1_huri,
-                         tb_name2_huri,
-                         tb_zipcode,
-                         tb_address1,
-                         tb_address2,
-                         tb_address3,
-                         tb_address4,
-                         tb_building,
-                         birthday,
-                         deathday,
-                         tb_code,
-                         dd_code),
+                 # tb_name1=None,
+                 # tb_name2=None,
+                 # tb_name1_huri=None,
+                 # tb_name2_huri=None,
+                 # tb_zipcode=None,
+                 # tb_address1=None,
+                 # tb_address2=None,
+                 # tb_address3=None,
+                 # tb_address4=None,
+                 # tb_building=None,
+                 # birthday=None,
+                 # deathday=None,
+                 # tb_code=None,
+                 # dd_code=None
+                 ):
+        super().__init__(
+            # tb_name1,
+            # tb_name2,
+            # tb_name1_huri,
+            # tb_name2_huri,
+            # tb_zipcode,
+            # tb_address1,
+            # tb_address2,
+            # tb_address3,
+            # tb_address4,
+            # tb_building,
+            # birthday,
+            # deathday,
+            # tb_code,
+            # dd_code
+        ),
         self.info = CustomText('＜相続人　登録・修正＞', size=24)
         self.tb_code.label = '被相続人コード'
         self.dd_code.label = '被相続人選択'
@@ -1025,14 +1086,15 @@ class RegistrationHeir(Registration):
                                           on_blur=self.change_tf_heir_id)
         self.tf_heir_id.value = heir_id
         # print('self.tf_heir_id.value:', self.tf_heir_id.value)
-        self.dd_heir_id = DropdownM2(label='相続人氏名選択', on_change=self.change_dd_heir_id)
+        self.dd_heir_id = DropdownM2(label='相続人氏名選択')
+        # self.dd_heir_id = DropdownM2(label='相続人氏名選択', on_change=self.change_dd_heir_id)
         self.ch_offer = Checkbox(label='依頼人')
         self.ch_transfer = Checkbox(label='振込者')
         self.legal_heir = CustomText('相続人チェック', visible=False)
         self.inheritance_form = CustomText(visible=False)
         self.contact_home = CustomTextField(label='連絡先(自宅) ※ハイフンあり')
         self.contact_phone = CustomTextField(label='連絡先(携帯) ※ハイフンあり')
-        self.mail = TextField(label='連絡先(メール)', width=899)
+        self.mail = CustomTextField(label='連絡先(メール)', width=899)
         self.b_delete = ElevatedButton(
             content=Container(
                 content=Row(
@@ -1156,7 +1218,7 @@ class RegistrationHeir(Registration):
             Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
             Row([self.tb_building]),
             Row([self.updated_date, self.note]),
-            ElevatedButton("登録", icon=Icons.SAVE, on_click=self.registration),
+            CustomElevatedButton(text_value="登録", icon=Icons.SAVE, on_click=self.controller.customer_registration),
         ]
 
         
@@ -1367,17 +1429,17 @@ class TabSearch(BaseView):
                 [
                     ElevatedButton(
                         icon=Icons.CREATE,
-                        text="被相続人 新規登録",
+                        text="新規顧客登録",
                         color=Colors.BLACK,
                         bgcolor=Colors.BLUE_200,
                         on_click=lambda e: self.page.go('/customer_registration')
                     ),
-                    ElevatedButton(
-                        icon=Icons.CREATE,
-                        text="相続人 新規登録",
-                        color=Colors.BLACK,
-                        bgcolor=Colors.BLUE_200,
-                    ),
+                    # ElevatedButton(
+                    #     icon=Icons.CREATE,
+                    #     text="相続人 新規登録",
+                    #     color=Colors.BLACK,
+                    #     bgcolor=Colors.BLUE_200,
+                    # ),
                     self.result_count,
                 ]
             ),
