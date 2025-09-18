@@ -121,7 +121,7 @@ class CustomTextField(TextField):
         width=200,
         on_change=None,
         on_focus=None,
-        on_blur=None,
+        _blur=None,
         format=None,
         hinttext=None,
         *args,
@@ -136,18 +136,24 @@ class CustomTextField(TextField):
             password=password,
             on_change=self._on_change,
             on_focus=self._on_focus,
-            on_blur=self._on_blur,
+            _blur=self._blur,
             *args,
             **kwargs,
         )
         self._on_change_callback = on_change
+        self._blur_callback = _blur
         self._on_focus = on_focus
-        self._on_blur = on_blur
+        self._blur = _blur
         self.hint_text = hinttext
         self.format = format
         # self.label_style = TextStyle(color=Colors.BLACK)
         # self.color = Colors.BLACK
         # self.focused_border_color = Colors.CYAN
+
+    def _blur(self, e):
+        print('_blur:')
+        if self._blur_callback:
+            self._blur_callback(e)
 
     def _on_change(self, e):
         if self._on_change_callback:
@@ -164,9 +170,9 @@ class CustomTextField(TextField):
             self.ime_off()
             self.re_number_format(e)
 
-    def _on_blur(self, e):
-        if self.format == "number":
-            self.number_format(e)
+    # def _on_blur(self, e):
+    #     if self.format == "number":
+    #         self.number_format(e)
 
     def number_format(self, e):
         e.control.value = (
@@ -725,8 +731,8 @@ class Registration(BaseView):
                                         on_blur=lambda e: utils.convert_seireki(self.birthday.value, e))
         self.deathday = CustomTextField(label='死亡日', hint_text='1900/1/1', width=120,
                                         on_blur=lambda e: utils.convert_seireki(self.deathday.value, e))
-        self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,
-                                          on_blur=self.zipcode_change)
+        self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,)
+                                          # on_blur=self.zipcode_change)
         self.tb_address1 = CustomTextField(label='都道府県', hint_text='東京都', width=150)
         self.tb_address2 = CustomTextField(label='市区町村', hint_text='中央区', width=150)
         self.tb_address3 = CustomTextField(label='町域名', hint_text='八重洲', width=150)
@@ -734,7 +740,8 @@ class Registration(BaseView):
         self.tb_building = CustomTextField(label='建物名', hint_text='八重洲口会館2階', width=889)
         self.note = CustomTextField(label='備考', width=500, multiline=True)
         self.tb_code = CustomTextField(label='コード', hint_text='G0000')
-        self.dd_code = DropdownM2(label='コード・氏名選択', on_change=self.change_dd_code)
+        # self.dd_code = DropdownM2(label='コード・氏名選択', on_change=self.change_dd_code)
+        self.dd_code = DropdownM2(label='コード・氏名選択',)
         # self.set_dd_code()
         # self.b_delete = ElevatedButton(
         #     content=Container(
@@ -903,7 +910,8 @@ class CustomerRegistration(Registration):
             self.deceased_tab,
             Tab(
                 text="代表相続人",
-                content=Column([TextField(label="氏名"), TextField(label="続柄")]),
+                content=RegistrationHeir(),
+                # content=Column([TextField(label="氏名"), TextField(label="続柄")]),
             ),
         ]
 
@@ -916,11 +924,12 @@ class CustomerRegistration(Registration):
         print(f"タブが切り替わりました。現在のインデックス: {current_tab_index}")
         print(f"選択されたタブのテキスト: {e.control.tabs[current_tab_index].text}")
         if e.control.tabs[current_tab_index].text == '相続人を追加':
-            self.new_heir_tab_content = HeirsTab()
+            # self.new_heir_tab_content = HeirsTab()
+            # self.new_heir_tab_content = RegistrationHeir(),
             new_tab = Tab(
                 text=f"相続人 {current_tab_index - 1}",
                 # content=HeirsTab(),
-                content=self.new_heir_tab_content,
+                content=RegistrationHeir()
             )
             self.heirs_tabs.append(new_tab)
             self.rebuild_tabs()
@@ -1082,32 +1091,20 @@ class RegistrationHeir(Registration):
         self.info = CustomText('＜相続人　登録・修正＞', size=24)
         self.tb_code.label = '被相続人コード'
         self.dd_code.label = '被相続人選択'
-        self.tf_heir_id = CustomTextField(label='相続人コード', hint_text='新規登録は空欄',
-                                          on_blur=self.change_tf_heir_id)
+        self.tf_heir_id = CustomTextField(label='相続人コード', hint_text='新規登録は空欄',)
+                                          # on_blur=self.change_tf_heir_id)
         self.tf_heir_id.value = heir_id
         # print('self.tf_heir_id.value:', self.tf_heir_id.value)
         self.dd_heir_id = DropdownM2(label='相続人氏名選択')
         # self.dd_heir_id = DropdownM2(label='相続人氏名選択', on_change=self.change_dd_heir_id)
-        self.ch_offer = Checkbox(label='依頼人')
-        self.ch_transfer = Checkbox(label='振込者')
+        # self.ch_offer = Checkbox(label='依頼人')
+        # self.ch_transfer = Checkbox(label='振込者')
         self.legal_heir = CustomText('相続人チェック', visible=False)
-        self.inheritance_form = CustomText(visible=False)
+        # self.inheritance_form = CustomText(visible=False)
         self.contact_home = CustomTextField(label='連絡先(自宅) ※ハイフンあり')
         self.contact_phone = CustomTextField(label='連絡先(携帯) ※ハイフンあり')
         self.mail = CustomTextField(label='連絡先(メール)', width=899)
-        self.b_delete = ElevatedButton(
-            content=Container(
-                content=Row(
-                    controls=[
-                        Icon(Icons.SEARCH),
-                        CustomText(value="顧客削除", size=20),
-                    ]
-                )
-            ),
-            height=50,
-            on_click=self.delete_clicked
-        )
-        self.relationship = DropdownM2(
+        self.relationship = CustomDropdown(
             label='続柄',
             width=130,
             options=[
@@ -1155,10 +1152,10 @@ class RegistrationHeir(Registration):
                 dropdown.Option('子の夫'),
                 dropdown.Option('子の妻'),
             ],
-            on_change=self.change_relationship
+            # on_change=self.change_relationship
         )
 
-        self.relationship2 = DropdownM2(
+        self.relationship2 = CustomDropdown(
             label='親の続柄',
             width=130,
             options=[
@@ -1188,7 +1185,7 @@ class RegistrationHeir(Registration):
             visible=False
         )
 
-        self.situation = DropdownM2(
+        self.situation = CustomDropdown(
             label='状態',
             width=130,
             options=[
@@ -1201,24 +1198,26 @@ class RegistrationHeir(Registration):
             ],
             value=' ',
         )
-        self.note = TextField(label='内容', width=769, multiline=True)
-        self.updated_date = TextField(label='更新日', hint_text='1900/1/1', width=120,
-                                      on_blur=lambda e: utils.convert_seireki(self.updated_date.value, e))
+        self.note = CustomTextField(label='内容', width=769, multiline=True)
+        self.updated_date = CustomTextField(label='更新日', hint_text='1900/1/1', width=120,
+                                            on_blur=lambda e: utils.convert_seireki(self.updated_date.value, e))
 
         self.controls =[
             Row([self.info,]),
-            Row([self.tb_code, self.dd_code, self.b_delete, self.legal_heir, self.inheritance_form]),
-            Row([self.tf_heir_id, self.dd_heir_id]),
-            Row([self.tb_name1, self.tb_name2, self.ch_offer, self.ch_transfer]),
+            Row([self.tb_code, self.dd_code, self.b_delete, self.legal_heir,]),
+            # Row([self.tb_code, self.dd_code, self.b_delete, self.legal_heir, self.inheritance_form]),
+            # Row([self.tf_heir_id, self.dd_heir_id]),
+            Row([self.tb_name1, self.tb_name2]),
+            # Row([self.tb_name1, self.tb_name2, self.ch_offer, self.ch_transfer]),
             Row([self.tb_name1_huri, self.tb_name2_huri,]),
             Row([self.relationship, self.relationship2, self.situation,]),
             Row([self.contact_home, self.contact_phone,]),
-            self.mail,
+            Row([self.mail,]),
             Row([self.birthday, self.deathday,]),
             Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
             Row([self.tb_building]),
             Row([self.updated_date, self.note]),
-            CustomElevatedButton(text_value="登録", icon=Icons.SAVE, on_click=self.controller.customer_registration),
+            Row([CustomElevatedButton(text_value="登録", icon=Icons.SAVE, on_click=self.controller.customer_registration)]),
         ]
 
         

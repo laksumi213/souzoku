@@ -165,6 +165,7 @@ def zipcode_to_address(zipcode):
 
 
 def convert_seireki(wareki_s, e):
+    print('convert_seireki', e)
     era = {
         'r': '令和',
         'h': '平成',
@@ -201,6 +202,8 @@ def convert_seireki(wareki_s, e):
         return wareki_s
     y = int(s.group(2)) if s.group(2) != '元' else 1
     e.control.value = f'{era_dic[s.group(1)] + y - 1}/{tmp[1]}/{tmp[2]}'
+    e.update()
+
 
 def bank_search(name=None, code=None):
     banks = {}
