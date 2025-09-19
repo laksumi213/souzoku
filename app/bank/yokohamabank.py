@@ -234,19 +234,34 @@ class YokohamaBank:
         # 届出書（残高証明書・取引明細表の発行依頼用）
         pdf = PdfCreate("A4")
 
-        path1 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_三井住友銀行_残高証明書依頼書_郵送専用1.pdf')
+        pdf.draw_string(28,207.5,'〇', 12)
+        pdf.draw_string(169,207.5,'1', 12)
+        pdf.draw_string(28,195,'〇', 12)
+        pdf.draw_string(169,195,'1', 12)
+        pdf.draw_string(28,188,'〇', 12)
+        pdf.draw_string(169,188,'1', 12)
+        pdf.draw_string(28,175,'〇', 12)
+        pdf.draw_string(169,175,'1', 12)
+        pdf.draw_string(28,162.5,'〇', 12)
+        pdf.draw_string(38.5,162.5,'履歴事項全部証明書', 12)
+        pdf.draw_string(169, 162.5, '1', 12)
+
+        pdf.draw_string(52, 98, self.customer_name, 14)
+        pdf.draw_string(52, 50, '代理人 行政書士法人チェスター 代表社員 清水 茜作', 12)
+
+        path1 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_横浜銀行_残高証明書申請書1.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '三井住友銀行_残高証明書依頼書_郵送専用.pdf'), page=1, open_bool=False)
+                                         '横浜銀行_残高証明書申請書.pdf'), page=1, open_bool=False)
 
         # 2ページ目　残高証明書等発行依頼書【相続用】
         pdf = PdfCreate("A4")
 
-        path2 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_野村證券_残高証明書申請書2.pdf')
+        path2 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_横浜銀行_残高証明書申請書2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '野村證券_残高証明書申請書.pdf'), page=2, open_bool=False)
+                                         '横浜銀行_残高証明書申請書.pdf'), page=2, open_bool=False)
 
         pdf.pdf_marge(
-            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_野村證券_残高証明書申請書.pdf'),
+            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_横浜銀行_残高証明書申請書.pdf'),
             path1, path2)
 
 def main():
