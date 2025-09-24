@@ -39,6 +39,7 @@ class MainApp(ft.Column):
             ft.Tabs(
                 selected_index=0,
                 animation_duration=300,
+                height=850,
                 tabs=[
                     ft.Tab(
                         text="顧客情報",
@@ -57,7 +58,17 @@ class MainApp(ft.Column):
 
     def show_message(self, message: str, color=ft.Colors.GREEN_500):
         """スナックバーにメッセージを表示します。"""
-        self.page.snack_bar.content = ft.Text(message)
-        self.page.snack_bar.bgcolor = color
-        self.page.snack_bar.open = True
-        self.page.update()
+        print()
+        print('show_message:')
+        self.page.show_snack_bar(
+            ft.SnackBar(ft.Text("This is a SnackBar!"))
+        )
+
+        # self.page.snack_bar.content = ft.Text(message)
+        # self.page.snack_bar.content = ft.Container(
+        #     ft.Text(message),
+        #     alignment=ft.alignment.top_center
+        # )
+        # self.page.snack_bar.bgcolor = color
+        # self.page.snack_bar.open = True
+        # self.page.update()

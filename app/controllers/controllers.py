@@ -1,7 +1,7 @@
 import asyncio
 from datetime import date
 
-from flet import Page, TextField, DropdownM2
+from flet import Page, TextField, DropdownM2, Row, Tabs
 from pyautogui import typewrite, hotkey
 
 import app.utils as utils
@@ -204,10 +204,18 @@ class MainController(BaseController):
         results = Staff.get_all_staff()
         return results
 
-    def customer_registration(self, e, data):
-        # print('customer_registration:', e)
-        print('self.b_Registration.data:', data)
-        print(self.page.session.get(data).folder.value)
+    def customer_registration(self, e):
+        print()
+        print('customer_registration起動')
+        # print('e:', e)
+        # print('e.info.value:', e.info.value)
+        # print('e.tb_name1.value:', e.tb_name1.value)
+        if '被相続人' in e.info.value:
+            print('被相続人')
+            MyLayout.show_message(e, message='被相続人')
+        elif '相続人' in e.info.value:
+            print('相続人')
+            MyLayout.show_message(e, message='相続人')
 
 
 def route_change(page: Page, e):
@@ -225,7 +233,7 @@ def route_change(page: Page, e):
 
     # print(page.controls[0].controls[2].content.controls[0].content)
     # 戻るボタンが非表示の場合は表示する
-    print("eb_return:", page.session.get("eb_return").content.visible)
+    # print("eb_return:", page.session.get("eb_return").content.visible)
     if (
         not page.session.get("eb_return").content.visible
         and len(page.session.get("past_route")) > 0
@@ -243,7 +251,6 @@ def route_change(page: Page, e):
 
     # if e.route == "/home":
     #     page.session.get("main_body").content.customer_name_kana_input.focus()
-
-    page.update()
+    #     page.update()
 
 
