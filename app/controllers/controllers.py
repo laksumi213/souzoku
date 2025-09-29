@@ -1,8 +1,9 @@
 import asyncio
 from datetime import date
+from typing import List, Dict, Any
 
-from flet import Page, TextField, DropdownM2, Row, Tabs
-from pyautogui import typewrite, hotkey
+from flet import DropdownM2, Page, TextField
+from pyautogui import hotkey, typewrite
 
 import app.utils as utils
 
@@ -50,12 +51,12 @@ class MainController(BaseController):
             utils.ime_off()
             typewrite(date.today().strftime("%Y/%m/%d"))
 
-        if e.key == 'Tab' and e.shift and self.shift_tab_bool:
+        if e.key == "Tab" and e.shift and self.shift_tab_bool:
             # print('e.key == tab and e.shift')
             self.shift_tab_bool = False
-            hotkey('shift', 'tab')
-            hotkey('tab')
-        elif e.key == 'Tab' and e.shift and not self.shift_tab_bool:
+            hotkey("shift", "tab")
+            hotkey("tab")
+        elif e.key == "Tab" and e.shift and not self.shift_tab_bool:
             # print('self.shift_tab_bool = True')
             self.shift_tab_bool = True
 
@@ -81,11 +82,19 @@ class MainController(BaseController):
         results = self.get_result_view_all(page=self.page)
         self.page.session.get("/home").customer_data_table(results)
 
-        for count in range(len(self.page.session.get("/home").search_fields.content.controls)):
+        for count in range(
+            len(self.page.session.get("/home").search_fields.content.controls)
+        ):
             for control in (
-                    self.page.session.get("/home").search_fields.content.controls[count].controls
+                self.page.session.get("/home")
+                .search_fields.content.controls[count]
+                .controls
             ):
-                if isinstance(control, TextField) or isinstance(control, DropdownM2) and control.value:
+                if (
+                    isinstance(control, TextField)
+                    or isinstance(control, DropdownM2)
+                    and control.value
+                ):
                     control.value = ""
 
                 # if isinstance(control, DropdownM2) and control.value:
@@ -102,7 +111,7 @@ class MainController(BaseController):
         self.page.session.get("eb_return").content.visible = False
         # print('len(self.page.session.get("past_route")):', len(self.page.session.get("past_route")),
         #       self.page.session.get("past_route"))
-        self.page.go('/home')
+        self.page.go("/home")
 
     def return_clicked(self, _):
         print("")
@@ -112,7 +121,7 @@ class MainController(BaseController):
         self.page.session.get("past_route").pop()
         key = self.page.session.get("past_route").pop()
         print("past_route:", self.page.session.get("past_route"))
-        self.page.go('/home')
+        self.page.go("/home")
 
         # # サイドバーのインデックスを設定
         # print("past_selected_index:", self.page.session.get("past_selected_index")[key])
@@ -135,7 +144,7 @@ class MainController(BaseController):
 
     def search_change(self, e):
         print()
-        print('search_change:', e)
+        print("search_change:", e)
         my_dict = {}
         results = None
         i = 0
@@ -144,9 +153,14 @@ class MainController(BaseController):
         elif e.control.data == "heir":
             i = 1
         # breakpoint()
-        for count in range(len(self.page.session.get("/home").search_fields.content.controls)):
+        for count in range(
+            len(self.page.session.get("/TabSearch").search_fields.content.controls)
+            # len(self.page.session.get("/home").search_fields.content.controls)
+        ):
             for control in (
-                self.page.session.get("/home").search_fields.content.controls[count].controls
+                self.page.session.get("/home")
+                .search_fields.content.controls[count]
+                .controls
             ):
                 # breakpoint()
                 if isinstance(control, TextField) and control.value:
@@ -161,7 +175,7 @@ class MainController(BaseController):
         self.page.session.get("/home").customer_data_table(results)
 
         # for control in [(
-            # self.page.session.get("/home").search_fields.controls[i].controls
+        # self.page.session.get("/home").search_fields.controls[i].controls
         #     self.page.session.get("/home").search_fields.content.controls[0].controls[i]
         # )]:
         #     print('control:', control)
@@ -204,18 +218,194 @@ class MainController(BaseController):
         results = Staff.get_all_staff()
         return results
 
+    @classmethod
+    def clean_date_fields(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        辞書内の指定された日付カラムが空文字列の場合、Noneに変換します。
+
+        Args:
+            data (dict): 処理対象のデータ辞書。
+
+        Returns:
+            dict: 変換後のデータ辞書。
+        """
+        # データベースで日付型として扱われるカラム名のリストを定義
+        DATE_COLUMNS: List[str] = [
+            'birthday',
+            'deathday',
+            'updated_date',
+            # 必要に応じて他の日付カラム名を追加
+        ]
+
+        # 辞書のコピーを作成し、元の辞書を変更しないようにする
+        cleaned_data = data.copy()
+
+        for key in DATE_COLUMNS:
+            # キーが辞書内に存在し、かつその値が空文字列であるかチェック
+            if key in cleaned_data and cleaned_data[key] == '':
+                cleaned_data[key] = None
+
+            # NOTE: 値が '  ' のようなスペースのみの場合は、
+            # .strip() を使って if cleaned_data[key].strip() == '' のようにチェックするとより安全です。
+
+        return cleaned_data
+
     def customer_registration(self, e):
         print()
-        print('customer_registration起動')
-        # print('e:', e)
-        # print('e.info.value:', e.info.value)
+        print("customer_registration起動")
+        print('e:', e)
+        print('e.info.value:', e.info.value)
         # print('e.tb_name1.value:', e.tb_name1.value)
-        if '被相続人' in e.info.value:
-            print('被相続人')
-            MyLayout.show_message(e, message='被相続人')
-        elif '相続人' in e.info.value:
-            print('相続人')
-            MyLayout.show_message(e, message='相続人')
+        if "被相続人　登録・修正" in e.info.value:
+            print("被相続人")
+
+            will = 0 if e.dd_will.value == '無' else 1
+            data = [
+                # 1,
+                str(e.tb_code.value).strip(),
+                e.tb_name1.value.strip(),
+                e.tb_name2.value.strip(),
+                e.tb_name1_huri.value.strip(),
+                e.tb_name2_huri.value.strip(),
+                e.birthday.value.strip(),
+                e.deathday.value.strip(),
+                e.tb_domicile.value.strip(),
+                e.tb_zipcode.value.strip(),
+                e.tb_address1.value.strip(),
+                e.tb_address2.value.strip(),
+                e.tb_address3.value.strip(),
+                str(e.tb_address4.value).strip(),
+                str(e.tb_building.value).strip(),
+                will,
+                e.folder.value,
+                # e.tb_maiden_name.value.strip(),
+                e.old_address1.value.strip(),
+                e.old_address2.value.strip(),
+                e.old_address3.value.strip(),
+                # e.tb_maiden_name_kana.value.strip(),
+                e.dd_progress.value,
+                e.note.value,
+                # e.dd_responsible_person.value
+            ]
+
+            columns = Decedent.get_table_columns_info('customer')
+            # columns = [
+            #     "code",
+            #     "username1",
+            #     "username2",
+            #     "username1_hurigana",
+            #     "username2_hurigana",
+            #     "birthday",
+            #     "deathday",
+            #     "domicile",
+            #     "zipcode",
+            #     "prefectures",
+            #     "municipalities",
+            #     "townarea",
+            #     "house_number",
+            #     "building",
+            #     "will",
+            #     "folder_path",
+            #     # "maiden_name",
+            #     "old_address1",
+            #     "old_address2",
+            #     "old_address3",
+            #     # "maiden_name_huri",
+            #     "situation",
+            #     "note",
+            #     # "responsible_person",
+            # ]
+
+            result_dict = dict(zip(columns, data))
+            print('result_dict:', result_dict)
+
+            # # プレースホルダー（?）のリストを生成
+            # placeholders = ["?"] * len(columns)
+            #
+            # # SQLクエリを動的に生成
+            # sql = f"""
+            #     REPLACE INTO customer (
+            #         {', '.join(columns)}
+            #     )
+            #     VALUES (
+            #         {', '.join(placeholders)}
+            #     )
+            # """
+
+            # Decedent.delete_all()
+            Decedent.register_data(Decedent, result_dict)
+            MyLayout.show_message(e, message=f"被相続人 {e.tb_name1.value} {e.tb_name2.value}の登録が完了しました。")
+
+        elif "相続人　登録・修正" in e.info.value:
+            print("相続人")
+            # Heir.delete_all()
+            data = [
+                # str(e.tf_heir_id.value).strip(),
+                # 1111,
+                str(e.tb_code.value).strip(),
+                e.tb_name1.value.strip(),
+                e.tb_name2.value.strip(),
+                e.tb_name1_huri.value.strip(),
+                e.tb_name2_huri.value.strip(),
+                e.contact_home.value.strip(),
+                e.contact_phone.value.strip(),
+                e.birthday.value.strip(),
+                e.deathday.value.strip(),
+                e.relationship.value,
+                e.relationship2.value,
+                e.situation.value.strip(),
+                e.tb_zipcode.value.strip(),
+                e.tb_address1.value.strip(),
+                e.tb_address2.value.strip(),
+                e.tb_address3.value.strip(),
+                str(e.tb_address4.value).strip(),
+                str(e.tb_building.value).strip(),
+                '',
+                '',
+                '',
+                '',
+                e.mail.value.strip(),
+                e.note.value.strip(),
+                e.updated_date.value.strip()
+                # e.dd_responsible_person.value
+            ]
+
+            columns = Heir.get_table_columns_info('heir')
+            # columns = [
+            #     "code",
+            #     "username1",
+            #     "username2",
+            #     "username1_hurigana",
+            #     "username2_hurigana",
+            #     "birthday",
+            #     "deathday",
+            #     "domicile",
+            #     "zipcode",
+            #     "prefectures",
+            #     "municipalities",
+            #     "townarea",
+            #     "house_number",
+            #     "building",
+            #     "will",
+            #     "folder_path",
+            #     # "maiden_name",
+            #     "old_address1",
+            #     "old_address2",
+            #     "old_address3",
+            #     # "maiden_name_huri",
+            #     "situation",
+            #     "note",
+            #     # "responsible_person",
+            # ]
+
+            result_dict = dict(zip(columns, data))
+            # print('result_dict:', result_dict)
+
+            processed_data = self.clean_date_fields(result_dict)
+            print('processed_data:', processed_data)
+
+            Heir.register_data(Heir, processed_data)
+            MyLayout.show_message(e, message=f"相続人 {e.tb_name1.value} {e.tb_name2.value}の登録が完了しました。")
 
 
 def route_change(page: Page, e):
@@ -226,6 +416,8 @@ def route_change(page: Page, e):
     if e.route == "/home":
         asyncio.new_event_loop().run_in_executor(None, utils.ime_on)
         page.session.get("eb_home").content.visible = False
+        results = MainController.get_result_view_all(page)
+        page.session.get("home_tab").customer_data_table(results)
         page.update()
     else:
         page.session.get("eb_home").content.visible = True
@@ -252,5 +444,3 @@ def route_change(page: Page, e):
     # if e.route == "/home":
     #     page.session.get("main_body").content.customer_name_kana_input.focus()
     #     page.update()
-
-

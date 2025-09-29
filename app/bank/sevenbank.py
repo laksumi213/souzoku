@@ -1,6 +1,5 @@
 # セブン銀行
 # from zengin import BankSearch
-# from pdf_create import PdfCreate
 import jaconv
 import re
 from app._utils.web_operation import Web
@@ -9,6 +8,7 @@ from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
+from app.controllers.pdf_create import PdfCreate
 
 
 class Sevenbank:
@@ -104,10 +104,16 @@ class Sevenbank:
 
         self.proc.driver.find_element(By.NAME, 'Address_Street').click()
 
+    def balance_certificate(self):
+        # 残高証明書等作成依頼書
+        pdf = PdfCreate("A4")
+
 
 def main():
     proc = Sevenbank()
-    proc.account_freezing()
+    # proc.account_freezing()
+    proc.balance_certificate()
+
 
 if __name__ == '__main__':
     main()

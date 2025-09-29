@@ -1,15 +1,16 @@
 import asyncio
-from functools import partial
+import subprocess
 
 # from typing import Dict, Any
 from time import sleep
+
 import pyautogui
 import pyperclip
-import subprocess
 from flet import (
     AlertDialog,
     ButtonStyle,
     Checkbox,
+    Colors,
     Column,
     Container,
     CrossAxisAlignment,
@@ -21,9 +22,8 @@ from flet import (
     ElevatedButton,
     Icon,
     IconButton,
+    Icons,
     MainAxisAlignment,
-    NavigationRail,
-    NavigationRailDestination,
     OutlinedButton,
     Page,
     Row,
@@ -36,9 +36,7 @@ from flet import (
     TextStyle,
     alignment,
     border,
-    Colors,
     dropdown,
-    Icons,
 )
 
 import app.utils as utils
@@ -57,11 +55,6 @@ class BaseView(Column):
         # self.scrollTo = "always"
         self.scroll = "always"
         # self.scrollable = False
-
-        # スナックバー (メッセージ表示用)
-        # super().page.snack_bar = SnackBar(content=Text(""), open=False)
-        # self._page.snack_bar = SnackBar(content=Text(""), open=False)
-
         # self.page.scrollTo = "always"
         # self.page.scroll = 'always'
 
@@ -312,16 +305,16 @@ class CustomDropdown(DropdownM2):
 
 class CustomElevatedButton(ElevatedButton):
     def __init__(
-            self,
-            icon: str = "",
-            text_value: str = '',
-            text_size=20,
-            height=40,
-            data='',
-            on_click=None,
-            # on_hover=None,
-            *args,
-            **kwargs
+        self,
+        icon: str = "",
+        text_value: str = "",
+        text_size=20,
+        height=40,
+        data="",
+        on_click=None,
+        # on_hover=None,
+        *args,
+        **kwargs,
     ):
         super().__init__(
             height=height,
@@ -329,7 +322,7 @@ class CustomElevatedButton(ElevatedButton):
             on_click=self._on_click,
             on_hover=self._on_hover,
             *args,
-            **kwargs
+            **kwargs,
         )
 
         self._on_click_callback = on_click
@@ -342,12 +335,12 @@ class CustomElevatedButton(ElevatedButton):
                 ]
             ),
             height=height,
-            data=data
+            data=data,
         )
 
     def _on_click(self, buf):
         print()
-        print('_on_click:')
+        print("_on_click:")
         # print('buf:', buf)
         # print('self:', self)
         # print('buf:', buf)
@@ -565,7 +558,9 @@ class MyLayout(BaseView):
         self.past_route = []
         page.session.set("past_route", self.past_route)
 
-        page.session.set('/customer_registration', CustomerRegistration(page, self.show_message))
+        page.session.set(
+            "/customer_registration", CustomerRegistration(page, self.show_message)
+        )
 
         self.eb_home = Container(
             content=ElevatedButton(
@@ -590,18 +585,26 @@ class MyLayout(BaseView):
         page.session.set("eb_return", self.eb_return)
 
         # self.main_body = Container(content=HomeBody())
-        self.page.session.set('/home', HomeBody())
+        self.page.session.set("/home", HomeBody())
         self.main_body = Container(
-            content=self.page.session.get('home'),
+            content=self.page.session.get("home"),
             expand=True,  # 残りのスペースを埋める
         )
         page.session.set("main_body", self.main_body)
 
         self.controls = [
-            Column([
-                Row([self.page.session.get('eb_home'),self.page.session.get('eb_return'),]),
-                self.main_body
-            ])
+            Column(
+                [
+                    Row(
+                        [
+                            self.page.session.get("eb_home"),
+                            self.page.session.get("eb_return"),
+                        ]
+                    ),
+
+                    self.main_body,
+                ]
+            )
         ]
 
     def show_message(self, message: str, color=Colors.GREEN_500):
@@ -621,6 +624,8 @@ class HomeBody(BaseView):
 
         # self.home_tab = TabSearch(self.show_message)
         self.home_tab = TabSearch()
+        super().page.session.set("home_tab", self.home_tab)
+        self.settings_tab = TabSettings()
 
         self.controls = [
             Tabs(
@@ -639,7 +644,7 @@ class HomeBody(BaseView):
                     Tab(
                         text="設定",
                         icon=Icons.SETTINGS,
-                        # content=self.settings_tab,
+                        content=self.settings_tab,
                     ),
                 ],
             )
@@ -661,32 +666,54 @@ class Registration(BaseView):
         super().__init__()
         # self.show_message_callback = show_message_callback
         print()
-        print('super().page:', super().page)
+        print("super().page:", super().page)
         super().page.snack_bar = SnackBar(content=Text(""), open=False)
-        print('super().page.snack_bar:', super().page.snack_bar)
+        print("super().page.snack_bar:", super().page.snack_bar)
 
         self.tab_contents = {}
 
-        self.tb_name1 = CustomTextField(label='姓', autofocus=True)
-        self.tb_name2 = CustomTextField(label='名')
-        self.tb_name1_huri = CustomTextField(label='姓ふりがな')
-        self.tb_name2_huri = CustomTextField(label='名ふりがな')
-        self.birthday = CustomTextField(label='生年月日', hint_text='1900/1/1', width=120,
-                                        on_blur=lambda e: utils.convert_seireki(self.birthday.value, e))
-        self.deathday = CustomTextField(label='死亡日', hint_text='1900/1/1', width=120,
-                                        on_blur=lambda e: utils.convert_seireki(self.deathday.value, e))
-        self.tb_zipcode = CustomTextField(label='郵便番号', hint_text='194-0022', width=120,)
-                                          # on_blur=self.zipcode_change)
-        self.tb_address1 = CustomTextField(label='都道府県', hint_text='東京都', width=150)
-        self.tb_address2 = CustomTextField(label='市区町村', hint_text='中央区', width=150)
-        self.tb_address3 = CustomTextField(label='町域名', hint_text='八重洲', width=150)
-        self.tb_address4 = CustomTextField(label='番地', hint_text='1-7-20', width=280)
-        self.tb_building = CustomTextField(label='建物名', hint_text='八重洲口会館2階', width=889)
-        self.note = CustomTextField(label='備考', width=500, multiline=True)
-        self.tb_code = CustomTextField(label='コード', hint_text='G0000')
+        self.tb_name1 = CustomTextField(label="姓", autofocus=True)
+        self.tb_name2 = CustomTextField(label="名")
+        self.tb_name1_huri = CustomTextField(label="姓ふりがな")
+        self.tb_name2_huri = CustomTextField(label="名ふりがな")
+        self.birthday = CustomTextField(
+            label="生年月日",
+            hint_text="1900/1/1",
+            width=120,
+            on_blur=lambda e: utils.convert_seireki(self.birthday.value, e),
+        )
+        self.deathday = CustomTextField(
+            label="死亡日",
+            hint_text="1900/1/1",
+            width=120,
+            on_blur=lambda e: utils.convert_seireki(self.deathday.value, e),
+        )
+        self.tb_zipcode = CustomTextField(
+            label="郵便番号",
+            hint_text="194-0022",
+            width=120,
+        )
+        # on_blur=self.zipcode_change)
+        self.tb_address1 = CustomTextField(
+            label="都道府県", hint_text="東京都", width=150
+        )
+        self.tb_address2 = CustomTextField(
+            label="市区町村", hint_text="中央区", width=150
+        )
+        self.tb_address3 = CustomTextField(
+            label="町域名", hint_text="八重洲", width=150
+        )
+        self.tb_address4 = CustomTextField(label="番地", hint_text="1-7-20", width=280)
+        self.tb_building = CustomTextField(
+            label="建物名", hint_text="八重洲口会館2階", width=889
+        )
+        self.note = CustomTextField(label="備考", width=500, multiline=True)
+        self.tb_code = CustomTextField(label="コード", hint_text="G0000")
         # self.dd_code = DropdownM2(label='コード・氏名選択', on_change=self.change_dd_code)
-        self.dd_code = DropdownM2(label='コード・氏名選択',)
-        self.b_delete = CustomElevatedButton(icon=Icons.DELETE, text_value='顧客削除')
+        self.dd_code = DropdownM2(
+            label="コード・氏名選択",
+        )
+        self.b_delete = CustomElevatedButton(icon=Icons.DELETE, text_value="顧客削除")
 
         # 手続きステータス
         self.dd_progress = CustomDropdown(
@@ -716,24 +743,33 @@ class CustomerRegistration(Registration):
     # def __init__(self):
     def __init__(self, page, show_message_callback):
         super().__init__()
-        print('super().page:', super().page)
+        print("super().page:", super().page)
         super().page.session.set("/customer_registration", self)
 
         self.page = page
         self.show_message = show_message_callback
         # self.show_message = show_message_callback
 
-        self.info = CustomText('＜被相続人　登録・修正＞', size=24)
-        self.tb_domicile = CustomTextField(label='本籍', width=700)
-        self.b_address_copy = CustomElevatedButton(icon=Icons.COPY, text_value='住所をコピー')
-        self.old_address1 = CustomTextField(label='旧住所1', width=889)
-        self.old_address2 = CustomTextField(label='旧住所2', width=889)
-        self.old_address3 = CustomTextField(label='旧住所3', width=889)
-        self.folder = CustomTextField(label='フォルダーパス', width=889)
-        self.dd_will = CustomDropdown(label='遺言書有無', width=130, options=[dropdown.Option('有'), dropdown.Option('無')])
-        self.b_Registration = CustomElevatedButton(text_value="登録", icon=Icons.SAVE,
-                                                   # on_click=lambda e: self.show_message("顧客IDと氏名は必須です。", Colors.RED_500))
-                                                   on_click=lambda e: self.controller.customer_registration(self))
+        self.info = CustomText("＜被相続人　登録・修正＞", size=24)
+        self.tb_domicile = CustomTextField(label="本籍", width=700)
+        self.b_address_copy = CustomElevatedButton(
+            icon=Icons.COPY, text_value="住所をコピー"
+        )
+        self.old_address1 = CustomTextField(label="旧住所1", width=889)
+        self.old_address2 = CustomTextField(label="旧住所2", width=889)
+        self.old_address3 = CustomTextField(label="旧住所3", width=889)
+        self.folder = CustomTextField(label="フォルダーパス", width=889)
+        self.dd_will = CustomDropdown(
+            label="遺言書有無",
+            width=130,
+            options=[dropdown.Option("有"), dropdown.Option("無")],
+        )
+        self.b_Registration = CustomElevatedButton(
+            text_value="登録",
+            icon=Icons.SAVE,
+            # on_click=lambda e: self.show_message("顧客IDと氏名は必須です。", Colors.RED_500))
+            on_click=lambda e: self.controller.customer_registration(self),
+        )
 
         # self.b_Registration.data = "/customer_registration"
 
@@ -743,11 +779,40 @@ class CustomerRegistration(Registration):
                     content=Column(
                         controls=[
                             self.info,
-                            Row([self.tb_code, self.dd_code, self.b_delete,]),
-                            Row([self.tb_name1, self.tb_name2,]),
-                            Row([self.tb_name1_huri, self.tb_name2_huri,]),
-                            Row([self.birthday, self.deathday,]),
-                            Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
+                            Row(
+                                [
+                                    self.tb_code,
+                                    self.dd_code,
+                                    self.b_delete,
+                                ]
+                            ),
+                            Row(
+                                [
+                                    self.tb_name1,
+                                    self.tb_name2,
+                                ]
+                            ),
+                            Row(
+                                [
+                                    self.tb_name1_huri,
+                                    self.tb_name2_huri,
+                                ]
+                            ),
+                            Row(
+                                [
+                                    self.birthday,
+                                    self.deathday,
+                                ]
+                            ),
+                            Row(
+                                [
+                                    self.tb_zipcode,
+                                    self.tb_address1,
+                                    self.tb_address2,
+                                    self.tb_address3,
+                                    self.tb_address4,
+                                ]
+                            ),
                             Row([self.tb_building]),
                             Row([self.tb_domicile, self.b_address_copy]),
                             self.old_address1,
@@ -783,10 +848,7 @@ class CustomerRegistration(Registration):
             indicator_color=Colors.RED,
             height=1000,
             tabs=[
-                Tab(
-                    text="被相続人",
-                    content=self.customer
-                ),
+                Tab(text="被相続人", content=self.customer),
                 Tab(
                     text="相続人追加",
                 ),
@@ -851,9 +913,7 @@ class CustomerRegistration(Registration):
                 controls=[
                     Container(
                         content=Column(
-                            controls=[
-                                RegistrationHeir(new_inheritor_name)
-                            ],
+                            controls=[RegistrationHeir(new_inheritor_name)],
                         ),
                         padding=10,
                         margin=10,
@@ -862,12 +922,14 @@ class CustomerRegistration(Registration):
             )
             # self.tab_contents[current_add_tab_index] = heir
             # self.tab_contents[current_add_tab_index] = RegistrationHeir(new_inheritor_name)
-            tabs_list[current_add_tab_index].content = self.tab_contents[current_add_tab_index]
+            tabs_list[current_add_tab_index].content = self.tab_contents[
+                current_add_tab_index
+            ]
 
             # 4. 新しく追加されたタブに自動で切り替え
             e.control.selected_index = new_tab_index
             super().page.update()
-            sleep(.1)
+            sleep(0.1)
             e.control.selected_index = new_tab_index - 1
             super().page.update()
 
@@ -899,66 +961,62 @@ class CustomerRegistration(Registration):
     #     super().page.update()
 
     def rebuild_tabs(self):
-            print('rebuild_tabs')
-            # 固定タブと動的タブを結合して、新しいリストを作成
-            fixed_tabs = [
-                self.deceased_tab,
-                Tab(
-                    text="代表相続人",
-                    content=Column(
-                        controls=[
-                            Container(
-                                content=Column(
-                                    controls=[
-                                        RegistrationHeir()
-                                    ]
-                                ),
-                                padding=10,
-                                margin=10,
-                            )
-                        ]
-                    )
+        print("rebuild_tabs")
+        # 固定タブと動的タブを結合して、新しいリストを作成
+        fixed_tabs = [
+            self.deceased_tab,
+            Tab(
+                text="代表相続人",
+                content=Column(
+                    controls=[
+                        Container(
+                            content=Column(controls=[RegistrationHeir()]),
+                            padding=10,
+                            margin=10,
+                        )
+                    ]
                 ),
-            ]
+            ),
+        ]
 
-            # 新しいタブリストを作成し、Tabsに設定
-            self.my_tab.tabs = fixed_tabs + self.heirs_tabs + [self.add_tab_button]
-            super().page.update()
+        # 新しいタブリストを作成し、Tabsに設定
+        self.my_tab.tabs = fixed_tabs + self.heirs_tabs + [self.add_tab_button]
+        super().page.update()
 
-        # def add_heir_tab(self, e):
-        #     print()
-        #     print('add_heir_tab起動')
-        #     print(e)
-        #     print(e.control)
-        #     current_tab_index = e.control.selected_index
-        #     print(f"タブが切り替わりました。現在のインデックス: {current_tab_index}")
-        #     print(f"選択されたタブのテキスト: {e.control.tabs[current_tab_index].text}")
-        #     if e.control.tabs[current_tab_index].text == '相続人を追加':
-        #         new_tab = Tab(
-        #             text=f"相続人 {current_tab_index - 1}",
-        #             content=Column(
-        #                 controls=[
-        #                     Container(
-        #                         content=Column(
-        #                             controls=[
-        #                                 RegistrationHeir()
-        #                             ]
-        #                         ),
-        #                         padding=10,
-        #                         margin=10,
-        #                     )
-        #                 ]
-        #             )
-        #         )
-        #         self.heirs_tabs.append(new_tab)
-        #         self.rebuild_tabs()
-        #
-        #         self.my_tab.selected_index = len(self.my_tab.tabs) - 1
-        #         super().page.update()
-        #
-        #         sleep(.1)
-        #         self.my_tab.selected_index = len(self.my_tab.tabs) - 2  # 追加タブは除く
-        #         super().page.update()
+    # def add_heir_tab(self, e):
+    #     print()
+    #     print('add_heir_tab起動')
+    #     print(e)
+    #     print(e.control)
+    #     current_tab_index = e.control.selected_index
+    #     print(f"タブが切り替わりました。現在のインデックス: {current_tab_index}")
+    #     print(f"選択されたタブのテキスト: {e.control.tabs[current_tab_index].text}")
+    #     if e.control.tabs[current_tab_index].text == '相続人を追加':
+    #         new_tab = Tab(
+    #             text=f"相続人 {current_tab_index - 1}",
+    #             content=Column(
+    #                 controls=[
+    #                     Container(
+    #                         content=Column(
+    #                             controls=[
+    #                                 RegistrationHeir()
+    #                             ]
+    #                         ),
+    #                         padding=10,
+    #                         margin=10,
+    #                     )
+    #                 ]
+    #             )
+    #         )
+    #         self.heirs_tabs.append(new_tab)
+    #         self.rebuild_tabs()
+    #
+    #         self.my_tab.selected_index = len(self.my_tab.tabs) - 1
+    #         super().page.update()
+    #
+    #         sleep(.1)
+    #         self.my_tab.selected_index = len(self.my_tab.tabs) - 2  # 追加タブは除く
+    #         super().page.update()
 
     def set_dd_code(self):
         pass
@@ -968,6 +1026,7 @@ class CustomerRegistration(Registration):
         #     self.dd_code.options.append(dropdown.Option("-"))
         #     [self.dd_code.options.append(dropdown.Option(f'{i[0]} {i[1]}')) for i in record]
         #
+
     def change_dd_code(self, e):
         pass
 
@@ -980,9 +1039,9 @@ class CustomerRegistration(Registration):
             self.tb_address2.value = zipcode_address[1]
             self.tb_address3.value = zipcode_address[2]
         else:
-            self.tb_address1.value = ''
-            self.tb_address2.value = ''
-            self.tb_address3.value = ''
+            self.tb_address1.value = ""
+            self.tb_address2.value = ""
+            self.tb_address3.value = ""
         self.update()
 
 
@@ -994,134 +1053,192 @@ class RegistrationHeir(Registration):
 
         self.tab_index = tab_index
 
-        self.info = CustomText('＜相続人　登録・修正＞', size=24)
-        self.tb_code.label = '被相続人コード'
-        self.dd_code.label = '被相続人選択'
-        self.tf_heir_id = CustomTextField(label='相続人コード', hint_text='新規登録は空欄',)
-                                          # on_blur=self.change_tf_heir_id)
+        self.info = CustomText("＜相続人　登録・修正＞", size=24)
+        self.tb_code.label = "被相続人コード"
+        self.dd_code.label = "被相続人選択"
+        self.tf_heir_id = CustomTextField(
+            label="相続人コード",
+            hint_text="新規登録は空欄",
+        )
+        # on_blur=self.change_tf_heir_id)
         self.tf_heir_id.value = heir_id
         # print('self.tf_heir_id.value:', self.tf_heir_id.value)
-        self.dd_heir_id = DropdownM2(label='相続人氏名選択')
+        self.dd_heir_id = DropdownM2(label="相続人氏名選択")
         # self.dd_heir_id = DropdownM2(label='相続人氏名選択', on_change=self.change_dd_heir_id)
-        self.legal_heir = CustomText('相続人チェック', visible=False)
-        self.contact_home = CustomTextField(label='連絡先(自宅) ※ハイフンあり', width=250)
-        self.contact_phone = CustomTextField(label='連絡先(携帯) ※ハイフンあり', width=250)
-        self.mail = CustomTextField(label='連絡先(メール)', width=890)
-        self.b_Registration = CustomElevatedButton(text_value="登録", icon=Icons.SAVE,
-                                                   on_click=lambda e: self.controller.customer_registration(self))
+        self.legal_heir = CustomText("相続人チェック", visible=False)
+        self.contact_home = CustomTextField(
+            label="連絡先(自宅) ※ハイフンあり", width=250
+        )
+        self.contact_phone = CustomTextField(
+            label="連絡先(携帯) ※ハイフンあり", width=250
+        )
+        self.mail = CustomTextField(label="連絡先(メール)", width=890)
+        self.b_Registration = CustomElevatedButton(
+            text_value="登録",
+            icon=Icons.SAVE,
+            on_click=lambda e: self.controller.customer_registration(self),
+        )
         self.relationship = CustomDropdown(
-            label='続柄',
+            label="続柄",
             width=130,
             options=[
-                dropdown.Option(' '),
-                dropdown.Option('妻'),
-                dropdown.Option('夫'),
-                dropdown.Option('父'),
-                dropdown.Option('母'),
-                dropdown.Option('長男'),
-                dropdown.Option('長女'),
-                dropdown.Option('二男'),
-                dropdown.Option('二女'),
-                dropdown.Option('三男'),
-                dropdown.Option('三女'),
-                dropdown.Option('四男'),
-                dropdown.Option('四女'),
-                dropdown.Option('五男'),
-                dropdown.Option('五女'),
-                dropdown.Option('兄弟1'),
-                dropdown.Option('姉妹1'),
-                dropdown.Option('兄弟2'),
-                dropdown.Option('姉妹2'),
-                dropdown.Option('兄弟3'),
-                dropdown.Option('姉妹3'),
-                dropdown.Option('兄弟4'),
-                dropdown.Option('姉妹4'),
-                dropdown.Option('兄弟5'),
-                dropdown.Option('姉妹5'),
-                dropdown.Option('孫'),
-                dropdown.Option('甥'),
-                dropdown.Option('姪'),
-                dropdown.Option('養子'),
-                dropdown.Option('義兄'),
-                dropdown.Option('義弟'),
-                dropdown.Option('義姉'),
-                dropdown.Option('義妹'),
-                dropdown.Option('祖父_父'),
-                dropdown.Option('祖父_母'),
-                dropdown.Option('祖母_父'),
-                dropdown.Option('祖母_母'),
-                dropdown.Option('元夫'),
-                dropdown.Option('元妻'),
-                dropdown.Option('元妻の子'),
-                dropdown.Option('父の元妻'),
-                dropdown.Option('母の元夫'),
-                dropdown.Option('子の夫'),
-                dropdown.Option('子の妻'),
+                dropdown.Option(" "),
+                dropdown.Option("妻"),
+                dropdown.Option("夫"),
+                dropdown.Option("父"),
+                dropdown.Option("母"),
+                dropdown.Option("長男"),
+                dropdown.Option("長女"),
+                dropdown.Option("二男"),
+                dropdown.Option("二女"),
+                dropdown.Option("三男"),
+                dropdown.Option("三女"),
+                dropdown.Option("四男"),
+                dropdown.Option("四女"),
+                dropdown.Option("五男"),
+                dropdown.Option("五女"),
+                dropdown.Option("兄弟1"),
+                dropdown.Option("姉妹1"),
+                dropdown.Option("兄弟2"),
+                dropdown.Option("姉妹2"),
+                dropdown.Option("兄弟3"),
+                dropdown.Option("姉妹3"),
+                dropdown.Option("兄弟4"),
+                dropdown.Option("姉妹4"),
+                dropdown.Option("兄弟5"),
+                dropdown.Option("姉妹5"),
+                dropdown.Option("孫"),
+                dropdown.Option("甥"),
+                dropdown.Option("姪"),
+                dropdown.Option("養子"),
+                dropdown.Option("義兄"),
+                dropdown.Option("義弟"),
+                dropdown.Option("義姉"),
+                dropdown.Option("義妹"),
+                dropdown.Option("祖父_父"),
+                dropdown.Option("祖父_母"),
+                dropdown.Option("祖母_父"),
+                dropdown.Option("祖母_母"),
+                dropdown.Option("元夫"),
+                dropdown.Option("元妻"),
+                dropdown.Option("元妻の子"),
+                dropdown.Option("父の元妻"),
+                dropdown.Option("母の元夫"),
+                dropdown.Option("子の夫"),
+                dropdown.Option("子の妻"),
             ],
             # on_change=self.change_relationship
         )
 
         self.relationship2 = CustomDropdown(
-            label='親の続柄',
+            label="親の続柄",
             width=130,
             options=[
-                dropdown.Option(' '),
-                dropdown.Option('父'),
-                dropdown.Option('母'),
-                dropdown.Option('長男'),
-                dropdown.Option('長女'),
-                dropdown.Option('二男'),
-                dropdown.Option('二女'),
-                dropdown.Option('三男'),
-                dropdown.Option('三女'),
-                dropdown.Option('四男'),
-                dropdown.Option('四女'),
-                dropdown.Option('五男'),
-                dropdown.Option('五女'),
-                dropdown.Option('兄弟1'),
-                dropdown.Option('姉妹1'),
-                dropdown.Option('兄弟2'),
-                dropdown.Option('姉妹2'),
-                dropdown.Option('兄弟3'),
-                dropdown.Option('姉妹3'),
-                dropdown.Option('兄弟4'),
-                dropdown.Option('姉妹4'),
-                dropdown.Option('兄弟5'),
-                dropdown.Option('姉妹5'),
+                dropdown.Option(" "),
+                dropdown.Option("父"),
+                dropdown.Option("母"),
+                dropdown.Option("長男"),
+                dropdown.Option("長女"),
+                dropdown.Option("二男"),
+                dropdown.Option("二女"),
+                dropdown.Option("三男"),
+                dropdown.Option("三女"),
+                dropdown.Option("四男"),
+                dropdown.Option("四女"),
+                dropdown.Option("五男"),
+                dropdown.Option("五女"),
+                dropdown.Option("兄弟1"),
+                dropdown.Option("姉妹1"),
+                dropdown.Option("兄弟2"),
+                dropdown.Option("姉妹2"),
+                dropdown.Option("兄弟3"),
+                dropdown.Option("姉妹3"),
+                dropdown.Option("兄弟4"),
+                dropdown.Option("姉妹4"),
+                dropdown.Option("兄弟5"),
+                dropdown.Option("姉妹5"),
             ],
-            visible=False
+            visible=False,
         )
 
         self.situation = CustomDropdown(
-            label='状態',
+            label="状態",
             width=130,
             options=[
-                dropdown.Option(' '),
-                dropdown.Option('死亡'),
-                dropdown.Option('海外居住'),
-                dropdown.Option('相続放棄'),
-                dropdown.Option('成年被後見人'),
-                dropdown.Option('相続人外')
+                dropdown.Option(" "),
+                dropdown.Option("死亡"),
+                dropdown.Option("海外居住"),
+                dropdown.Option("相続放棄"),
+                dropdown.Option("成年被後見人"),
+                dropdown.Option("相続人外"),
             ],
-            value=' ',
+            value=" ",
         )
-        self.note = CustomTextField(label='内容', width=760, multiline=True)
-        self.updated_date = CustomTextField(label='更新日', hint_text='1900/1/1', width=120,
-                                            on_blur=lambda e: utils.convert_seireki(self.updated_date.value, e))
+        self.note = CustomTextField(label="内容", width=760, multiline=True)
+        self.updated_date = CustomTextField(
+            label="更新日",
+            hint_text="1900/1/1",
+            width=120,
+            on_blur=lambda e: utils.convert_seireki(self.updated_date.value, e),
+        )
 
         self.controls = [
-            Row([self.info,]),
-            Row([self.tb_code, self.dd_code, self.b_delete, self.legal_heir,]),
+            Row(
+                [
+                    self.info,
+                ]
+            ),
+            Row(
+                [
+                    self.tb_code,
+                    self.dd_code,
+                    self.b_delete,
+                    self.legal_heir,
+                ]
+            ),
             # Row([self.tb_code, self.dd_code, self.b_delete, self.legal_heir, self.inheritance_form]),
             # Row([self.tf_heir_id, self.dd_heir_id]),
             Row([self.tb_name1, self.tb_name2]),
             # Row([self.tb_name1, self.tb_name2, self.ch_offer, self.ch_transfer]),
-            Row([self.tb_name1_huri, self.tb_name2_huri,]),
-            Row([self.relationship, self.relationship2, self.situation,]),
-            Row([self.contact_home, self.contact_phone,]),
-            Row([self.mail,]),
-            Row([self.birthday, self.deathday,]),
-            Row([self.tb_zipcode, self.tb_address1, self.tb_address2, self.tb_address3, self.tb_address4]),
+            Row(
+                [
+                    self.tb_name1_huri,
+                    self.tb_name2_huri,
+                ]
+            ),
+            Row(
+                [
+                    self.relationship,
+                    self.relationship2,
+                    self.situation,
+                ]
+            ),
+            Row(
+                [
+                    self.contact_home,
+                    self.contact_phone,
+                ]
+            ),
+            Row(
+                [
+                    self.mail,
+                ]
+            ),
+            Row(
+                [
+                    self.birthday,
+                    self.deathday,
+                ]
+            ),
+            Row(
+                [
+                    self.tb_zipcode,
+                    self.tb_address1,
+                    self.tb_address2,
+                    self.tb_address3,
+                    self.tb_address4,
+                ]
+            ),
             Row([self.tb_building]),
             Row([self.updated_date, self.note]),
             Row([self.b_Registration]),
@@ -1130,10 +1247,12 @@ class RegistrationHeir(Registration):
 
 
 class TabSearch(Registration):
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         super().__init__()
         self.spacing = 20
-        super().page.session.set("/home", self)
+        # super().page.session.set("/home", self)
 
         # self.info = Text('＜顧客情報＞', size=24)
 
@@ -1238,7 +1357,7 @@ class TabSearch(Registration):
                             self.customer_name_kana_input,
                             self.customer_name_input,
                             self.dd_progress,
-                            self.note
+                            self.note,
                         ]
                     ),
                     Row(
@@ -1248,12 +1367,7 @@ class TabSearch(Registration):
                             self.heir_tel_input,
                         ]
                     ),
-                    Row(
-                        [
-                            self.clear_bt,
-                            self.ch_contractor
-                        ]
-                    )
+                    Row([self.clear_bt, self.ch_contractor]),
                 ]
             ),
             padding=10,
@@ -1270,9 +1384,7 @@ class TabSearch(Registration):
                 DataColumn(
                     Text("Code"), heading_row_alignment=MainAxisAlignment.CENTER
                 ),
-                DataColumn(
-                    Text("状況"), heading_row_alignment=MainAxisAlignment.START
-                ),
+                DataColumn(Text("状況"), heading_row_alignment=MainAxisAlignment.START),
                 DataColumn(
                     Text("フォルダ"), heading_row_alignment=MainAxisAlignment.CENTER
                 ),
@@ -1304,6 +1416,7 @@ class TabSearch(Registration):
         )
 
         results = self.controller.get_result_view_all(page=super().page)
+        print('results:', results)
         self.customer_data_table(results)
 
         self.controls = [
@@ -1316,7 +1429,7 @@ class TabSearch(Registration):
                         text="新規顧客登録",
                         color=Colors.BLACK,
                         bgcolor=Colors.BLUE_200,
-                        on_click=lambda e: self.page.go('/customer_registration')
+                        on_click=lambda e: self.page.go("/customer_registration"),
                     ),
                     # ElevatedButton(
                     #     icon=Icons.CREATE,
@@ -1343,7 +1456,8 @@ class TabSearch(Registration):
                             # DataCell(Icon(Icons.TOUCH_APP, color=Colors.BLACK)),
                             DataCell(
                                 Container(
-                                    Text(result["code"], size=11), alignment=alignment.center
+                                    Text(result["code"], size=11),
+                                    alignment=alignment.center,
                                 ),
                                 data=result["code"],
                                 on_tap=lambda e: pyperclip.copy(e.control.data),
@@ -1366,13 +1480,13 @@ class TabSearch(Registration):
                                     Icon(Icons.FOLDER), alignment=alignment.center
                                 ),
                                 data=result["フォルダ"],
-                                on_tap=self.folder_open
+                                on_tap=self.folder_open,
                             ),
                             DataCell(
                                 Container(
                                     Text(result["被相続人"]),
                                     alignment=alignment.center_left,
-                                    width=80
+                                    width=80,
                                 ),
                                 data=result["被相続人"],
                                 on_tap=lambda e: pyperclip.copy(e.control.data),
@@ -1381,19 +1495,22 @@ class TabSearch(Registration):
                                 Container(
                                     Text(result["依頼人"]),
                                     alignment=alignment.center_left,
-                                    width=80
+                                    width=80,
                                 ),
                                 data=result["依頼人"],
                                 on_tap=lambda e: pyperclip.copy(e.control.data),
                             ),
                             DataCell(
                                 Container(
-                                    Text(result["更新日"], size=11), alignment=alignment.center
+                                    Text(result["更新日"], size=11),
+                                    alignment=alignment.center,
                                 )
                             ),
                             DataCell(
                                 Container(
-                                    Text(result["内容"], size=11, tooltip=result['内容']),
+                                    Text(
+                                        result["内容"], size=11, tooltip=result["内容"]
+                                    ),
                                     alignment=alignment.center_left,
                                 )
                             ),
@@ -1412,7 +1529,9 @@ class TabSearch(Registration):
                             ),
                             DataCell(
                                 Container(
-                                    Text(result["備考"], size=11, tooltip=result["備考"]),
+                                    Text(
+                                        result["備考"], size=11, tooltip=result["備考"]
+                                    ),
                                     alignment=alignment.center_left,
                                     # width=200
                                 )
@@ -1424,8 +1543,8 @@ class TabSearch(Registration):
         super().page.update()
 
     def folder_open(self, e):
-        folder = e.control.data.replace('/', '\\')
-        print('folder:', folder)
+        folder = e.control.data.replace("/", "\\")
+        print("folder:", folder)
         subprocess.Popen(["explorer", "/root,", folder], shell=True)
         # if os.name == 'nt':
         #     print('nt folder_open')
@@ -1436,6 +1555,11 @@ class TabSearch(Registration):
         #     folder = folder.replace('\\', '/')
         #     subprocess.call(['open', folder])
 
+
+class TabSettings(BaseView):
+    def __init__(self):
+        super().__init__()
+        
 
 class TabBank(BaseView):
     def __init__(self, show_message_callback):

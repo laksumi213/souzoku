@@ -152,5 +152,6 @@ def main():
     proc = Smbc()
     proc.balance_certificate()
 
+
 if __name__ == '__main__':
     main()
