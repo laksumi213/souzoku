@@ -19,15 +19,15 @@ class JibunBank:
         self.customer_name_kana = 'うの　まさな'
         self.heir_name = '宇野　美穂'
         self.heir_name_kana = 'うの　みほ'
-        self.bank_account_number = '1111'
-        self.branch_name = '緑園都市支店'
-        self.subjects = '普通預金'
+        self.bank_account_number = ''
+        self.branch_name = ''
+        self.subjects = ''
         self.birthday = re.findall('[0-9]+', '1958/9/18')
         self.deathday = re.findall('[0-9]+', '2025/6/27')
         self.address = '千葉県船橋市夏見台1-13-24'
         self.building = ''
-        self.heir_address = '神奈川県横浜市泉区緑園4丁目3番地1'
-        self.heir_building = 'サンステージ緑園都市東の街11番館603号'
+        self.heir_address = '千葉県船橋市夏見台1-13-24'
+        self.heir_building = ''
         self.proc = None
         self.passed_away_date = None
         zipcode = utils.get_zipcode_from_address(self.address)
@@ -36,7 +36,7 @@ class JibunBank:
 
         if os.name == 'nt':
             print('nt')
-            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（スタンダードプラン）\07.申請書類\01.残証申請書類'
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
         elif os.name == 'posix':
             print('posix')
             self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))

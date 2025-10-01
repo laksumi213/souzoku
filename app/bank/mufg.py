@@ -161,8 +161,8 @@ class Mufg:
         sleep(0.5)
 
         # 姓名
-        self.proc.driver.find_element(By.ID, 'NotifierLastName').send_keys('森町')
-        self.proc.driver.find_element(By.ID, 'NotifierFirstName').send_keys('翼')
+        self.proc.driver.find_element(By.ID, 'NotifierLastName').send_keys('行政書士法人チェスター')
+        self.proc.driver.find_element(By.ID, 'NotifierFirstName').send_keys(f'森町翼({self.code})')
         self.proc.driver.find_element(By.ID, 'NotifierLastNameKana').send_keys('モリマチ')
         self.proc.driver.find_element(By.ID, 'NotifierFirstNameKana').send_keys('ツバサ')
 
@@ -179,7 +179,7 @@ class Mufg:
         # 電話番号
         self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber11').send_keys('050')
         self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber12').send_keys('6864')
-        self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber13').send_keys('8328')
+        self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber13').send_keys('7034')
 
         # 電話番号種類
         Select(self.proc.driver.find_element(By.ID, "NotifierPhoneType1")).select_by_visible_text("勤務先")
@@ -360,41 +360,39 @@ class Mufg:
 
         if os.name == 'nt':
             print('nt')
-            output_path = r'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\G1967宇野美穂様（フルサポートプラン）\07.申請書類\01.残証申請書類'
+            output_path = r'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\G2069臼杵優子様（スタンダードプラン）\09.申請書類\01.残証申請書類'
 
         elif os.name == 'posix':
             print('posix')
             output_path = os.path.dirname(os.path.dirname(os.getcwd()))
 
         print('output_path:', output_path)
-        path1 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ_残高証明書依頼書1.pdf')
-        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ_残高証明書依頼書.pdf'), page=1, open_bool=False)
+        path1 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書1.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=5, open_bool=False)
 
 
         # 書類2
         pdf = PdfCreate("A4")
-        path2 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ_残高証明書依頼書2.pdf')
-        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ_残高証明書依頼書.pdf'), page=2, open_bool=False)
+        path2 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書2.pdf')
+        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=6, open_bool=False)
 
-        # 書類3
-        pdf = PdfCreate("A4")
-        pdf.draw_string(30, 265.5, '103', 8)
-        pdf.draw_string(46, 265.5, '0028', 8)
-        pdf.draw_string(47.5, 260, '〇', 16)
-        pdf.draw_string(31, 257, '東京', 12)
-        pdf.draw_string(65, 257, '中央区', 12)
-        pdf.draw_string(31, 248, '八重洲1-7-20  八重洲口会館2階', 12)
-        pdf.draw_string(31, 240, '行政書士法人チェスター　代表社員　清水　茜作', 10)
-        pdf.draw_string(31, 235, f'担当：森町（{self.code}）', 10)
-        path3 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ_残高証明書依頼書3.pdf')
-        pdf.pdf_save(path3, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '三菱UFJ_残高証明書依頼書.pdf'), page=3, open_bool=False)
-
-        # os.makedirs(os.path.join(self.customer[0]['フォルダパス'], '金融機関手続', '残高証明書', '申請書'), exist_ok=True)
+        # # 書類3
+        # pdf = PdfCreate("A4")
+        # pdf.draw_string(30, 265.5, '103', 8)
+        # pdf.draw_string(46, 265.5, '0028', 8)
+        # pdf.draw_string(47.5, 260, '〇', 16)
+        # pdf.draw_string(31, 257, '東京', 12)
+        # pdf.draw_string(65, 257, '中央区', 12)
+        # pdf.draw_string(31, 248, '八重洲1-7-20  八重洲口会館2階', 12)
+        # pdf.draw_string(31, 240, '行政書士法人チェスター　代表社員　清水　茜作', 10)
+        # pdf.draw_string(31, 235, f'担当：森町（{self.code}）', 10)
+        # path3 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書3.pdf')
+        # pdf.pdf_save(path3, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+        #                                  '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=3, open_bool=False)
 
         pdf.pdf_marge(
-            os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ_残高証明書依頼書.pdf'),
-            path1, path2, path3)
+            os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'),
+            path1, path2)
 
     def reservation(self):
         self.proc = Web()
@@ -423,12 +421,40 @@ class Mufg:
         # self.proc.driver.execute_script(js_script, ele)
         # print(0)
 
+    # 相続届
+    def inheritance_notification(self):
+        pdf = PdfCreate("A3")
+        pdf.draw_string(30, 150, '194', 20)
+
+        if os.name == 'nt':
+            print('nt')
+            output_path = r'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\G2069臼杵優子様（スタンダードプラン）\09.申請書類\02.解約・名変申請書類'
+
+        elif os.name == 'posix':
+            print('posix')
+            output_path = os.path.dirname(os.path.dirname(os.getcwd()))
+
+        print('output_path:', output_path)
+        path1 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_相続届1.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_相続届.pdf'), page=1, open_bool=False)
+
+
+        # 書類2
+        pdf = PdfCreate("A3")
+        path2 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_相続届2.pdf')
+        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_相続届.pdf'), page=2, open_bool=False)
+
+
+        pdf.pdf_marge(
+            os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_相続届.pdf'),
+            path1, path2)
 
 def main():
     proc = Mufg()
-    # proc.account_freezing()
+    proc.account_freezing()
     # proc.balance_certificate_create()
-    proc.reservation()
+    # proc.reservation()
+    # proc.inheritance_notification()
 
 if __name__ == '__main__':
     main()
