@@ -298,7 +298,6 @@ class CustomDropdown(DropdownM2):
         )
 
     def add_options(self, data):
-        # self.options = None
         for item in data:
             self.options.append(dropdown.Option(*item.values()))
 

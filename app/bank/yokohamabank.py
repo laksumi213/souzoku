@@ -256,6 +256,24 @@ class YokohamaBank:
         # 2ページ目　残高証明書等発行依頼書【相続用】
         pdf = PdfCreate("A4")
 
+        pdf.draw_string(58, 247, self.customer_name, 14)
+        pdf.draw_string(58, 234, f'相続人　{self.heir_name}　代理人', 12)
+        pdf.draw_string(58, 223.5, f'行政書士法人チェスター　代表社員　清水　茜作', 12)
+        pdf.draw_string(37,215, '103-0027')
+        pdf.draw_string(37, 209, f'東京都中央区八重洲1-7-20 八重洲口会館2階　担当：森町({self.code})', 12)
+
+        pdf.draw_string(67, 186.5, self.deathday[0], 12)
+        pdf.draw_string(88, 186.5, self.deathday[1], 12)
+        pdf.draw_string(105, 186.5, self.deathday[2], 12)
+
+        pdf.draw_string(38.5, 167, '✓', 14)
+
+        pdf.draw_string(129.5, 160.3, '✓', 14)  # 定期預金の経過利息
+        pdf.draw_string(129.5, 154, '✓', 14)    # 貸金庫の有無
+        pdf.draw_string(129.5, 147.2, '✓', 14)  # 金保護預りの有無
+
+        pdf.draw_string(15.5, 40, '✓', 14)
+
         path2 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_横浜銀行_残高証明書申請書2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          '横浜銀行_残高証明書申請書.pdf'), page=2, open_bool=False)
@@ -264,10 +282,12 @@ class YokohamaBank:
             os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_横浜銀行_残高証明書申請書.pdf'),
             path1, path2)
 
+
 def main():
     proc = YokohamaBank()
     # proc.account_freezing()     # メールアドレスに認証コードのみ
     proc.balance_certificate()
+
 
 if __name__ == '__main__':
     main()

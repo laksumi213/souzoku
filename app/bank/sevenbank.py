@@ -9,6 +9,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 import time
 from app.controllers.pdf_create import PdfCreate
+import os
+import mojimoji
 
 
 class Sevenbank:
@@ -24,15 +26,29 @@ class Sevenbank:
         self.address = None
         self.passed_away_date = None
 
+        if os.name == 'nt':
+            print('nt')
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
+        elif os.name == 'posix':
+            print('posix')
+            self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
 
-    def account_freezing(self):
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
-        self.bank_account_number = ''
+        self.bank_account_number = mojimoji.han_to_zen(str('').zfill(7))
+        self.branch_name = ''
+        self.subjects = ''
         self.birthday = re.findall('[0-9]+', '1958/9/18')
-        self.deathday = re.findall('[0-9]+', '2025/6/27')
         self.address = '千葉県船橋市夏見台1-13-24'
+        self.passed_away_date = re.findall('[0-9]+', '2025-06-27')
+        self.heir_name = '宇野　美穂'
+        self.heir_name_kana = 'うの　みほ'
+        self.heir_address = '千葉県船橋市夏見台1-13-24'
+        self.heir_building = ''
+
+
+    def account_freezing(self):
         pattern = '(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村)市|.+?郡(?:玉村|大町|.+?)[町村]|.+?市.+?区|.+?[市区町村])(.+)'
         address = re.findall(pattern, self.address)[0]
         print(utils.get_zipcode_from_address(address))
@@ -107,6 +123,15 @@ class Sevenbank:
     def balance_certificate(self):
         # 残高証明書等作成依頼書
         pdf = PdfCreate("A4")
+
+        pdf.draw_string(45, 169, self.customer_name, 12)
+        pdf.draw_string(45, 178, jaconv.hira2kata(self.customer_name_kana), 8)
+
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書依頼書.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'セブン銀行_残高証明書依頼書.pdf'), page=3, open_bool=True)
 
 
 def main():

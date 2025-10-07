@@ -193,7 +193,7 @@ class Sbishinseibank:
         pdf.draw_string(63, 37, f'行政書士法人チェスター　森町（{self.code}）', 12)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_SBI申請銀行_残高証明書依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_SBI新生銀行_残高証明書依頼書.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          'SBI新生銀行_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
 
