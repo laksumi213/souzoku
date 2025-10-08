@@ -11,6 +11,7 @@ import time
 from app.controllers.pdf_create import PdfCreate
 import os
 import mojimoji
+from datetime import datetime
 
 
 class Sevenbank:
@@ -18,21 +19,7 @@ class Sevenbank:
         super().__init__()
         self.deathday = None
         self.proc = None
-        self.code = None
-        self.customer_name = None
-        self.customer_name_kana = None
-        self.bank_account_number = None
-        self.birthday = None
-        self.address = None
-        self.passed_away_date = None
-
-        if os.name == 'nt':
-            print('nt')
-            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
-        elif os.name == 'posix':
-            print('posix')
-            self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
-
+        self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
@@ -46,6 +33,14 @@ class Sevenbank:
         self.heir_name_kana = 'うの　みほ'
         self.heir_address = '千葉県船橋市夏見台1-13-24'
         self.heir_building = ''
+
+        if os.name == 'nt':
+            print('nt')
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
+        elif os.name == 'posix':
+            print('posix')
+            self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
+
 
 
     def account_freezing(self):
@@ -124,15 +119,56 @@ class Sevenbank:
         # 残高証明書等作成依頼書
         pdf = PdfCreate("A4")
 
+        pdf.draw_string(45, 177, jaconv.hira2kata(self.customer_name_kana), 8)
         pdf.draw_string(45, 169, self.customer_name, 12)
-        pdf.draw_string(45, 178, jaconv.hira2kata(self.customer_name_kana), 8)
 
+        pdf.draw_string(45, 160.5, f'ｿｳｿﾞｸﾆﾝ　{mojimoji.zen_to_han(jaconv.hira2kata(self.heir_name_kana))} ﾀﾞｲﾘﾆﾝ ｷﾞｮｳｾｲｼｮｼﾎｳｼﾞﾝﾁｪｽﾀｰ ﾀﾞｲﾋｮｳｼｬｲﾝ ｼﾐｽﾞ ｾﾝｻｸ', 8)
+        pdf.draw_string(45, 155, f'相続人　{self.heir_name}　代理人', 12)
+        pdf.draw_string(45, 150, f'行政書士法人チェスター　代表社員　清水　茜作', 12)
+
+        pdf.draw_string(40, 146, '相続人', 6)
+        pdf.draw_string(40, 144, '代理人', 6)
+
+        pdf.draw_string(45, 140.5, 'ﾄｳｷｮｳﾄﾁｭｳｵｳｸﾔｴｽ1-7-20 ﾔｴｽｸﾞﾁｶｲｶﾝ2ｶｲ ﾀﾝﾄｳ:ﾓﾘﾏﾁ', 8)
+
+        pdf.draw_string(35, 136, '1 0  3    0  0  2  8', 8)
+        pdf.draw_string(37, 127, '東京', 12)
+        pdf.draw_string(49.6, 130.4, '〇', 12)
+        pdf.draw_string(64, 133, '中央区八重洲一丁目7-20 八重洲口会館2階')
+        pdf.draw_string(64, 127, f'宛先　担当：森町（{self.code}）')
+
+        pdf.draw_string(44, 117, '050', 12)
+        pdf.draw_string(59, 117, '6864', 12)
+        pdf.draw_string(77, 117, '7034', 12)
+
+        pdf.draw_string(26, 81, self.passed_away_date[0][2:4])
+        pdf.draw_string(38, 81, self.passed_away_date[1])
+        pdf.draw_string(51, 81, self.passed_away_date[2])
+
+        pdf.draw_string(102, 82, 1, 14)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書依頼書.pdf')
+             f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書依頼書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          'セブン銀行_残高証明書依頼書.pdf'), page=3, open_bool=True)
 
+        # 経理への振込依頼時の添付ファイル
+        pdf = PdfCreate("A4")
+        path2 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書依頼書1_{self.date[0]}{self.date[2]}{self.date[2]}.pdf')
+        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'セブン銀行_残高証明書依頼書.pdf'), page=1, open_bool=False)
+
+        pdf = PdfCreate("A4")
+        pdf.draw_string(70, 143, f'「故　{self.customer_name}さま　代理人　行政書士法人チェスター　代表社員　清水　茜作」')
+        path3 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書依頼書2_{self.date[0]}{self.date[2]}{self.date[2]}.pdf')
+        pdf.pdf_save(path3, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'セブン銀行_残高証明書依頼書.pdf'), page=2, open_bool=False)
+        pdf.pdf_marge(
+            os.path.join(self.output_path,
+                         f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書の振込情報（経理用）.pdf'),
+            path2, path3)
 
 def main():
     proc = Sevenbank()

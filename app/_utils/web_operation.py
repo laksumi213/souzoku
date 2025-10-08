@@ -97,7 +97,9 @@ class Web:
             print('self.driver.title:', self.driver.title)
             if self.driver.current_url == url:
                 print('url:', url)
-
+                # Web.driver = self.driver
+                # a = Web.driver.find_element(By.NAME, 'firstNmKn')
+                # a.send_keys('22')
 
 
                 # # CSSセレクタを使って、type="checkbox"のすべての<input>要素を取得

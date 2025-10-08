@@ -10,21 +10,21 @@ class JpBank:
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2069'
-        self.customer_name = '鈴木　幡雄'
-        self.customer_name_kana = 'すずき　はたお'
-        self.heir_name = '臼杵　優子'
-        self.heir_name_kana = 'うすき　ゆうこ'
+        self.code = 'G2103'
+        self.customer_name = '水谷　弘'
+        self.customer_name_kana = 'みずたに　ひろし'
+        self.heir_name = '水谷　昌代'
+        self.heir_name_kana = 'みずたに　まさよ'
         self.bank_account_number = ''
         self.subjects = '通常貯金'
-        self.birthday = '1927/12/1'
-        self.deathday = '2025-05-26'
-        self.address = '東京都目黒区中町2丁目38番21号'
-        self.heir_address = '東京都目黒区中町2丁目38番21号'
+        self.birthday = '1935/1/12'
+        self.deathday = '2025/5/16'
+        self.address = '東京都中央区晴海2丁目5番16-1101号'
+        self.heir_address = '東京都中央区晴海2丁目5番16-1101号'
 
         if os.name == 'nt':
             print('nt')
-            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（スタンダードプラン）\07.申請書類\01.残証申請書類'
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（スタンダードプラン）\09.申請書類\01.残証申請書類'
         elif os.name == 'posix':
             print('posix')
             self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))

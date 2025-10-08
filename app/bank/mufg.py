@@ -17,18 +17,20 @@ class Mufg:
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2069'
-        self.customer_name = '鈴木　幡雄'
-        self.customer_name_kana = 'すずき　はたお'
-        self.heir_name = '臼杵　優子'
-        self.heir_name_kana = 'うすき　ゆうこ'
-        # self.bank_store_number = '352'
-        self.branch_name = '渋谷明治通支店'
-        self.bank_account_number = '3159175'
+        self.code = 'G2103'
+        self.customer_name = '水谷　弘'
+        self.customer_name_kana = 'みずたに　ひろし'
+        self.bank_account_number = str('1149170').zfill(7)
+        self.branch_name = '京橋'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1927/12/1')
-        self.deathday = re.findall('[0-9]+', '2025-05-26')
-        self.address = '東京都目黒区中町2丁目38番21号'
+        self.birthday = re.findall('[0-9]+', '1935/1/12')
+        self.address = '東京都中央区晴海2丁目5番16'
+        self.building = '1101号'
+        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
+        self.heir_name = '水谷　昌代'
+        self.heir_name_kana = 'みずたに　まさよ'
+        self.heir_address = '東京都中央区晴海二丁目5番16'
+        self.heir_building = '1101号'
 
         zipcode = utils.get_zipcode_from_address(self.address)
         self.zipcode = re.findall('[0-9]+', zipcode)
@@ -117,11 +119,11 @@ class Mufg:
         sleep(0.1)
 
         # 死亡日
-        Select(self.proc.driver.find_element(By.ID, "InheriteeDateOfDeathYear")).select_by_visible_text(self.deathday[0] + '年')
+        Select(self.proc.driver.find_element(By.ID, "InheriteeDateOfDeathYear")).select_by_visible_text(self.passed_away_date[0] + '年')
         sleep(0.1)
-        Select(self.proc.driver.find_element(By.ID, "InheriteeDateOfDeathMonth")).select_by_visible_text(f"{int(self.deathday[1])}月")
+        Select(self.proc.driver.find_element(By.ID, "InheriteeDateOfDeathMonth")).select_by_visible_text(f"{int(self.passed_away_date[1])}月")
         sleep(0.1)
-        Select(self.proc.driver.find_element(By.ID, "InheriteeDateOfDeathDay")).select_by_visible_text(f"{int(self.deathday[2])}日")
+        Select(self.proc.driver.find_element(By.ID, "InheriteeDateOfDeathDay")).select_by_visible_text(f"{int(self.passed_away_date[2])}日")
         sleep(0.1)
 
         # 金融機関
