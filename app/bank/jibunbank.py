@@ -9,6 +9,7 @@ import app.utils as utils
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 import time
+from datetime import datetime
 
 
 class JibunBank:
@@ -33,6 +34,7 @@ class JibunBank:
         zipcode = utils.get_zipcode_from_address(self.address)
         self.zipcode = re.findall('[0-9]+', zipcode)
         print('self.zipcode:', self.zipcode)
+        self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
         if os.name == 'nt':
             print('nt')
@@ -194,7 +196,7 @@ class JibunBank:
         pdf.draw_string(21.5, 127, '✓', 14)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_auじぶん銀行_残高証明書依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_auじぶん銀行_残高証明書依頼書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          'auじぶん銀行_残高証明書申請書・取引明細申請書.pdf'), page=2, open_bool=True)
 
@@ -226,10 +228,21 @@ class JibunBank:
         pdf.draw_string(89, 113.5, 1, 12)
 
         path2 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_auじぶん銀行_取引明細表発行依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_auじぶん銀行_取引明細表発行依頼書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          'auじぶん銀行_残高証明書申請書・取引明細申請書.pdf'), page=3, open_bool=True)
-
+        
+        # 経理添付ファイル
+        pdf = PdfCreate("A4")
+        pdf.draw_string(82,173, f'「〇〇〇〇〇〇」{self.heir_name}（行政書士法人チェスター 代表社員 清水 茜作）')
+        pdf.draw_line(98, 172.5, 108, 128)
+        pdf.draw_line(106, 130, 108, 128)
+        pdf.draw_line(109, 131, 108, 128)
+        path3 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir[0]}様_auじぶん銀行_振込情報_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
+        pdf.pdf_save(path3, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'auじぶん銀行_残高証明書申請書・取引明細申請書.pdf'), page=1, open_bool=True)
+        
 
 def main():
     proc = JibunBank()
