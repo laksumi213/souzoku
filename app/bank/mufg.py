@@ -7,30 +7,37 @@ import re
 from time import sleep
 from tkinter import messagebox
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import Select, WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from app.controllers.pdf_create import PdfCreate
 import os
 from pyautogui import press
+from datetime import datetime
 
 class Mufg:
     def __init__(self):
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2103'
-        self.customer_name = '水谷　弘'
-        self.customer_name_kana = 'みずたに　ひろし'
-        self.bank_account_number = str('1149170').zfill(7)
-        self.branch_name = '京橋'
+        self.code = 'G2069'
+        self.customer_name = '鈴木　幡雄'
+        self.customer_name_kana = 'すずき　はたお'
+        self.bank_account_number = '3159175'
+        if self.bank_account_number:
+            self.bank_account_number = str(self.bank_account_number).zfill(7)
+        self.branch_name = '渋谷明治通支店'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1935/1/12')
-        self.address = '東京都中央区晴海2丁目5番16'
-        self.building = '1101号'
-        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
-        self.heir_name = '水谷　昌代'
-        self.heir_name_kana = 'みずたに　まさよ'
-        self.heir_address = '東京都中央区晴海二丁目5番16'
-        self.heir_building = '1101号'
+        self.birthday = re.findall('[0-9]+', '1927/12/1')
+        self.address = '東京都目黒区中町2丁目38番21号'
+        self.building = ''
+        self.passed_away_date = re.findall('[0-9]+', '2025/5/26')
+        self.deathday = re.findall('[0-9]+' ,utils.convert_to_wareki2('2025/5/26'))
+        self.heir_name = '臼杵　優子'
+        self.heir_name_kana = 'うすき　ゆうこ'
+        self.heir_address = '東京都世田谷区若林1丁目2番20号'
+        self.heir_building = ''
+
+        self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
         zipcode = utils.get_zipcode_from_address(self.address)
         self.zipcode = re.findall('[0-9]+', zipcode)
@@ -239,17 +246,26 @@ class Mufg:
 
         pdf.draw_string(30, 265.5, '103', 8)
         pdf.draw_string(46, 265.5, '0028', 8)
-        pdf.draw_string(47.5, 260, '〇', 15)
+        pdf.draw_string(47, 260.2, '〇', 15)
         pdf.draw_string(31, 257, '東京', 12)
         pdf.draw_string(65, 257, '中央区', 12)
         pdf.draw_string(31, 248, '八重洲1-7-20  八重洲口会館2階', 12)
-        pdf.draw_string(135, 258, '050', 10)
-        pdf.draw_string(135, 250, '6864', 10)
-        pdf.draw_string(156, 250, '7034', 10)
+        pdf.draw_string(135, 249, '050', 10)
+        pdf.draw_string(135, 240, '6864', 10)
+        pdf.draw_string(154, 240, '7034', 10)
         pdf.draw_string(26, 240, f'被相続人　{self.customer_name}　相続人　{self.heir_name}')
         pdf.draw_string(26, 235, '代理人　行政書士法人チェスター　代表社員　清水　茜作')
 
-        pdf.draw_string(150, 235, self.customer_name, 12)
+        pdf.draw_string(53, 220, self.customer_name, 12)
+
+        # 証明日
+        deathday = self.deathday
+        pdf.draw_string(37.5, 193.5, str(deathday[0]).zfill(2)[0], 12)
+        pdf.draw_string(43.5, 193.5, str(deathday[0]).zfill(2)[1], 12)
+        pdf.draw_string(37+18.5, 193.5, str(deathday[1]).zfill(2)[0], 12)
+        pdf.draw_string(37+25, 193.5, str(deathday[1]).zfill(2)[1], 12)
+        pdf.draw_string(37+37, 193.5, str(deathday[2]).zfill(2)[0], 12)
+        pdf.draw_string(37+43.5, 193.5, str(deathday[2]).zfill(2)[1], 12)
 
         ### 残高証明書 ###
         rec_row = []
@@ -262,31 +278,31 @@ class Mufg:
 
         i = 0
         bool = 0
-        pdf.draw_string(9, (215 - i * 7), str(branch_code).zfill(3)[0], 11)
-        pdf.draw_string(16, (215 - i * 7), str(branch_code).zfill(3)[1], 11)
-        pdf.draw_string(24, (215 - i * 7), str(branch_code).zfill(3)[2], 11)
+        pdf.draw_string(9, (181 - i * 7), str(branch_code).zfill(3)[0], 11)
+        pdf.draw_string(16, (181 - i * 7), str(branch_code).zfill(3)[1], 11)
+        pdf.draw_string(24, (181 - i * 7), str(branch_code).zfill(3)[2], 11)
 
-        pdf.draw_string(30, (215 - i * 7), self.branch_name, 11)
+        pdf.draw_string(30, (181 - i * 7), self.branch_name.replace('支店', ''), 11)
 
         if '普通' in self.subjects:
-            pdf.draw_string(71, (217 - i * 7), '✓', 10)
+            pdf.draw_string(73.3, (183.2 - i * 7), '✓', 10)
         else:
-            pdf.draw_string(71, (214 - i * 7), '✓', 10)
-            pdf.draw_string(85, (214.5 - i * 7), self.subjects.replace('預金', ''), 8)
+            pdf.draw_string(71, (178 - i * 7), '✓', 10)
+            pdf.draw_string(85, (178.5 - i * 7), self.subjects.replace('預金', ''), 8)
 
         if '定期' in self.subjects:
             bool = 1
             rec_row.append(i)
 
-        pdf.draw_string(114, (215 - i * 7), str(self.bank_account_number).zfill(7)[0], 11)
-        pdf.draw_string(122, (215 - i * 7), str(self.bank_account_number).zfill(7)[1], 11)
-        pdf.draw_string(130, (215 - i * 7), str(self.bank_account_number).zfill(7)[2], 11)
-        pdf.draw_string(138, (215 - i * 7), str(self.bank_account_number).zfill(7)[3], 11)
-        pdf.draw_string(145.5, (215 - i * 7), str(self.bank_account_number).zfill(7)[4], 11)
-        pdf.draw_string(153, (215 - i * 7), str(self.bank_account_number).zfill(7)[5], 11)
-        pdf.draw_string(161, (215 - i * 7), str(self.bank_account_number).zfill(7)[6], 11)
+        pdf.draw_string(122, (182 - i * 7), str(self.bank_account_number).zfill(7)[0], 11)
+        pdf.draw_string(130, (182 - i * 7), str(self.bank_account_number).zfill(7)[1], 11)
+        pdf.draw_string(138, (182 - i * 7), str(self.bank_account_number).zfill(7)[2], 11)
+        pdf.draw_string(145.5, (182 - i * 7), str(self.bank_account_number).zfill(7)[3], 11)
+        pdf.draw_string(153, (182 - i * 7), str(self.bank_account_number).zfill(7)[4], 11)
+        pdf.draw_string(161, (182 - i * 7), str(self.bank_account_number).zfill(7)[5], 11)
+        pdf.draw_string(169, (182 - i * 7), str(self.bank_account_number).zfill(7)[6], 11)
 
-        pdf.draw_string(192, (215 - i * 7), '1', 11)
+        pdf.draw_string(192, (182 - i * 7), '1', 11)
 
         # bool = 0
         # rec_row = []
@@ -321,44 +337,37 @@ class Mufg:
         ### 経過利息 ###
         if bool == 1:
             deathday = re.findall('[0-9]+', utils.convert_to_wareki2(self.deathday))
-            pdf.draw_string(40, 89, str(deathday[0]).zfill(2)[0], 12)
-            pdf.draw_string(46, 89, str(deathday[0]).zfill(2)[1], 12)
-            pdf.draw_string(58, 89, str(deathday[1]).zfill(2)[0], 12)
-            pdf.draw_string(65, 89, str(deathday[1]).zfill(2)[1], 12)
-            pdf.draw_string(77, 89, str(deathday[2]).zfill(2)[0], 12)
-            pdf.draw_string(82, 89, str(deathday[2]).zfill(2)[1], 12)
+            pdf.draw_string(40, 137, str(deathday[0]).zfill(2)[0], 12)
+            pdf.draw_string(46, 137, str(deathday[0]).zfill(2)[1], 12)
+            pdf.draw_string(58, 137, str(deathday[1]).zfill(2)[0], 12)
+            pdf.draw_string(65, 137, str(deathday[1]).zfill(2)[1], 12)
+            pdf.draw_string(77, 137, str(deathday[2]).zfill(2)[0], 12)
+            pdf.draw_string(82, 137, str(deathday[2]).zfill(2)[1], 12)
 
         for i, rec in enumerate(rec_row):
-            pdf.draw_string(9, (170 - i * 7), str(branch_code).zfill(3)[0], 11)
-            pdf.draw_string(16, (170 - i * 7), str(branch_code).zfill(3)[1], 11)
-            pdf.draw_string(24, (170 - i * 7), str(branch_code).zfill(3)[2], 11)
+            pdf.draw_string(9, (123 - i * 7), str(branch_code).zfill(3)[0], 11)
+            pdf.draw_string(16, (123 - i * 7), str(branch_code).zfill(3)[1], 11)
+            pdf.draw_string(24, (123 - i * 7), str(branch_code).zfill(3)[2], 11)
 
-            pdf.draw_string(35, (170 - i * 7), self.branch_name, 11)
-            pdf.draw_string(80, (170 - i * 7), self.subjects.replace('預金', ''), 11)
+            pdf.draw_string(35, (123 - i * 7), self.branch_name, 11)
+            pdf.draw_string(80, (123 - i * 7), self.subjects.replace('預金', ''), 11)
 
-            pdf.draw_string(114, (170 - i * 7), str(self.bank_account_number).zfill(7)[0], 11)
-            pdf.draw_string(122, (170 - i * 7), str(self.bank_account_number).zfill(7)[1], 11)
-            pdf.draw_string(130, (170 - i * 7), str(self.bank_account_number).zfill(7)[2], 11)
-            pdf.draw_string(138, (170 - i * 7), str(self.bank_account_number).zfill(7)[3], 11)
-            pdf.draw_string(145.5, (170 - i * 7), str(self.bank_account_number).zfill(7)[4], 11)
-            pdf.draw_string(153, (170 - i * 7), str(self.bank_account_number).zfill(7)[5], 11)
-            pdf.draw_string(161, (170 - i * 7), str(self.bank_account_number).zfill(7)[6], 11)
+            pdf.draw_string(114, (123 - i * 7), str(self.bank_account_number).zfill(7)[0], 11)
+            pdf.draw_string(122, (123 - i * 7), str(self.bank_account_number).zfill(7)[1], 11)
+            pdf.draw_string(130, (123 - i * 7), str(self.bank_account_number).zfill(7)[2], 11)
+            pdf.draw_string(138, (123 - i * 7), str(self.bank_account_number).zfill(7)[3], 11)
+            pdf.draw_string(145.5, (123 - i * 7), str(self.bank_account_number).zfill(7)[4], 11)
+            pdf.draw_string(153, (123 - i * 7), str(self.bank_account_number).zfill(7)[5], 11)
+            pdf.draw_string(161, (123 - i * 7), str(self.bank_account_number).zfill(7)[6], 11)
 
-            pdf.draw_string(166, (172 - i * 7), '✓', 10)
-            pdf.draw_string(194, (172 - i * 7), '1', 8)
+            pdf.draw_string(166, (125 - i * 7), '✓', 10)
+            pdf.draw_string(194, (125 - i * 7), '1', 8)
             # bool = 0
 
-        ### 証明日 ###
-        deathday = re.findall('[0-9]+', utils.convert_to_wareki2(self.deathday))
-        pdf.draw_string(40, 102, str(self.deathday[0]).zfill(2)[0], 12)
-        pdf.draw_string(46, 102, str(self.deathday[0]).zfill(2)[1], 12)
-        pdf.draw_string(58, 102, str(self.deathday[1]).zfill(2)[0], 12)
-        pdf.draw_string(65, 102, str(self.deathday[1]).zfill(2)[1], 12)
-        pdf.draw_string(77, 102, str(self.deathday[2]).zfill(2)[0], 12)
-        pdf.draw_string(82, 102, str(self.deathday[2]).zfill(2)[1], 12)
+
 
         ### 受取方法 ###
-        pdf.draw_string(22, 53, '✓', 8)
+        # pdf.draw_string(22, 53, '✓', 8)
 
         if os.name == 'nt':
             print('nt')
@@ -375,6 +384,15 @@ class Mufg:
 
         # 書類2
         pdf = PdfCreate("A4")
+        pdf.draw_string(30, 265.5, '103', 8)
+        pdf.draw_string(46, 265.5, '0028', 8)
+        pdf.draw_string(47.3, 259.8, '〇', 15)
+        pdf.draw_string(31, 257, '東京', 12)
+        pdf.draw_string(65, 257, '中央区', 12)
+        pdf.draw_string(31, 248, '八重洲1-7-20  八重洲口会館2階', 12)
+        pdf.draw_string(26, 241, f'被相続人　{self.customer_name}　相続人　{self.heir_name}')
+        pdf.draw_string(26, 236, '代理人　行政書士法人チェスター　代表社員　清水　茜作')
+        pdf.draw_string(26, 231.5, f'担当：森町（{self.code}）')
         path2 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=6, open_bool=False)
 
@@ -393,35 +411,77 @@ class Mufg:
         #                                  '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=3, open_bool=False)
 
         pdf.pdf_marge(
-            os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'),
+            os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path1, path2)
 
     def reservation(self):
         self.proc = Web()
-        url = 'https://airrsv.net/AKR5556562249/calendar'
+        # 新丸の内支店（徒歩１０分）
+        url = 'https://airrsv.net/AKR2137240529/calendar'
         self.proc.web_open(url)
-        # self.proc.web_operation(url)
-        ele = self.proc.driver.find_element(By.XPATH, '//*[@id="menuCategorizeTitle"]')
-        self.proc.driver.execute_script("arguments[0].click();", ele)
-        sleep(.5)
-        press('tab', presses=7)
-        press('enter')
-        self.proc.driver.execute_script("arguments[0].scrollIntoView();", ele)
+        messagebox.showinfo("待機中", "「予約するボタンを押下後」にOKボタンをクリックしてください。")
+        self.proc.web_operation(self.proc.driver.current_url)
+        self.proc.driver.implicitly_wait(10)
+        # フォームの存在を確認
+        WebDriverWait(self.proc.driver, 10).until(
+            EC.presence_of_element_located((By.ID, "frontStaffBookingEditForm"))
+        )
 
-        # self.proc.driver.execute_script("arguments[0].textContent = arguments[1];", ele,
-        #                                 '相続関連のお手続き（相続届・残高証明書）：相続発生のご連絡がお済みのお客さまがご予約の対象です')
-        #
-        # sleep(3)
-        # # JavaScriptコード
-        # js_script = """
-        # var element = arguments[0];
-        # var event = new Event('blur', { bubbles: true });
-        # element.dispatchEvent(event);
-        # """
-        #
-        # # 実行
-        # self.proc.driver.execute_script(js_script, ele)
-        # print(0)
+        # --- 1. ご予約者様情報の入力 (必須) ---
+
+        # フリガナ（セイ）(name="lastNmKn")
+        self.proc.driver.find_element(By.NAME, "lastNmKn").send_keys('ギョウセイショシホウジンチェスター　モリマチ')
+
+        # フリガナ（メイ）(name="firstNmKn")
+        self.proc.driver.find_element(By.NAME, "firstNmKn").send_keys(KANA_MEI)
+
+        # 名前（姓）(name="lastNm")
+        self.proc.driver.find_element(By.NAME, "lastNm").send_keys(KANJI_SEI)
+
+        # 名前（名）(name="firstNm")
+        self.proc.driver.find_element(By.NAME, "firstNm").send_keys(KANJI_MEI)
+
+        # 電話番号 (name="tel1")
+        self.proc.driver.find_element(By.NAME, "tel1").send_keys(TEL_NUMBER)
+
+        # メールアドレス (name="mailAddress1")
+        self.proc.driver.find_element(By.NAME, "mailAddress1").send_keys(EMAIL_ADDRESS)
+
+        # メールアドレス（確認用）(name="mailAddress1ForCnfrm")
+        self.proc.driver.find_element(By.NAME, "mailAddress1ForCnfrm").send_keys(EMAIL_ADDRESS)
+
+        # --- 2. お亡くなりになった方の情報（生年月日とお客様番号）の入力 (必須) ---
+
+        # 生年月日（年）(name="birthdayYyyy")
+        Select(self.proc.driver.find_element(By.NAME, "birthdayYyyy")).select_by_value(BIRTH_YEAR)
+
+        # 生年月日（月）(name="birthdayMm")
+        Select(self.proc.driver.find_element(By.NAME, "birthdayMm")).select_by_value(BIRTH_MONTH)
+
+        # 生年月日（日）(name="birthdayDd")
+        Select(self.proc.driver.find_element(By.NAME, "birthdayDd")).select_by_value(BIRTH_DAY)
+
+        # お客様番号 (name="cstmrNo")
+        self.proc.driver.find_element(By.NAME, "cstmrNo").send_keys(CSTMR_NO)
+
+        # --- 3. 備考欄の入力 (必須) ---
+
+        # 備考欄 (name="exItem01", id="rmFreeEntry")
+        textarea_field = self.proc.driver.find_element(By.ID, "rmFreeEntry")
+        textarea_field.clear()  # 既存のテキストがあればクリア
+        textarea_field.send_keys(MEMO_DETAILS)
+
+        print("必須項目にデータを入力しました。")
+        print(f"備考欄の入力内容: {MEMO_DETAILS[:20]}...")
+
+        # --- 4. フォームの送信 ---
+
+        # 「次へ」ボタンを特定 (type="submit", class="btn is-primary")
+        # フォームの送信機能はJavaScriptに依存しているため、クリックが確実です。
+        submit_button = self.proc.driver.find_element(By.XPATH, "//button[@type='submit' and text()='次へ']")
+
+        # 実際にフォームを送信したい場合は、以下のコメントを外してください
+        # submit_button.click()
 
     # 相続届
     def inheritance_notification(self):
@@ -453,9 +513,9 @@ class Mufg:
 
 def main():
     proc = Mufg()
-    proc.account_freezing()
+    # proc.account_freezing()
     # proc.balance_certificate_create()
-    # proc.reservation()
+    proc.reservation()
     # proc.inheritance_notification()
 
 if __name__ == '__main__':

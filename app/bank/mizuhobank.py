@@ -13,25 +13,27 @@ import os
 import app.utils as utils
 from datetime import datetime
 from tkinter import messagebox
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 class Mizuhobank:
     def __init__(self):
         super().__init__()
         self.proc = None
-        self.code = 'G2103'
-        self.customer_name = '水谷　弘'
-        self.customer_name_kana = 'みずたに　ひろし'
-        self.bank_account_number = mojimoji.han_to_zen(str('1178860').zfill(7))
-        self.branch_name = '銀座中央'
+        self.code = 'G2069'
+        self.customer_name = '鈴木　幡雄'
+        self.customer_name_kana = 'すずき　はたお'
+        self.bank_account_number = mojimoji.han_to_zen(str('50089').zfill(7))
+        self.branch_name = '祐天寺支店'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1935/1/12')
-        self.address = '東京都中央区晴海'
-        self.building = '二丁目5番16-1101号'
-        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
-        self.heir_name = '水谷　昌代'
-        self.heir_name_kana = 'みずたに　まさよ'
-        self.heir_address = '東京都中央区晴海'
-        self.heir_building = '二丁目5番16-1101号'
+        self.birthday = re.findall('[0-9]+', '1927/12/1')
+        self.address = '東京都目黒区中町'
+        self.building = '2丁目38番21号'
+        self.passed_away_date = re.findall('[0-9]+', '2025/5/26')
+        self.heir_name = '臼杵　優子'
+        self.heir_name_kana = 'うすき　ゆうこ'
+        self.heir_address = '東京都世田谷区若林'
+        self.heir_building = '1丁目2番20号'
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
@@ -278,31 +280,203 @@ class Mizuhobank:
     def balance_certificate(self):
         pdf = PdfCreate("A4")
 
-        pdf.draw_string(23, 193, f'相続人　{self.heir_name}　代理人', 10)
-        pdf.draw_string(23, 188, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
+        pdf.draw_string(148, 277, self.customer_name)
 
-        pdf.draw_string(63, 55, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
-        pdf.draw_string(63, 37, f'行政書士法人チェスター　森町（{mojimoji.han_to_zen(self.code)}）', 12)
+        # pdf.draw_string(121, 252, '〇', 14)
+        pdf.draw_string(87, 267, '✓', 14)
+
+        pdf.draw_string(112, 267, '相続人代理人')
+        # pdf.draw_string(134, 252, '代理人')
+
+        pdf.draw_string(111, 260, '194', 10)
+        pdf.draw_string(127, 260, '0022', 10)
+        pdf.draw_string(104, 255, '東京都中央区八重洲一丁目7-20', 8)
+        pdf.draw_string(104, 251, '八重洲口会館2階', 8)
+        pdf.draw_string(104, 246, f'相続人　{self.heir_name}　代理人', 8)
+        # pdf.draw_string(104, 230, f'相続人　{self.heir["氏名"]}', 8)
+        pdf.draw_string(104, 242, '行政書士法人チェスター　代表社員　清水　茜作', 8)
+        pdf.draw_string(104, 238, f'担当：森町（{self.code}）', 8)
+        # pdf.draw_string(104, 227, '相続手続支援センター町田有限責任事業組合　組合員', 8)
+        # pdf.draw_string(107, 238, '株式会社プロフィット・ワン　職務執行者　大貫利一', 8)
+        # pdf.draw_string(104, 224, '株式会社プロフィット・ワン　職務執行者　大貫利一', 8)
+        pdf.draw_string(117, 234, '050', 8)
+        # pdf.draw_string(114, 215, '042', 8)
+        pdf.draw_string(131, 234, '6864', 8)
+        # pdf.draw_string(130, 215, '710', 8)
+        pdf.draw_string(148, 234, '7034', 8)
+        # pdf.draw_string(150, 215, '6178', 8)
+
+        pdf.draw_string(18, 211.5, '✓', 12)
+        # pdf.draw_string(27, 195, '✓', 8)
+
+        pdf.draw_string(63, 211.5, '1', 12)
+        # pdf.draw_string(74, 194, '1')
+
+        # pdf.draw_string(85, 208, self.customer['支店名'], 8)
+
+        # deathday = re.findall('[0-9]+', self.passed_away_date)
+        pdf.draw_string(32, 154.5, self.passed_away_date[0])
+        # pdf.draw_string(79, 123.5, deathday[0])
+        pdf.draw_string(55, 154.5, self.passed_away_date[1])
+        # pdf.draw_string(104, 123.5, deathday[1])
+        pdf.draw_string(72, 154.5, self.passed_away_date[2])
+        # pdf.draw_string(123, 123.5, deathday[2])
+
+        # 支店名
+        pdf.draw_string(85, 209.5, self.branch_name.replace('支店', ''))
+        # buf = ''
+        # for i, customer in enumerate(self.customer):
+        #     if buf != customer['支店名']:
+        #         pdf.draw_string(85 + i * 37, 209.5, customer['支店名'])
+        #     buf = customer['支店名']
+
+        # 現金払い
+        pdf.draw_string(89, 115, '✓', 12)
+
+        # pdf.draw_string(23, 193, f'相続人　{self.heir_name}　代理人', 10)
+        # pdf.draw_string(23, 188, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
+        #
+        # pdf.draw_string(63, 55, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
+        # pdf.draw_string(63, 37, f'行政書士法人チェスター　森町（{mojimoji.han_to_zen(self.code)}）', 12)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_SBI申請銀行_残高証明書依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_みずほ銀行_残高証明書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         'SBI新生銀行_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
+                                         'みずほ銀行_残高証明書.pdf'), page=1, open_bool=True)
 
-        path2 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書2.pdf')
-        pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '三菱UFJモルガン・スタンレー証券_相続に関する届出書.pdf'), page=2, open_bool=False)
+        # path2 = os.path.join(self.output_path,
+        #                      f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書2.pdf')
+        # pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+        #                                  '三菱UFJモルガン・スタンレー証券_相続に関する届出書.pdf'), page=2, open_bool=False)
+        #
+        # pdf.pdf_marge(
+        #     os.path.join(self.output_path,
+        #                  f'【{self.code}】{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書_{self.date[0]}{self.date[2]}{self.date[2]}.pdf'),
+        #     path1, path2)
 
-        pdf.pdf_marge(
-            os.path.join(self.output_path,
-                         f'【{self.code}】{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書_{self.date[0]}{self.date[2]}{self.date[2]}.pdf'),
-            path1, path2)
+    def reservation(self):
+        self.proc = Web()
+        # 京橋支店
+        url = 'https://mizuhobank.resv.jp/reserve/calendar.php?direct_id=8260&_gl=1%2A1bpqtuj%2A_gcl_au%2ANjgyMzY3NTgzLjE3NTk4MTg1ODk.%2A_ga%2AMTY5MzY1OTY1My4xNzU5ODE4NTkw%2A_ga_3D4K3DCJNB%2AczE3NjA0OTUxNDYkbzIkZzEkdDE3NjA0OTU1OTYkajQ4JGwwJGgw&x=1760495598'
+        self.proc.web_open(url)
+
+        messagebox.showinfo("待機中", "「日付選択後」にOKボタンをクリックしてください。")
+        self.proc.web_operation(self.proc.driver.current_url)
+        self.proc.driver.implicitly_wait(10)
+        WebDriverWait(self.proc.driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "reserveform"))
+        )
+
+        ## 1. 必須のチェックボックス（3項目）の操作
+        # すべての項目をチェックして同意します。これらはすべて同じ name="attr_res4[]" を持っています。
+
+        # 最初の項目: 【個人のお客さま】振込・振替・税公金・両替・印鑑確認等はご予約対象外です
+        self.proc.driver.find_element(By.XPATH,
+                                      "//*[@id='right-column']/div[1]/form/div[1]/div[2]/div[1]/label/span").click()
+
+        # 2番目の項目: 【法人・事業を営む個人・団体等のお客さま】事業性融資取引はご予約対象外です
+        self.proc.driver.find_element(By.XPATH,
+                                      '//*[@id="right-column"]/div[1]/form/div[1]/div[2]/div[2]/label/span').click()
+
+        # 3番目の項目: 独立した予約メニューがあるお取引(口座開設・相続手続など)は該当のメニューでご予約ください
+        self.proc.driver.find_element(By.XPATH,
+                                      '//*[@id="right-column"]/div[1]/form/div[1]/div[2]/div[3]/label/span').click()
+
+        # 2. テキストエリア（ご相談内容・ご希望など）の操作
+        textarea_field = self.proc.driver.find_element(By.ID, "bt_form_attr_res28")
+
+        # 既存の値をクリア（あれば）
+        textarea_field.clear()
+
+        # 新しい値を入力
+        textarea_field.send_keys(f'相続の手続き　残高証明書の発行依頼　被相続人：{self.customer_name}様　生年月日：{self.birthday[0]}年{self.birthday[1]}月{self.birthday[2]}日　口座番号：{mojimoji.zen_to_han(self.bank_account_number)}　')
+
+        ## 3. ラジオボタン（ご予約時刻を15分過ぎてもご来店されない場合...）の操作
+        # 選択肢は「確認しました」のみ (name="attr_res9", value="確認しました")
+        radio_button = self.proc.driver.find_element(By.XPATH, '//*[@id="right-column"]/div[1]/form/div[1]/div[6]/div/label/span')
+        radio_button.click()
+
+        ## 4. フォームの送信
+        # 「次へ進む」ボタンを特定 (type="submit", value="次へ進む")
+        self.proc.driver.find_element(By.NAME, 'submit').click()
+
+        sleep(2)
+        self.proc.web_operation(self.proc.driver.current_url)
+        self.proc.driver.implicitly_wait(10)
+        # フォームが表示されるのを待つ
+        WebDriverWait(self.proc.driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "form1"))
+        )
+
+        # --- 1. 必須フィールドの操作 ---
+
+        # お名前／法人名【漢字】 (name="cus_name")
+        self.proc.driver.find_element(By.NAME, "cus_name").send_keys('行政書士法人チェスター')
+
+        # お名前／法人名【全角カナ】 (name="cus_kana")
+        self.proc.driver.find_element(By.NAME, "cus_kana").send_keys('ギョウセイショシホウジンチェスター')
+
+        # （法人・任意団体のお客さま）ご来店者のお名前【漢字】
+        self.proc.driver.find_element(By.NAME, "attr_org1").send_keys(f'森町　翼（{self.code}）')
+
+        # （法人・任意団体のお客さま）ご来店者のお名前【全角カナ】
+        self.proc.driver.find_element(By.NAME, "attr_org2").send_keys('モリマチ　ツバサ')
+
+        # 電話番号 (name="cus_tel")
+        self.proc.driver.find_element(By.NAME, "cus_tel").send_keys('05068647034')
+
+        # 連絡がつきやすい時間帯　いつでも
+        self.proc.driver.find_element(By.XPATH, "//*[@id='right-column']/div[1]/form/div[1]/div[12]/div[1]/label/span").click()
+
+        # メールアドレス (name="cus_mail")
+        self.proc.driver.find_element(By.NAME, "cus_mail").send_keys('t.morimachi_gy@chester-tax.com')
+
+        # 生年月日 (年/月/日) ※設立年月日または今日の日付
+        Select(self.proc.driver.find_element(By.ID, "bt_form_cus_birthy")).select_by_value(self.date[0])
+        Select(self.proc.driver.find_element(By.ID, "bt_form_cus_birthm")).select_by_value(self.date[1])
+        Select(self.proc.driver.find_element(By.ID, "bt_form_cus_birthd")).select_by_value(self.date[2])
+
+        # 郵便番号
+        self.proc.driver.find_element(By.NAME, 'cus_zip').send_keys('1030028')
+        self.proc.driver.find_element(By.XPATH, '//*[@id="right-column"]/div[1]/form/div[1]/div[18]/input[2]').click()
+        sleep(1)
+
+        # 市区町村・番地
+        self.proc.driver.find_element(By.NAME, 'cus_addr1').send_keys('7-20')
+
+        # 建物名など
+        self.proc.driver.find_element(By.NAME, 'cus_addr2').send_keys('八重洲口会館2階')
+
+        # 店番号 (name="attr_org4")
+        self.proc.driver.find_element(By.NAME, "attr_org4").send_keys(0)
+
+        # 口座番号 (name="attr_org6")
+        self.proc.driver.find_element(By.NAME, "attr_org6").send_keys(0)
+
+        # ご予約時に選択いただいたメニュー... (name="attr_org8") - ラジオボタン【必須】
+        # value="確認しました" のラジオボタンを選択
+        self.proc.driver.find_element(By.XPATH, '//*[@id="right-column"]/div[1]/form/div[1]/div[34]/div/label/span').click()
+
+        # 「お客さまの個人情報の利用目的」を確認し同意します。 (name="attr_org9[]") - チェックボックス【必須】
+        # value="「お客さまの個人情報の利用目的」を確認し同意します。" のチェックボックスを選択
+        self.proc.driver.find_element(By.XPATH,
+                            '//*[@id="right-column"]/div[1]/form/div[1]/div[36]/div/label/span').click()
+
+        # メールマガジンの配信を希望しない
+        self.proc.driver.find_element(By.XPATH,
+                                      '//*[@id="right-column"]/div[1]/form/div[1]/div[38]/div[2]/label/span').click()
+
+        # --- 3. フォームの送信 ---
+
+        # 「次へ進む」ボタンを特定 (type="submit", value="次へ進む")
+        self.proc.driver.find_element(By.NAME, "submit").click()
+
 
 if __name__ == '__main__':
     cl = Mizuhobank()
-    cl.account_freezing()
+    # cl.account_freezing()
     # cl.balance_certificate()
     # cl.inheritance_notification_create()
+    cl.reservation()    # 来店予約
 
 

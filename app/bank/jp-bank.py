@@ -4,23 +4,26 @@ import jaconv
 import re
 from app.controllers.pdf_create import PdfCreate
 import os
+from datetime import datetime
 
 class JpBank:
     def __init__(self):
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2103'
-        self.customer_name = '水谷　弘'
-        self.customer_name_kana = 'みずたに　ひろし'
-        self.heir_name = '水谷　昌代'
-        self.heir_name_kana = 'みずたに　まさよ'
-        self.bank_account_number = ''
+        self.code = 'G2069'
+        self.customer_name = '鈴木　幡雄'
+        self.customer_name_kana = 'すずき　はたお'
+        self.heir_name = '臼杵　優子'
+        self.heir_name_kana = 'うすき　ゆうこ'
+        self.bank_account_number = '10150-18288791'
         self.subjects = '通常貯金'
-        self.birthday = '1935/1/12'
-        self.deathday = '2025/5/16'
-        self.address = '東京都中央区晴海2丁目5番16-1101号'
-        self.heir_address = '東京都中央区晴海2丁目5番16-1101号'
+        self.birthday = '1927/12/1'
+        self.deathday = '2025/5/26'
+        self.address = '東京都目黒区中町2丁目38番21号'
+        self.heir_address = '東京都世田谷区若林1丁目2番20号'
+
+        self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
         if os.name == 'nt':
             print('nt')
@@ -167,29 +170,29 @@ class JpBank:
         pdf.draw_string(75, 70, self.zipcode_heir[6], 12)
         pdf.draw_string(81, 70, self.zipcode_heir[7], 12)
 
-        pdf.draw_string(91, 70, self.address_pattern[0][:len(self.address_pattern[0]) - 1], 10)
-        if self.address_pattern[0][-1] == '都':
+        pdf.draw_string(91, 70, self.heir_address_pattern[0][:len(self.heir_address_pattern[0]) - 1], 10)
+        if self.heir_address_pattern[0][-1] == '都':
             pdf.draw_string(106.5, 71.5, '〇', 10)
-        elif self.address_pattern[0][-1] == '道':
+        elif self.heir_address_pattern[0][-1] == '道':
             pdf.draw_string(109.5, 71.5, '〇', 10)
-        elif self.address_pattern[0][-1] == '府':
+        elif self.heir_address_pattern[0][-1] == '府':
             pdf.draw_string(106.5, 68.5, '〇', 10)
-        elif self.address_pattern[0][-1] == '県':
+        elif self.heir_address_pattern[0][-1] == '県':
             pdf.draw_string(109.5, 68.5, '〇', 10)
 
-        if not self.address_pattern[1][-1] == '町':
-            pdf.draw_string(115, 70, self.address_pattern[1][:len(self.address_pattern[1]) - 1])
+        if not self.heir_address_pattern[1][-1] == '町':
+            pdf.draw_string(115, 70, self.heir_address_pattern[1][:len(self.heir_address_pattern[1]) - 1])
         else:
-            pdf.draw_string(115, 70, self.address_pattern[1])
+            pdf.draw_string(115, 70, self.heir_address_pattern[1])
 
-        if self.address_pattern[1][-1] == '市':
+        if self.heir_address_pattern[1][-1] == '市':
             pdf.draw_string(134, 73, '〇', 10)
-        elif self.address_pattern[1][-1] == '区':
+        elif self.heir_address_pattern[1][-1] == '区':
             pdf.draw_string(134, 70, '〇', 10)
-        elif self.address_pattern[1][-1] == '郡':
+        elif self.heir_address_pattern[1][-1] == '郡':
             pdf.draw_string(134, 67, '〇', 10)
 
-        pdf.draw_string(42, 61, self.address_pattern[2])
+        pdf.draw_string(42, 61, self.heir_address_pattern[2])
 
         # 相続人氏名
         pdf.draw_string(42, 52, jaconv.hira2kata(self.heir_kana[0]), 12)
@@ -283,6 +286,149 @@ class JpBank:
         pdf.pdf_marge(
             os.path.join(self.output_path, f'【{self.code}】{self.heir[0]}様_ゆうちょ_相続確認表.pdf'),
             path1, path2, path3)
+
+        # 貯金等照会書
+        pdf = PdfCreate("A4")
+
+        pdf.draw_string(52, 223, '行政書士法人チェスター', 12)
+        # pdf.draw_string(48, 143, '✓', 12)
+
+        pdf.draw_string(19.5, 201, '✓', 8)
+        pdf.draw_string(51, 167,
+                        f'{jaconv.hira2kata(self.customer_name_kana)}')
+        pdf.draw_string(51, 154, f'{self.customer_name}', 12)
+
+        # 旧姓
+        # pdf.draw_string(143, 167, jaconv.hira2kata(self.customer["旧姓_ふりがな"]))
+        # pdf.draw_string(143, 154, self.customer["旧姓"], 12)
+        # if not self.customer['旧姓'] == '':
+        #     pdf.draw_string(143, 167, jaconv.hira2kata(self.customer['旧姓_ふりがな']))
+        #     pdf.draw_string(143, 154, self.customer['旧姓'], 12)
+
+        pdf.draw_string(49, 144, '✓', 12)
+        customer_birthday = re.findall('[0-9]+', self.birthday)
+        pdf.draw_string(136, 144, customer_birthday[0][0])
+        pdf.draw_string(141, 144, customer_birthday[0][1])
+        pdf.draw_string(147.5, 144, customer_birthday[0][2])
+        pdf.draw_string(152, 144, customer_birthday[0][3])
+        pdf.draw_string(164, 144, str(customer_birthday[1]).zfill(2)[0])
+        pdf.draw_string(169, 144, str(customer_birthday[1]).zfill(2)[1])
+        pdf.draw_string(181, 144, str(customer_birthday[2]).zfill(2)[0])
+        pdf.draw_string(186, 144, str(customer_birthday[2]).zfill(2)[1])
+
+        # 郵便番号
+        customer_zipcode = self.zipcode
+        pdf.draw_string(53, 132.5, customer_zipcode[0][0])
+        pdf.draw_string(58, 132.5, customer_zipcode[0][1])
+        pdf.draw_string(64, 132.5, customer_zipcode[0][2])
+        pdf.draw_string(75, 132.5, customer_zipcode[1][0])
+        pdf.draw_string(81, 132.5, customer_zipcode[1][1])
+        pdf.draw_string(87, 132.5, customer_zipcode[1][2])
+        pdf.draw_string(92, 132.5, customer_zipcode[1][3])
+
+        # 連絡先
+
+        # 住所
+        pdf.draw_string(49, 122, self.address_pattern[0][:len(self.address_pattern[0]) - 1], 12)
+        if self.address_pattern[0][-1] == '都':
+            pdf.draw_string(68, 124, '✓')
+        elif self.address_pattern[0][-1] == '道':
+            pdf.draw_string(78, 124, '✓')
+        elif self.address_pattern[0][-1] == '府':
+            pdf.draw_string(68, 118, '✓')
+        elif self.address_pattern[0][-1] == '県':
+            pdf.draw_string(78, 118, '✓')
+        pdf.draw_string(92, 122, self.address_pattern[1] + self.address_pattern[2], 12)
+
+        # 旧住所
+        # if self.customer['旧住所1']:
+        #     prefectures = re.match('東京都|北海道|(?:京都|大阪)府|.{2,3}県', self.customer['旧住所1']).group()
+        #     city = self.customer['旧住所1'].replace(prefectures, '')
+        #     pdf.draw_string(49, 96, prefectures[0:len(prefectures) - 1], 12)
+        #     if prefectures[-1] == '都':
+        #         pdf.draw_string(69, 99, '✓')
+        #     elif prefectures[-1] == '道':
+        #         pdf.draw_string(78, 99, '✓')
+        #     elif prefectures[-1] == '府':
+        #         pdf.draw_string(69, 93.5, '✓')
+        #     elif prefectures[-1] == '県':
+        #         pdf.draw_string(78, 93.5, '✓')
+        #     pdf.draw_string(92, 96, city, 12)
+
+        # if self.customer['旧住所2']:
+        #     pdf.draw_string(49, 69,
+        #                     re.match('東京都|北海道|(?:京都|大阪)府|.{2,3}県', self.customer['旧住所2']).group(), 12)
+        #     pdf.draw_string(92, 69, str(self.customer['旧住所2']).replace(
+        #         re.match('東京都|北海道|(?:京都|大阪)府|.{2,3}県', self.customer['旧住所1']).group(), ''), 12)
+        #
+        # if self.customer['旧住所3']:
+        #     pdf.draw_string(49, 45,
+        #                     re.match('東京都|北海道|(?:京都|大阪)府|.{2,3}県', self.customer['旧住所3']).group(), 12)
+        #     pdf.draw_string(92, 45, str(self.customer['旧住所2']).replace(
+        #         re.match('東京都|北海道|(?:京都|大阪)府|.{2,3}県', self.customer['旧住所3']).group(), ''), 12)
+
+
+        # if self.customer[15] == '-':
+        #     pdf.draw_string(92, 122, self.customer[12] + self.customer[13] + self.customer[14], 12)
+        # else:
+        #     pdf.draw_string(92, 122,
+        #                   self.customer[12] + self.customer[13] + self.customer[14] + self.customer[15], 12)
+
+        # 調査対象項目
+        pdf.draw_string(49, 37, '✓')
+        pdf.draw_string(72, 37, '✓')
+        pdf.draw_string(151, 37, '✓')
+        pdf.draw_string(49, 30.5, '✓')
+        pdf.draw_string(72, 30.5, '✓')
+        pdf.draw_string(93, 30.5, '✓')  # その他
+        pdf.draw_string(115, 31.5, '財形、積立、民営化前郵便貯金')
+
+        path4 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_ゆうちょ_貯金等照会書1.pdf')
+        pdf.pdf_save(path4, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'ゆうちょ_貯金等照会書（相続用）.pdf'), page=1, open_bool=False)
+
+
+        pdf = PdfCreate("A4")
+        pdf.draw_string(45, 264, '✓', 8)
+        pdf.draw_string(83, 264, '✓', 8)
+
+        customer_deathday = re.findall('[0-9]+', self.deathday)
+        pdf.draw_string(133, 263, customer_deathday[0][0])
+        pdf.draw_string(138, 263, customer_deathday[0][1])
+        pdf.draw_string(144, 263, customer_deathday[0][2])
+        pdf.draw_string(150, 263, customer_deathday[0][3])
+        pdf.draw_string(162, 263, str(customer_deathday[1]).zfill(2)[0])
+        pdf.draw_string(168, 263, str(customer_deathday[1]).zfill(2)[1])
+        pdf.draw_string(179, 263, str(customer_deathday[2]).zfill(2)[0])
+        pdf.draw_string(185, 263, str(customer_deathday[2]).zfill(2)[1])
+        pdf.draw_string(83, 238, '相続のため')
+        # pdf.draw_string(22, 207, '✓', 12)
+        pdf.draw_string(86, 230, '1', 12)
+
+        pdf.draw_string(92, 212, '1', 12)
+        pdf.draw_string(97.5, 212, '1', 12)
+        pdf.draw_string(104, 212, '3', 12)
+        pdf.draw_string(109, 212, '2', 12)
+        pdf.draw_string(115, 212, '0', 12)
+
+        pdf.draw_string(139, 212, '2', 12)
+        pdf.draw_string(144, 212, '3', 12)
+        pdf.draw_string(150, 212, '0', 12)
+        pdf.draw_string(156, 212, '9', 12)
+        pdf.draw_string(162, 212, '3', 12)
+        pdf.draw_string(168, 212, '3', 12)
+        pdf.draw_string(173, 212, '6', 12)
+        pdf.draw_string(178, 212, '1', 12)
+
+        pdf.draw_string(81, 202, '✓', 12)
+        path5 = os.path.join(self.output_path,
+                             f'【{self.code}】{self.heir[0]}様_ゆうちょ_貯金等照会書2.pdf')
+        pdf.pdf_save(path5, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'ゆうちょ_貯金等照会書（相続用）.pdf'), page=2, open_bool=False)
+
+        pdf.pdf_marge(
+            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_ゆうちょ_相続確認表_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
+            path4, path5)
 
 
 def main():

@@ -3,6 +3,8 @@ import jaconv
 import mojimoji
 import re
 from app._utils.web_operation import Web
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
@@ -86,7 +88,12 @@ class MizuhoSc:
         self.proc = Web()
         url = ''
         self.proc.web_open(url)
-        messagebox.showinfo("認証番号入力", "「認証番号入力後」にOKボタンをクリックしてください。")
+        messagebox.showinfo("待機中", "「日付選択後」にOKボタンをクリックしてください。")
+        self.proc.web_operation(self.proc.driver.current_url)
+        self.proc.driver.implicitly_wait(10)
+        WebDriverWait(self.proc.driver, 10).until(
+            EC.presence_of_element_located((By.NAME, ""))
+        )
 
     # 残高証明書
     def balance_certificate(self):
@@ -113,9 +120,19 @@ class MizuhoSc:
                          f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path1, path2)
 
+    def reservation(self):
+        self.proc = Web()
+        url = ''
+        self.proc.web_open(url)
+        self.proc.driver.implicitly_wait(10)
+        WebDriverWait(self.proc.driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "reserveform"))
+        )
+
 if __name__ == '__main__':
     cl = MizuhoSc()
     cl.balance_certificate()
     # cl.inheritance_notification_create()
+    # cl.reservation()  # 来店予約
 
 

@@ -129,7 +129,8 @@ class Smbc:
         pdf.draw_string(69,131,1,14)
 
         # 引き落とし口座
-        pdf.draw_string(53,109,'ギョ）チェスター',12)
+        # pdf.draw_string(53,109,'ギョ）チェスター',12)
+        pdf.draw_string(53,109,'行政書士法人チェスター　代表社員　古庄　夏耶',12)
         pdf.draw_string(53,95,'日本橋',12)
         pdf.draw_string(87, 98, '〇', 14)
         pdf.draw_rect(114, 100.5, 127, 105 )
