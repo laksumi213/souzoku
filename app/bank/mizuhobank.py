@@ -356,8 +356,8 @@ class Mizuhobank:
 
     def reservation(self):
         self.proc = Web()
-        # 京橋支店
-        url = 'https://mizuhobank.resv.jp/reserve/calendar.php?direct_id=8260&_gl=1%2A1bpqtuj%2A_gcl_au%2ANjgyMzY3NTgzLjE3NTk4MTg1ODk.%2A_ga%2AMTY5MzY1OTY1My4xNzU5ODE4NTkw%2A_ga_3D4K3DCJNB%2AczE3NjA0OTUxNDYkbzIkZzEkdDE3NjA0OTU1OTYkajQ4JGwwJGgw&x=1760495598'
+        # 京橋支店 ※この支店は法人ではなく個人で予約
+        url = 'https://mizuhobank.resv.jp/reserve/calendar.php?direct_id=70&_gl=1%2Avlc0pa%2A_gcl_au%2ANjgyMzY3NTgzLjE3NTk4MTg1ODk.%2A_ga%2AMTY5MzY1OTY1My4xNzU5ODE4NTkw%2A_ga_3D4K3DCJNB%2AczE3NjA1ODI4OTAkbzUkZzEkdDE3NjA1ODM0MTckajU4JGwwJGgw&x=1760583422'
         self.proc.web_open(url)
 
         messagebox.showinfo("待機中", "「日付選択後」にOKボタンをクリックしてください。")
