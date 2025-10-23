@@ -19,22 +19,21 @@ class Mufg:
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2069'
-        self.customer_name = '鈴木　幡雄'
-        self.customer_name_kana = 'すずき　はたお'
-        self.bank_account_number = '3159175'
+        self.code = 'G2103'
+        self.customer_name = '水谷　弘'
+        self.customer_name_kana = 'みずたに　ひろし'
+        self.bank_account_number = '1149170'
         if self.bank_account_number:
             self.bank_account_number = str(self.bank_account_number).zfill(7)
-        self.branch_name = '渋谷明治通支店'
+        self.branch_name = '京橋'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1927/12/1')
-        self.address = '東京都目黒区中町2丁目38番21号'
+        self.birthday = re.findall('[0-9]+', '1935/1/12')
+        self.address = '東京都中央区晴海二丁目5番16-1101号'
         self.building = ''
-        self.passed_away_date = re.findall('[0-9]+', '2025/5/26')
-        self.deathday = re.findall('[0-9]+' ,utils.convert_to_wareki2('2025/5/26'))
-        self.heir_name = '臼杵　優子'
-        self.heir_name_kana = 'うすき　ゆうこ'
-        self.heir_address = '東京都世田谷区若林1丁目2番20号'
+        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
+        self.heir_name = '水谷　昌代'
+        self.heir_name_kana = 'みずたに　まさよ'
+        self.heir_address = '東京都中央区晴海二丁目5番16-1101号'
         self.heir_building = ''
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
@@ -175,6 +174,11 @@ class Mufg:
         self.proc.driver.find_element(By.ID, 'NotifierLastNameKana').send_keys('モリマチ')
         self.proc.driver.find_element(By.ID, 'NotifierFirstNameKana').send_keys('ツバサ')
 
+        # 宮持玲那
+        # self.proc.driver.find_element(By.ID, 'NotifierFirstName').send_keys(f'宮持玲那({self.code})')
+        # self.proc.driver.find_element(By.ID, 'NotifierLastNameKana').send_keys('ミヤモチ')
+        # self.proc.driver.find_element(By.ID, 'NotifierFirstNameKana').send_keys('レイナ')
+
         # 住所
         # 上記以外をクリック
         self.proc.driver.find_element(By.XPATH, "/html/body/article/section/div/form/div[3]/ul/li/div/label[2]").click()
@@ -189,6 +193,8 @@ class Mufg:
         self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber11').send_keys('050')
         self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber12').send_keys('6864')
         self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber13').send_keys('7034')
+        # 宮持玲那
+        # self.proc.driver.find_element(By.ID, 'NotifierPhoneNumber13').send_keys('7048')
 
         # 電話番号種類
         Select(self.proc.driver.find_element(By.ID, "NotifierPhoneType1")).select_by_visible_text("勤務先")
@@ -253,19 +259,21 @@ class Mufg:
         pdf.draw_string(135, 249, '050', 10)
         pdf.draw_string(135, 240, '6864', 10)
         pdf.draw_string(154, 240, '7034', 10)
+        # 宮持
+        # pdf.draw_string(154, 240, '7048', 10)
         pdf.draw_string(26, 240, f'被相続人　{self.customer_name}　相続人　{self.heir_name}')
         pdf.draw_string(26, 235, '代理人　行政書士法人チェスター　代表社員　清水　茜作')
 
-        pdf.draw_string(53, 220, self.customer_name, 12)
+        pdf.draw_string(53, 220, self.customer_name, 16)
 
         # 証明日
-        deathday = self.deathday
-        pdf.draw_string(37.5, 193.5, str(deathday[0]).zfill(2)[0], 12)
-        pdf.draw_string(43.5, 193.5, str(deathday[0]).zfill(2)[1], 12)
-        pdf.draw_string(37+18.5, 193.5, str(deathday[1]).zfill(2)[0], 12)
-        pdf.draw_string(37+25, 193.5, str(deathday[1]).zfill(2)[1], 12)
-        pdf.draw_string(37+37, 193.5, str(deathday[2]).zfill(2)[0], 12)
-        pdf.draw_string(37+43.5, 193.5, str(deathday[2]).zfill(2)[1], 12)
+        deathday = self.passed_away_date
+        pdf.draw_string(37.5, 194, str(deathday[0]).zfill(2)[0], 12)
+        pdf.draw_string(43.5, 194, str(deathday[0]).zfill(2)[1], 12)
+        pdf.draw_string(37+18.5, 194, str(deathday[1]).zfill(2)[0], 12)
+        pdf.draw_string(37+25, 194, str(deathday[1]).zfill(2)[1], 12)
+        pdf.draw_string(37+37, 194, str(deathday[2]).zfill(2)[0], 12)
+        pdf.draw_string(37+43.5, 194, str(deathday[2]).zfill(2)[1], 12)
 
         ### 残高証明書 ###
         rec_row = []
@@ -371,14 +379,14 @@ class Mufg:
 
         if os.name == 'nt':
             print('nt')
-            output_path = r'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\G2069臼杵優子様（スタンダードプラン）\09.申請書類\01.残証申請書類'
+            output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（スタンダードプラン）\04.残高証明書・取引履歴'
 
         elif os.name == 'posix':
             print('posix')
             output_path = os.path.dirname(os.path.dirname(os.getcwd()))
 
         print('output_path:', output_path)
-        path1 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書1.pdf')
+        path1 = os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書1.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=5, open_bool=False)
 
 
@@ -393,6 +401,8 @@ class Mufg:
         pdf.draw_string(26, 241, f'被相続人　{self.customer_name}　相続人　{self.heir_name}')
         pdf.draw_string(26, 236, '代理人　行政書士法人チェスター　代表社員　清水　茜作')
         pdf.draw_string(26, 231.5, f'担当：森町（{self.code}）')
+        # 宮持玲那
+        # pdf.draw_string(26, 231.5, f'担当：宮持（{self.code}）')
         path2 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_残高証明書・取引明細書依頼書2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_残高証明書・取引明細書依頼書.pdf'), page=6, open_bool=False)
 
@@ -490,32 +500,32 @@ class Mufg:
 
         if os.name == 'nt':
             print('nt')
-            output_path = r'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\G2069臼杵優子様（スタンダードプラン）\09.申請書類\02.解約・名変申請書類'
+            output_path = rf'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（スタンダードプラン）\09.申請書類\01.残証申請書類'
 
         elif os.name == 'posix':
             print('posix')
             output_path = os.path.dirname(os.path.dirname(os.getcwd()))
 
         print('output_path:', output_path)
-        path1 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_相続届1.pdf')
+        path1 = os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_相続届1.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_相続届.pdf'), page=1, open_bool=False)
 
 
         # 書類2
         pdf = PdfCreate("A3")
-        path2 = os.path.join(output_path, f'【{self.code}】{self.heir[0]}様_三菱UFJ銀行_相続届2.pdf')
+        path2 = os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_相続届2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf', '三菱UFJ銀行_相続届.pdf'), page=2, open_bool=False)
 
 
         pdf.pdf_marge(
-            os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_相続届.pdf'),
+            os.path.join(output_path, f'{self.code}{self.heir[0]}様_三菱UFJ銀行_相続届_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path1, path2)
 
 def main():
     proc = Mufg()
     # proc.account_freezing()
-    # proc.balance_certificate_create()
-    proc.reservation()
+    proc.balance_certificate_create()
+    # proc.reservation()
     # proc.inheritance_notification()
 
 if __name__ == '__main__':

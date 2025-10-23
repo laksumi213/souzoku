@@ -5,6 +5,7 @@ import mojimoji
 import re
 from app.controllers.pdf_create import PdfCreate
 import os
+from datetime import datetime
 
 
 class Nomura:
@@ -12,27 +13,29 @@ class Nomura:
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2014'
-        self.customer_name = '菅沼　純子'
-        self.customer_name_kana = 'すがぬま　すみこ'
-        self.heir_name = '菅沼　富男'
-        self.heir_name_kana = 'すがぬま　とみお'
-        self.heir_tel = '080-5546-7144'
-        self.account_number = '173339'
-        self.trading_store_name = '戸塚支店'
-        self.trading_shop_code = '241'
-        self.birthday = '1937/11/3'
+        self.code = 'G2240'
+        self.customer_name = '横山　喜男'
+        self.customer_name_kana = 'よこやま　よしお'
+        self.heir_name = '細田　さゆり'
+        self.heir_name_kana = 'ほそだ　さゆり'
+        self.heir_tel = '090-3533-3831'
+        self.account_number = '2076322'
+        self.trading_store_name = '野村ネット&コール'
+        self.trading_shop_code = '979'
+        self.birthday = '1941/3/1'
         # self.birthday = re.findall('[0-9]+', self.birthday)
-        self.deathday = '2025-06-12'
+        self.deathday = '2025/6/30'
         # self.deathday = re.findall('[0-9]+', self.deathday)
-        self.address = '神奈川県横浜市泉区緑園4丁目3番地1'
-        self.building_name = 'サンステージ緑園都市東の街11番館603号'
-        self.heir_address = '神奈川県横浜市泉区緑園4丁目3番地1'
-        self.heir_building_name = 'サンステージ緑園都市東の街11番館603号'
+        self.address = '東京都文京区根津2-6-1'
+        self.building_name = ''
+        self.heir_address = '東京都荒川区荒川5-20-7'
+        self.heir_building_name = ''
+
+        self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
         if os.name == 'nt':
             print('nt')
-            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（スタンダードプラン）\07.申請書類\01.残証申請書類'
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（フルサポート）\04.残高証明書・取引履歴'
         elif os.name == 'posix':
             print('posix')
             self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
@@ -154,6 +157,10 @@ class Nomura:
         pdf.draw_string(81, 140, f'行政書士法人チェスター 森町（{self.code}）', 11)
         pdf.draw_string(96, 118.25, '050-6864-7034')
 
+        # 宮持玲那
+        # pdf.draw_string(81, 140, f'行政書士法人チェスター 宮持（{self.code}）', 11)
+        # pdf.draw_string(96, 118.25, '050-6864-7048')
+
         path2 = os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_野村證券_残高証明書申請書2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          '野村證券_残高証明書申請書.pdf'), page=2, open_bool=False)
@@ -161,7 +168,7 @@ class Nomura:
         # os.makedirs(os.path.join(self.customer[0]['フォルダパス'], '金融機関手続', '残高証明書', '申請書'), exist_ok=True)
 
         pdf.pdf_marge(
-            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_野村證券_残高証明書申請書.pdf'),
+            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_野村證券_残高証明書申請書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path1, path2)
 
 def main():

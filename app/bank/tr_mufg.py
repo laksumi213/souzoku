@@ -21,23 +21,23 @@ class TrMufg:
         self.code = 'G2103'
         self.customer_name = '水谷　弘'
         self.customer_name_kana = 'みずたに　ひろし'
-        self.bank_account_number = str('1428911').zfill(7)
-        self.branch_name = '日本橋'
+        self.bank_account_number = mojimoji.han_to_zen(str('1178860').zfill(7))
+        self.branch_name = '銀座中央'
         self.subjects = '普通'
         self.birthday = re.findall('[0-9]+', '1935/1/12')
-        self.address = '東京都中央区晴海2丁目5番16'
-        self.building = '1101号'
+        self.address = '東京都中央区晴海'
+        self.building = '二丁目5番16-1101号'
         self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
         self.heir_name = '水谷　昌代'
         self.heir_name_kana = 'みずたに　まさよ'
-        self.heir_address = '東京都中央区晴海二丁目5番16'
-        self.heir_building = '1101号'
+        self.heir_address = '東京都中央区晴海'
+        self.heir_building = '二丁目5番16-1101号'
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
         if os.name == 'nt':
             print('nt')
-            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（スタンダードプラン）\09.申請書類\01.残証申請書類'
         elif os.name == 'posix':
             print('posix')
             self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
@@ -183,31 +183,67 @@ class TrMufg:
     def balance_certificate(self):
         pdf = PdfCreate("A4")
 
-        pdf.draw_string(23, 193, f'相続人　{self.heir_name}　代理人', 10)
-        pdf.draw_string(23, 188, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
+        pdf.draw_string(30, 210, self.customer_name, 16)
 
-        pdf.draw_string(63, 55, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
-        pdf.draw_string(63, 37, f'行政書士法人チェスター　森町（{self.code}）', 12)
+        pdf.draw_string(120, 215, f'相続人　{self.heir_name}', 10)
+        pdf.draw_string(120, 211, f'行政書士法人チェスター', 10)
+        pdf.draw_string(120, 207, f'代表社員　清水　茜作', 10)
+
+        pdf.draw_string(60, 202, f'103', 9)
+        pdf.draw_string(76, 202, f'0028', 9)
+        pdf.draw_string(131, 202, f'050', 10)
+        pdf.draw_string(153, 202, f'6864', 10)
+        pdf.draw_string(176, 202, f'7034', 10)
+
+        # pdf.draw_string(26, 196, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
+        # pdf.draw_string(26, 191, f'行政書士法人チェスター　担当：森町（{self.code}）', 12)
+        pdf.draw_string(26, 193, f'東京都中央区八重洲1-7-20 八重洲口会館2階　担当：森町（{self.code}）', 12)
+
+        pdf.draw_string(63, 152, self.passed_away_date[0], 14)
+        pdf.draw_string(87, 152, self.passed_away_date[1], 14)
+        pdf.draw_string(106, 152, self.passed_away_date[2], 14)
+
+        # 評価証明書
+        # pdf.draw_string(178, 148.5, 1, 14)
+        # pdf.draw_string(85, 90.5, '✓', 14)
+
+        # 残高証明書
+        pdf.draw_string(178, 141, 1, 14)
+        pdf.draw_string(111, 90.5, '✓', 14)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_SBI申請銀行_残高証明書依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_三菱UFJ信託_証明書等発行依頼書_預金1.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         'SBI新生銀行_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
+                                         '三菱UFJ信託_証明書等発行依頼書_預金.pdf'), page=1, open_bool=False)
 
         path2 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書2.pdf')
+                             f'{self.code}{self.heir[0]}様_三菱UFJ信託_証明書等発行依頼書_預金2.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '三菱UFJモルガン・スタンレー証券_相続に関する届出書.pdf'), page=2, open_bool=False)
+                                         '三菱UFJ信託_証明書等発行依頼書_預金.pdf'), page=2, open_bool=False)
 
         pdf.pdf_marge(
             os.path.join(self.output_path,
-                         f'【{self.code}】{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書_{self.date[0]}{self.date[2]}{self.date[2]}.pdf'),
+                         f'{self.code}{self.heir[0]}様_三菱UFJ信託_証明書等発行依頼書_預金_{self.date[0]}{self.date[2]}{self.date[2]}.pdf'),
             path1, path2)
+
+        # 経理提出書類
+        pdf = PdfCreate("A4")
+        pdf.draw_line(100, 187, 100, 171)
+        pdf.draw_line(100, 187, 98, 184)
+        pdf.draw_line(100, 187, 102, 184)
+
+        pdf.draw_string(75,168, f'C25009668　行政書士法人チェスター　代表社員　清水　茜作', 12)
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir[0]}様_三菱UFJ信託_証明書等発行依頼書_経理提出書類.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         '三菱UFJ信託_証明書等発行依頼書_預金.pdf'), page=5, open_bool=True)
+
 
 if __name__ == '__main__':
     cl = TrMufg()
-    cl.account_freezing()
-    # cl.balance_certificate()
+    # cl.account_freezing()
+    cl.balance_certificate()
     # cl.inheritance_notification_create()
 
 

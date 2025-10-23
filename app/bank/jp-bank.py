@@ -11,23 +11,25 @@ class JpBank:
         super().__init__()
         self.proc = None
         self.url = None
-        self.code = 'G2069'
-        self.customer_name = '鈴木　幡雄'
-        self.customer_name_kana = 'すずき　はたお'
-        self.heir_name = '臼杵　優子'
-        self.heir_name_kana = 'うすき　ゆうこ'
-        self.bank_account_number = '10150-18288791'
+        self.code = 'G2087'
+        self.customer_name = '関谷　雄孝'
+        self.customer_name_kana = 'せきや　ゆうこう'
+        self.heir_name = '西澤　直子'
+        self.heir_name_kana = 'にしざわ　なおこ'
+        self.bank_account_number = '10120-45914011'
         self.subjects = '通常貯金'
-        self.birthday = '1927/12/1'
-        self.deathday = '2025/5/26'
-        self.address = '東京都目黒区中町2丁目38番21号'
-        self.heir_address = '東京都世田谷区若林1丁目2番20号'
+        self.birthday = '1930/1/3'
+        self.deathday = '2025/6/27'
+        self.address = '東京都墨田区緑2丁目6番10号'
+        self.building = ''
+        self.heir_address = '東京都墨田区緑2丁目1番3号'
+        self.heir_building = ''
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
         if os.name == 'nt':
             print('nt')
-            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（スタンダードプラン）\09.申請書類\01.残証申請書類'
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　','')}様（スタンダードプラン）\04.残高証明書・取引履歴'
         elif os.name == 'posix':
             print('posix')
             self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
@@ -109,7 +111,12 @@ class JpBank:
         elif self.address_pattern[1][-1] == '郡':
             pdf.draw_string(134, 126, '〇')
 
-        pdf.draw_string(42, 119, self.address_pattern[2])
+        # 住所・建物名
+        if self.building:
+            pdf.draw_string(42, 121, self.address_pattern[2])
+            pdf.draw_string(42, 117, self.building)
+        else:
+            pdf.draw_string(42, 118, self.address_pattern[2])
 
         # 氏名
         pdf.draw_string(42, 110, jaconv.hira2kata(self.name_kana[0]), 12)
@@ -192,7 +199,11 @@ class JpBank:
         elif self.heir_address_pattern[1][-1] == '郡':
             pdf.draw_string(134, 67, '〇', 10)
 
-        pdf.draw_string(42, 61, self.heir_address_pattern[2])
+        if self.heir_building:
+            pdf.draw_string(42, 62, self.heir_address_pattern[2])
+            pdf.draw_string(42, 58, self.heir_building)
+        else:
+            pdf.draw_string(42, 60, self.heir_address_pattern[2])
 
         # 相続人氏名
         pdf.draw_string(42, 52, jaconv.hira2kata(self.heir_kana[0]), 12)
@@ -229,8 +240,8 @@ class JpBank:
         pdf.draw_string(43, 63, '八重洲1-7-20  八重洲口会館2階')
         pdf.draw_string(40, 57, 'ｷﾞｮｳｾｲｼｮｼﾎｳｼﾞﾝ　ﾀﾞｲﾋｮｳｼｬｼﾝ　ｼﾐｽﾞ ｾﾝｻｸ', 6)
         pdf.draw_string(40, 52, '行政書士法人チェスター　代表社員', 8)
-        pdf.draw_string(40, 48, f'清水　茜作　担当：森町（{self.code}）', 8)
 
+        pdf.draw_string(40, 48, f'清水　茜作　担当：森町（{self.code}）', 8)
         pdf.draw_string(103, 55, '0')
         pdf.draw_string(106.5, 55, '5')
         pdf.draw_string(110, 55, '0')
@@ -242,6 +253,12 @@ class JpBank:
         pdf.draw_string(133, 55, '0')
         pdf.draw_string(136.5, 55, '3')
         pdf.draw_string(140, 55, '4')
+
+        # pdf.draw_string(40, 48, f'清水　茜作　担当：宮持（{self.code}）', 8)
+        # pdf.draw_string(130, 55, '7')
+        # pdf.draw_string(133, 55, '0')
+        # pdf.draw_string(136.5, 55, '4')
+        # pdf.draw_string(140, 55, '8')
 
         pdf.draw_string(113, 48.5, '✓')
         pdf.draw_string(106.5, 38, '✓')
@@ -284,7 +301,7 @@ class JpBank:
                                          'ゆうちょ_相続確認表_20230508改正.pdf'), page=5, open_bool=False)
 
         pdf.pdf_marge(
-            os.path.join(self.output_path, f'【{self.code}】{self.heir[0]}様_ゆうちょ_相続確認表.pdf'),
+            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_ゆうちょ_相続確認表_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path1, path2, path3)
 
         # 貯金等照会書
@@ -389,8 +406,8 @@ class JpBank:
 
 
         pdf = PdfCreate("A4")
-        pdf.draw_string(45, 264, '✓', 8)
-        pdf.draw_string(83, 264, '✓', 8)
+        pdf.draw_string(44, 264, '✓', 12)
+        pdf.draw_string(81, 264, '✓', 12)
 
         customer_deathday = re.findall('[0-9]+', self.deathday)
         pdf.draw_string(133, 263, customer_deathday[0][0])
@@ -404,6 +421,17 @@ class JpBank:
         pdf.draw_string(83, 238, '相続のため')
         # pdf.draw_string(22, 207, '✓', 12)
         pdf.draw_string(86, 230, '1', 12)
+
+        # 証明日
+        pdf.draw_string(81, 222.5, '✓', 12)
+        pdf.draw_string(133, 223, customer_deathday[0][0])
+        pdf.draw_string(138, 223, customer_deathday[0][1])
+        pdf.draw_string(144, 223, customer_deathday[0][2])
+        pdf.draw_string(150, 223, customer_deathday[0][3])
+        pdf.draw_string(162, 223, str(customer_deathday[1]).zfill(2)[0])
+        pdf.draw_string(168, 223, str(customer_deathday[1]).zfill(2)[1])
+        pdf.draw_string(179, 223, str(customer_deathday[2]).zfill(2)[0])
+        pdf.draw_string(185, 223, str(customer_deathday[2]).zfill(2)[1])
 
         pdf.draw_string(92, 212, '1', 12)
         pdf.draw_string(97.5, 212, '1', 12)
@@ -420,14 +448,14 @@ class JpBank:
         pdf.draw_string(173, 212, '6', 12)
         pdf.draw_string(178, 212, '1', 12)
 
-        pdf.draw_string(81, 202, '✓', 12)
+        pdf.draw_string(80.5, 202, '✓', 12)
         path5 = os.path.join(self.output_path,
                              f'【{self.code}】{self.heir[0]}様_ゆうちょ_貯金等照会書2.pdf')
         pdf.pdf_save(path5, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          'ゆうちょ_貯金等照会書（相続用）.pdf'), page=2, open_bool=False)
 
         pdf.pdf_marge(
-            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_ゆうちょ_相続確認表_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
+            os.path.join(self.output_path, f'{self.code}{self.heir[0]}様_ゆうちょ_貯金等照会書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path4, path5)
 
 

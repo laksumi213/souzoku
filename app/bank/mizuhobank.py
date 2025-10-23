@@ -20,20 +20,22 @@ class Mizuhobank:
     def __init__(self):
         super().__init__()
         self.proc = None
-        self.code = 'G2069'
-        self.customer_name = '鈴木　幡雄'
-        self.customer_name_kana = 'すずき　はたお'
-        self.bank_account_number = mojimoji.han_to_zen(str('50089').zfill(7))
-        self.branch_name = '祐天寺支店'
+        self.code = 'G2103'
+        self.customer_name = '水谷　弘'
+        self.customer_name_kana = 'みずたに　ひろし'
+        self.bank_account_number = '1178860'
+        if self.bank_account_number:
+            self.bank_account_number = str(self.bank_account_number).zfill(7)
+        self.branch_name = '銀座中央'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1927/12/1')
-        self.address = '東京都目黒区中町'
-        self.building = '2丁目38番21号'
-        self.passed_away_date = re.findall('[0-9]+', '2025/5/26')
-        self.heir_name = '臼杵　優子'
-        self.heir_name_kana = 'うすき　ゆうこ'
-        self.heir_address = '東京都世田谷区若林'
-        self.heir_building = '1丁目2番20号'
+        self.birthday = re.findall('[0-9]+', '1935/1/12')
+        self.address = '東京都中央区晴海'
+        self.building = '二丁目5番16-1101号'
+        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
+        self.heir_name = '水谷　昌代'
+        self.heir_name_kana = 'みずたに　まさよ'
+        self.heir_address = '東京都中央区晴海'
+        self.heir_building = '二丁目5番16-1101号'
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
@@ -101,11 +103,11 @@ class Mizuhobank:
         self.proc.driver.find_element(By.ID, 'zipCode1').send_keys(re.findall(r'\d+', self.zipcode)[0])
         self.proc.driver.find_element(By.ID, 'zipCode2').send_keys(re.findall(r'\d+', self.zipcode)[1])
 
-        self.proc.driver.find_element(By.ID, 'address1').send_keys(jaconv.h2z(self.address, digit=True))
+        self.proc.driver.find_element(By.ID, 'address1').send_keys(jaconv.h2z(self.address.replace('-', '－').replace(' ', '').replace('　', ''), digit=True))
         # self.proc.driver.find_element(By.ID, 'searchaddr').click()
         # sleep(.5)
         self.proc.driver.find_element(By.ID, 'address2').send_keys(
-            jaconv.h2z(self.building.replace('-', '－'), digit=True))
+            jaconv.h2z(self.building.replace('-', '－').replace(' ', '').replace('　', ''), digit=True))
 
         self.proc.driver.find_element(By.XPATH, '//*[@id="birthday_swRadioset"]/label[1]').click()
         sleep(.5)
@@ -141,9 +143,11 @@ class Mizuhobank:
         self.proc.driver.find_element(By.ID, 'acntNumIn').send_keys(mojimoji.zen_to_han(self.bank_account_number))
 
         self.proc.driver.find_element(By.ID, 'offerLastkana').send_keys('ギョウセイショシホウジンチェスター')
-        self.proc.driver.find_element(By.ID, 'offerFirstkana').send_keys('モリマチ　ツバサ')
+        # self.proc.driver.find_element(By.ID, 'offerFirstkana').send_keys('モリマチ　ツバサ')
+        self.proc.driver.find_element(By.ID, 'offerFirstkana').send_keys('ミヤモチ　レイナ')
         self.proc.driver.find_element(By.ID, 'offerLastkanji').send_keys('行政書士法人チェスター')
         self.proc.driver.find_element(By.ID, 'offerFirstkanji').send_keys(f'森町　翼（{mojimoji.han_to_zen(self.code)}）')
+        # self.proc.driver.find_element(By.ID, 'offerFirstkanji').send_keys(f'宮持　玲那（{mojimoji.han_to_zen(self.code)}）')
         self.proc.driver.find_element(By.XPATH, '//*[@id="decedentRelationship-button"]/span[2]').click()
         sleep(.5)
         self.proc.driver.find_element(By.ID, 'ui-id-26').click()
@@ -156,9 +160,14 @@ class Mizuhobank:
             jaconv.h2z('一丁目７番２０号', digit=True))
         self.proc.driver.find_element(By.ID, 'offerorAddress2').send_keys(
             jaconv.h2z('八重洲口会館２階', digit=True))
+
         self.proc.driver.find_element(By.ID, 'homePhoneNumber1').send_keys('050')
         self.proc.driver.find_element(By.ID, 'homePhoneNumber2').send_keys('6864')
         self.proc.driver.find_element(By.ID, 'homePhoneNumber3').send_keys('7034')
+
+        # 宮持玲那
+        # self.proc.driver.find_element(By.ID, 'homePhoneNumber3').send_keys('7048')
+
         self.proc.driver.find_element(By.ID, 'representLastkana').send_keys(self.heir_kana[0])
         self.proc.driver.find_element(By.ID, 'representFirstkana').send_keys(self.heir_kana[1])
         self.proc.driver.find_element(By.ID, 'representLastkanji').send_keys(self.heir[0])
@@ -296,15 +305,13 @@ class Mizuhobank:
         # pdf.draw_string(104, 230, f'相続人　{self.heir["氏名"]}', 8)
         pdf.draw_string(104, 242, '行政書士法人チェスター　代表社員　清水　茜作', 8)
         pdf.draw_string(104, 238, f'担当：森町（{self.code}）', 8)
-        # pdf.draw_string(104, 227, '相続手続支援センター町田有限責任事業組合　組合員', 8)
-        # pdf.draw_string(107, 238, '株式会社プロフィット・ワン　職務執行者　大貫利一', 8)
-        # pdf.draw_string(104, 224, '株式会社プロフィット・ワン　職務執行者　大貫利一', 8)
+        # pdf.draw_string(104, 238, f'担当：宮持（{self.code}）', 8)
         pdf.draw_string(117, 234, '050', 8)
-        # pdf.draw_string(114, 215, '042', 8)
         pdf.draw_string(131, 234, '6864', 8)
-        # pdf.draw_string(130, 215, '710', 8)
         pdf.draw_string(148, 234, '7034', 8)
-        # pdf.draw_string(150, 215, '6178', 8)
+
+        # 宮持　玲那
+        # pdf.draw_string(148, 234, '7048', 8)
 
         pdf.draw_string(18, 211.5, '✓', 12)
         # pdf.draw_string(27, 195, '✓', 8)
@@ -475,8 +482,8 @@ class Mizuhobank:
 if __name__ == '__main__':
     cl = Mizuhobank()
     # cl.account_freezing()
-    # cl.balance_certificate()
+    cl.balance_certificate()
     # cl.inheritance_notification_create()
-    cl.reservation()    # 来店予約
+    # cl.reservation()    # 来店予約
 
 

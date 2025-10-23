@@ -1,43 +1,45 @@
-import flet as ft
+import pytesseract
+from PIL import Image
+import pandas as pd  # 結果をデータフレームとして扱うため
 
+# 1. Tesseractの実行ファイルのパスを設定（Windowsユーザー向け）
+# 🚨 注意: Tesseractをインストールした場所に合わせてパスを変更してください
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-def main(page: ft.Page):
-    page.title = "Add Tabs Dynamically"
-    page.vertical_alignment = ft.CrossAxisAlignment.START
+# 2. 画像ファイルを読み込む
+# 🚨 注意: 'input_document.png' を実際のファイル名に置き換えてください
+try:
+    img = Image.open('input_document.png')
+except FileNotFoundError:
+    print("エラー: 'input_document.png' が見つかりません。ファイル名を確認してください。")
+    exit()
 
-    # タブのリストを定義
-    my_tabs = ft.Tabs(
-        selected_index=0,
-        animation_duration=300,
-        tabs=[],  # 初期状態は空のタブリスト
-        expand=1,
-    )
+# 3. 座標情報を含むOCR結果を取得
+# output_type.DATAFRAME を指定することで、結果がデータフレームとして返されます
+data = pytesseract.image_to_data(
+    img,
+    lang='jpn',  # 認識言語を日本語に設定
+    output_type=pytesseract.Output.DATAFRAME
+)
 
-    tab_counter = 0
+# 4. 認識結果と座標情報を表示
+print("--- データフレームの最初の5行 ---")
+print(data.head())
 
-    def add_tab_btn_clicked(e):
-        nonlocal tab_counter
-        tab_counter += 1
+# 5. 必要な情報（認識された単語とその座標）を抽出
+# 'level' 5 は通常、認識された「単語」を指します
+words_data = data[data.conf != -1]  # 信頼度（conf）が-1でない行（認識された行）のみを抽出
+words_data = words_data[words_data.text.str.strip().astype(bool)]  # 空白行を除外
 
-        # 新しいタブを作成
-        new_tab = ft.Tab(
-            text=f"新しいタブ {tab_counter}",
-            content=ft.Text(f"これは新しいタブ {tab_counter} のコンテンツです。"),
-        )
+print("\n--- 抽出された単語とその座標 ---")
+for index, row in words_data.iterrows():
+    text = row['text']
+    # 座標情報
+    x = row['left']
+    y = row['top']
+    w = row['width']
+    h = row['height']
+    conf = row['conf']  # 信頼度 (0-100)
 
-        # 既存のタブリストに新しいタブを追加
-        my_tabs.tabs.append(new_tab)
-
-        # 新しく追加されたタブをアクティブにする
-        my_tabs.selected_index = len(my_tabs.tabs) - 1
-
-        # UIを更新
-        page.update()
-
-    page.add(
-        my_tabs,
-        ft.ElevatedButton("新しいタブを追加", on_click=add_tab_btn_clicked),
-    )
-
-
-ft.app(target=main)
+    # 抽出された情報
+    print(f"テキスト: {text}, 信頼度: {conf}, 座標 (x, y, w, h): ({x}, {y}, {w}, {h})")
