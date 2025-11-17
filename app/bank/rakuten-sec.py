@@ -7,25 +7,14 @@ from selenium.webdriver.common.by import By
 # from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
+import os
+from app.controllers.pdf_create import PdfCreate
+from datetime import datetime
 
 
 class RakutenSec:
     def __init__(self):
         super().__init__()
-        self.deathday = None
-        self.heir_name_kana = None
-        self.heir_name = None
-        self.proc = None
-        self.code = None
-        self.customer_name = None
-        self.customer_name_kana = None
-        self.bank_account_number = None
-        self.birthday = None
-        self.address = None
-        self.passed_away_date = None
-
-
-    def account_freezing(self):
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
@@ -35,15 +24,18 @@ class RakutenSec:
         self.birthday = re.findall('[0-9]+', '1958/9/18')
         self.deathday = re.findall('[0-9]+', '2025/6/27')
         self.address = '千葉県船橋市夏見台1-13-24'
+
+        self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
+
         pattern = '(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村)市|.+?郡(?:玉村|大町|.+?)[町村]|.+?市.+?区|.+?[市区町村])(.+)'
         address = re.findall(pattern, self.address)[0]
         print(utils.get_zipcode_from_address(address))
 
         match = re.search(r'([^\d]+)(\d.*)', address[2])
         if match:
-            place = match.group(1) # 最初のグループ（数字以外の文字）
+            place = match.group(1)  # 最初のグループ（数字以外の文字）
             number = match.group(2)  # 2番目のグループ（数字とハイフンを含む部分）
-            print(f"場所: {place}") # 出力: 場所: 夏見台
+            print(f"場所: {place}")  # 出力: 場所: 夏見台
             print(f"番地: {number}")
 
         zipcode = utils.get_zipcode_from_address(self.address)
@@ -66,6 +58,15 @@ class RakutenSec:
         print(address)
         print('birthday:', self.birthday)
 
+        if os.name == 'nt':
+            print('nt')
+            self.output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
+        elif os.name == 'posix':
+            print('posix')
+            self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
+
+
+    def account_freezing(self):
         self.proc = Web()
         url = 'https://member.rakuten-sec.co.jp/service/setup/inheritanceInputInit.do?inheritance=agent'
         self.proc.web_open(url)
@@ -135,10 +136,23 @@ class RakutenSec:
         # self.proc.driver.find_element(By.ID, '00N0K00000JEq7Q').send_keys('森町　翼（' + mojimoji.han_to_zen(self.code) +'）')
         # self.proc.driver.find_element(By.ID, '00N0K00000LYk1t').click()
 
+    def trading_item(self):
+        pdf = PdfCreate("A4")
+
+        pdf.draw_string(122, 163, f'相続人　{self.heir_name}')
+        pdf.draw_string(122, 159, f'代理人　行政書士法人チェスター')
+        pdf.draw_string(122, 155, f'代表社員　清水　茜作')
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir_name[0]}様_楽天証券_顧客勘定元帳発行依頼書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         # '20251107115156180.pdf'), page=1, open_bool=True)
+                                         '楽天証券_顧客勘定元帳発行依頼書.pdf'), page=1, open_bool=True)
 
 def main():
     proc = RakutenSec()
-    proc.account_freezing()
+    # proc.account_freezing()
+    proc.trading_item()
 
 if __name__ == '__main__':
     main()

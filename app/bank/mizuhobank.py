@@ -15,27 +15,28 @@ from datetime import datetime
 from tkinter import messagebox
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
 
 class Mizuhobank:
     def __init__(self):
         super().__init__()
         self.proc = None
-        self.code = 'G2103'
-        self.customer_name = '水谷　弘'
-        self.customer_name_kana = 'みずたに　ひろし'
-        self.bank_account_number = '1178860'
+        self.code = 'G2087'
+        self.customer_name = '関谷　雄孝'
+        self.customer_name_kana = 'せきや　ゆうこう'
+        self.bank_account_number = '1074942'
         if self.bank_account_number:
             self.bank_account_number = str(self.bank_account_number).zfill(7)
-        self.branch_name = '銀座中央'
+        self.branch_name = '本所'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1935/1/12')
-        self.address = '東京都中央区晴海'
-        self.building = '二丁目5番16-1101号'
-        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
-        self.heir_name = '水谷　昌代'
-        self.heir_name_kana = 'みずたに　まさよ'
-        self.heir_address = '東京都中央区晴海'
-        self.heir_building = '二丁目5番16-1101号'
+        self.birthday = re.findall('[0-9]+', '1930/1/3')
+        self.address = '東京都墨田区緑二丁目6番10号'
+        self.building = ''
+        self.passed_away_date = re.findall('[0-9]+', '2025/6/27')
+        self.heir_name = '西澤　直子'
+        self.heir_name_kana = 'にしざわ　なおこ'
+        self.heir_address = '東京都墨田区緑二丁目1番3号'
+        self.heir_building = ''
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
 
@@ -297,8 +298,8 @@ class Mizuhobank:
         pdf.draw_string(112, 267, '相続人代理人')
         # pdf.draw_string(134, 252, '代理人')
 
-        pdf.draw_string(111, 260, '194', 10)
-        pdf.draw_string(127, 260, '0022', 10)
+        pdf.draw_string(111, 260, '103', 10)
+        pdf.draw_string(127, 260, '0028', 10)
         pdf.draw_string(104, 255, '東京都中央区八重洲一丁目7-20', 8)
         pdf.draw_string(104, 251, '八重洲口会館2階', 8)
         pdf.draw_string(104, 246, f'相続人　{self.heir_name}　代理人', 8)
@@ -362,13 +363,56 @@ class Mizuhobank:
         #     path1, path2)
 
     def reservation(self):
+        def click_button_by_text(driver, text):
+            """ボタンの表示テキストを使って要素を探し、クリックする関数"""
+            # XPath: buttonタグで、表示されているテキストが完全に一致するものを探す
+            xpath_locator = f"//button[text()='{text}']"
+
+            try:
+                button = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.XPATH, xpath_locator))
+                )
+                button.click()
+                sleep(.5)
+                print(f"✅ ボタン '{text}' をクリックしました。")
+            except Exception:
+                raise NoSuchElementException(f"エラー: ボタン '{text}' が見つからないか、クリックできませんでした。")
+
         self.proc = Web()
         # 京橋支店 ※この支店は法人ではなく個人で予約
-        url = 'https://mizuhobank.resv.jp/reserve/calendar.php?direct_id=70&_gl=1%2Avlc0pa%2A_gcl_au%2ANjgyMzY3NTgzLjE3NTk4MTg1ODk.%2A_ga%2AMTY5MzY1OTY1My4xNzU5ODE4NTkw%2A_ga_3D4K3DCJNB%2AczE3NjA1ODI4OTAkbzUkZzEkdDE3NjA1ODM0MTckajU4JGwwJGgw&x=1760583422'
+        url = 'https://www.mizuhobank.co.jp/tenpoinfo/tenpo_reservation/reservation.html?id=BA338922&_gl=1*k5k7g4*_ga*MTY5MzY1OTY1My4xNzU5ODE4NTkw*_ga_3D4K3DCJNB*czE3NjA0OTUxNDYkbzIkZzEkdDE3NjA0OTUzMzUkajYwJGwwJGgw'
+        # # 八重洲口支店
+        # url = 'https://www.mizuhobank.co.jp/tenpoinfo/tenpo_reservation/reservation.html?id=BA338924&_gl=1*1yjvpu4*_ga*MTY5MzY1OTY1My4xNzU5ODE4NTkw*_ga_3D4K3DCJNB*czE3NjA0OTUxNDYkbzIkZzEkdDE3NjA0OTU1MjkkajUxJGwwJGgw'
+        # # 東京中央支店 ※この支店は法人ではなく個人で予約
+        # url = 'https://www.mizuhobank.co.jp/tenpoinfo/tenpo_reservation/reservation.html?id=BA339731&_gl=1*1eoo2t1*_ga*MTY5MzY1OTY1My4xNzU5ODE4NTkw*_ga_3D4K3DCJNB*czE3NjA0OTUxNDYkbzIkZzEkdDE3NjA0OTU0MzgkajUyJGwwJGgw'
         self.proc.web_open(url)
 
+        # --- ステップ 1: どちらかを選択してください。 ---
+        click_button_by_text(self.proc.driver, "個人のお客さま")
+
+        # --- ステップ 2: ご来店目的を選択してください。 ---
+        # 新しい選択肢が表示されるのを待ってからクリック
+        click_button_by_text(self.proc.driver, "各種手続き")
+
+        # --- ステップ 3: 内容を選択してください。 ---
+        # 新しい選択肢が表示されるのを待ってからクリック
+        click_button_by_text(self.proc.driver, "相続手続")
+
+        # --- ステップ 4: 日時・お客さま情報入力へ進む ---
+        # 最後のボタンは <a> タグなので、XPathを変更して対応します。
+        # reservation_link_xpath = "//a[text()='日時・お客さま情報入力へ']"
+        reservation_link_xpath = '//*[@id="answer-20-3"]/div/div/a'
+
+        reservation_link = WebDriverWait(self.proc.driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, reservation_link_xpath))
+        )
+        # reservation_link.click()
+        self.proc.driver.execute_script("arguments[0].click();", reservation_link)
+        print("✅ リンク '日時・お客さま情報入力へ' をクリックしました。")
+
         messagebox.showinfo("待機中", "「日付選択後」にOKボタンをクリックしてください。")
-        self.proc.web_operation(self.proc.driver.current_url)
+        # self.proc.web_operation(self.proc.driver.current_url)
+        self.proc.driver.switch_to.window(self.proc.driver.window_handles[-1])
         self.proc.driver.implicitly_wait(10)
         WebDriverWait(self.proc.driver, 10).until(
             EC.presence_of_element_located((By.NAME, "reserveform"))
@@ -377,31 +421,46 @@ class Mizuhobank:
         ## 1. 必須のチェックボックス（3項目）の操作
         # すべての項目をチェックして同意します。これらはすべて同じ name="attr_res4[]" を持っています。
 
-        # 最初の項目: 【個人のお客さま】振込・振替・税公金・両替・印鑑確認等はご予約対象外です
+        # # 最初の項目: 【個人のお客さま】振込・振替・税公金・両替・印鑑確認等はご予約対象外です
         self.proc.driver.find_element(By.XPATH,
                                       "//*[@id='right-column']/div[1]/form/div[1]/div[2]/div[1]/label/span").click()
+        #
+        # # 2番目の項目: 【法人・事業を営む個人・団体等のお客さま】事業性融資取引はご予約対象外です
+        # self.proc.driver.find_element(By.XPATH,
+        #                               '//*[@id="right-column"]/div[1]/form/div[1]/div[2]/div[2]/label/span').click()
+        #
+        # # 3番目の項目: 独立した予約メニューがあるお取引(口座開設・相続手続など)は該当のメニューでご予約ください
+        # self.proc.driver.find_element(By.XPATH,
+        #                               '//*[@id="right-column"]/div[1]/form/div[1]/div[2]/div[3]/label/span').click()
 
-        # 2番目の項目: 【法人・事業を営む個人・団体等のお客さま】事業性融資取引はご予約対象外です
+
+        if not self.branch_code or not self.bank_account_number:
+            self.proc.driver.find_element(By.ID, 'bt_form_attr_res11').send_keys(
+                f'相続の手続き　　残高証明書の発行依頼　　被相続人：{self.customer_name}様　　生年月日：{self.birthday[0]}年{self.birthday[1]}月{self.birthday[2]}日　　口座番号：0')
+        else:
+            self.proc.driver.find_element(By.ID, 'bt_form_attr_res11').send_keys(
+                f'相続の手続き　　残高証明書の発行依頼　　被相続人：{self.customer_name}様　　生年月日：{self.birthday[0]}年{self.birthday[1]}月{self.birthday[2]}日　　口座番号：{mojimoji.zen_to_han(self.branch_code)}{mojimoji.zen_to_han(self.bank_account_number)}')
+
+        # 各種証明書発行
         self.proc.driver.find_element(By.XPATH,
-                                      '//*[@id="right-column"]/div[1]/form/div[1]/div[2]/div[2]/label/span').click()
+                                      '//*[@id="right-column"]/div[1]/form/div[1]/div[6]/div[2]/label/span').click()
 
-        # 3番目の項目: 独立した予約メニューがあるお取引(口座開設・相続手続など)は該当のメニューでご予約ください
-        self.proc.driver.find_element(By.XPATH,
-                                      '//*[@id="right-column"]/div[1]/form/div[1]/div[2]/div[3]/label/span').click()
+        # 口座解約
+        # self.proc.driver.find_element(By.XPATH,
+        #                               '//*[@id="right-column"]/div[1]/form/div[1]/div[6]/div[1]/label/span').click()
 
-        # 2. テキストエリア（ご相談内容・ご希望など）の操作
-        textarea_field = self.proc.driver.find_element(By.ID, "bt_form_attr_res28")
-
-        # 既存の値をクリア（あれば）
-        textarea_field.clear()
-
-        # 新しい値を入力
-        textarea_field.send_keys(f'相続の手続き　残高証明書の発行依頼　被相続人：{self.customer_name}様　生年月日：{self.birthday[0]}年{self.birthday[1]}月{self.birthday[2]}日　口座番号：{mojimoji.zen_to_han(self.bank_account_number)}　')
+        # # 2. テキストエリア（ご相談内容・ご希望など）の操作
+        # textarea_field = self.proc.driver.find_element(By.ID, "bt_form_attr_res28")
+        #
+        # # 既存の値をクリア（あれば）
+        # textarea_field.clear()
+        #
+        # # 新しい値を入力
+        # textarea_field.send_keys(f'相続の手続き　残高証明書の発行依頼　被相続人：{self.customer_name}様　生年月日：{self.birthday[0]}年{self.birthday[1]}月{self.birthday[2]}日　口座番号：{mojimoji.zen_to_han(self.bank_account_number)}　')
 
         ## 3. ラジオボタン（ご予約時刻を15分過ぎてもご来店されない場合...）の操作
         # 選択肢は「確認しました」のみ (name="attr_res9", value="確認しました")
-        radio_button = self.proc.driver.find_element(By.XPATH, '//*[@id="right-column"]/div[1]/form/div[1]/div[6]/div/label/span')
-        radio_button.click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="right-column"]/div[1]/form/div[1]/div[8]/div/label/span').click()
 
         ## 4. フォームの送信
         # 「次へ進む」ボタンを特定 (type="submit", value="次へ進む")
@@ -482,8 +541,8 @@ class Mizuhobank:
 if __name__ == '__main__':
     cl = Mizuhobank()
     # cl.account_freezing()
-    cl.balance_certificate()
+    # cl.balance_certificate()
     # cl.inheritance_notification_create()
-    # cl.reservation()    # 来店予約
+    cl.reservation()    # 来店予約
 
 

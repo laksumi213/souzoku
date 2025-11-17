@@ -208,26 +208,46 @@ class Monex:
     # 残高証明書
     def balance_certificate(self):
         pdf = PdfCreate("A4")
+        pdf.draw_string(62, 198, self.customer_name,12)
+        pdf.draw_string(152, 194.7, self.birthday[0],12)
+        pdf.draw_string(169, 194.7, self.birthday[1],12)
+        pdf.draw_string(180, 194.7, self.birthday[2],12)
+        pdf.draw_string(67, 175.5, f'ｿｳｿﾞｸﾆﾝ {mojimoji.zen_to_han(jaconv.hira2kata(self.heir_name_kana))} ﾀﾞｲﾘﾆﾝ ｷﾞｮｳｾｲｼｮｼﾎｳｼﾞﾝﾁｪｽﾀｰ ﾀﾞｲﾋｮｳｼｬｲﾝ ｼﾐｽﾞ ｾﾝｻｸ', 8)
+        pdf.draw_string(62, 166, f'相続人　{self.heir_name}　代理人', 10)
+        pdf.draw_string(62, 162, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
 
-        pdf.draw_string(23, 193, f'相続人　{self.heir_name}　代理人', 10)
-        pdf.draw_string(23, 188, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
-
-        pdf.draw_string(63, 55, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
-        pdf.draw_string(63, 37, f'行政書士法人チェスター　森町（{self.code}）', 12)
+        pdf.draw_string(57.5, 156, '103', 6)
+        pdf.draw_string(67, 156, '0028', 6)
+        pdf.draw_string(62, 150, '東京都中央区八重洲1-7-20 八重洲口会館2階', 10)
+        pdf.draw_string(62, 146, f'担当：森町（{self.code}）', 10)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_SBI申請銀行_残高証明書依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_マネックス証券_開示依頼書.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         'SBI新生銀行_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
+                                         'マネックス証券_開示依頼書.pdf'), page=1, open_bool=False)
 
+        pdf = PdfCreate("A4")
+        pdf.draw_string(60, 242, self.customer_name,12)
+        pdf.draw_string(69, 236,
+                        f'ｿｳｿﾞｸﾆﾝ {mojimoji.zen_to_han(jaconv.hira2kata(self.heir_name_kana))} ﾀﾞｲﾘﾆﾝ ｷﾞｮｳｾｲｼｮｼﾎｳｼﾞﾝﾁｪｽﾀｰ ﾀﾞｲﾋｮｳｼｬｲﾝ ｼﾐｽﾞ ｾﾝｻｸ',
+                        7)
+        pdf.draw_string(60, 230, f'相続人　{self.heir_name}　代理人', 10)
+        pdf.draw_string(60, 226, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
+        pdf.draw_string(60, 220.5, '103-0028', 8)
+        pdf.draw_string(60, 217, f'東京都中央区八重洲一丁目7-20', 8)
+        pdf.draw_string(60, 214, f'八重洲口会館2階　担当:森町({self.code})', 8)
+        pdf.draw_string(60, 206, '050-6864-7034')
+        pdf.draw_string(18, 165, '〇', 18)
+        pdf.draw_string(74.5, 169, '✓', 16)
+        pdf.draw_string(18, 103.6, '〇', 18)
         path2 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書2.pdf')
+                             f'{self.code}{self.heir[0]}様_マネックス証券_残高証明書申請書.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '三菱UFJモルガン・スタンレー証券_相続に関する届出書.pdf'), page=2, open_bool=False)
+                                         'マネックス証券_残高証明書申請書.pdf'), page=1, open_bool=False)
 
         pdf.pdf_marge(
             os.path.join(self.output_path,
-                         f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
+                         f'{self.code}{self.heir[0]}マネックス証券_開示依頼書・残高証明書申請書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
             path1, path2)
 
     def reservation(self):
@@ -241,8 +261,8 @@ class Monex:
 
 if __name__ == '__main__':
     cl = Monex()
-    cl.account_freezing()
-    # cl.balance_certificate()
+    # cl.account_freezing()
+    cl.balance_certificate()
     # cl.inheritance_notification_create()
     # cl.reservation()  # 来店予約
 

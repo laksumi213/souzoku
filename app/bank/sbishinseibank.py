@@ -20,8 +20,10 @@ class Sbishinseibank:
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
-        self.bank_account_number = mojimoji.han_to_zen(str('').zfill(7))
-        self.branch_name = ''
+        self.bank_account_number = '1211912'
+        if self.bank_account_number:
+            self.bank_account_number = mojimoji.han_to_zen(str(self.bank_account_number).zfill(7))
+        self.branch_name = '本店'
         self.subjects = ''
         self.birthday = re.findall('[0-9]+', '1958/9/18')
         self.address = '千葉県船橋市夏見台1-13-24'
@@ -198,10 +200,54 @@ class Sbishinseibank:
                                          'SBI新生銀行_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
 
 
+    def trading_item(self):
+        # 取引明細
+        pdf = PdfCreate("A4")
+
+        if self.branch_code:
+            pdf.draw_string(91, 236, self.branch_code[0], 14)
+            pdf.draw_string(100, 236, self.branch_code[1], 14)
+            pdf.draw_string(109, 236, self.branch_code[2], 14)
+
+        if not self.bank_account_number == '０００００００':
+            pdf.draw_string(126, 236, self.bank_account_number[0], 14)
+            pdf.draw_string(135, 236, self.bank_account_number[1], 14)
+            pdf.draw_string(144, 236, self.bank_account_number[2], 14)
+            pdf.draw_string(153, 236, self.bank_account_number[3], 14)
+            pdf.draw_string(162, 236, self.bank_account_number[4], 14)
+            pdf.draw_string(171, 236, self.bank_account_number[5], 14)
+            pdf.draw_string(180, 236, self.bank_account_number[6], 14)
+
+        pdf.draw_string(56, 226, f'{self.name_kana[0]}　{self.name_kana[1]}',12)
+        pdf.draw_string(56, 215, f'{self.name[0]}　{self.name[1]}',14)
+
+        pdf.draw_string(23, 195, f'相続人　{self.heir_name}　代理人', 11)
+        pdf.draw_string(23, 190, f'行政書士法人チェスター　代表社員　清水　茜作', 11)
+        pdf.draw_string(121, 190, f'相続人代理人', 11)
+
+        pdf.draw_string(34, 128, '050', 12)
+        pdf.draw_string(51, 128, '6864', 12)
+        pdf.draw_string(72, 128, '7034', 12)
+
+        pdf.draw_string(114, 132, 'モリマチ　ツバサ', 12)
+        pdf.draw_string(114, 124, '森町　翼', 12)
+
+        pdf.draw_string(50, 97, '103', 10)
+        pdf.draw_string(68, 97, '0028', 10)
+
+        pdf.draw_string(50, 87, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
+        pdf.draw_string(50, 69, f'行政書士法人チェスター　森町（{self.code}）', 12)
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir[0]}様_SBI新生銀行_取引明細申請書.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'SBI新生銀行_取引明細申請書.pdf'), page=3, open_bool=True)
+
 def main():
     proc = Sbishinseibank()
     # proc.account_freezing()
-    proc.balance_certificate()
+    # proc.balance_certificate()
+    proc.trading_item()     #取引明細
     # proc.reservation()  # 来店予約
 
 

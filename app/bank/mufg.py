@@ -18,22 +18,22 @@ class Mufg:
     def __init__(self):
         super().__init__()
         self.proc = None
-        self.url = None
-        self.code = 'G2103'
-        self.customer_name = '水谷　弘'
-        self.customer_name_kana = 'みずたに　ひろし'
-        self.bank_account_number = '1149170'
+        self.code = 'G1967'
+        self.customer_name = '宇野　正名'
+        self.customer_name_kana = 'うの　まさな'
+        self.bank_account_number = ''
         if self.bank_account_number:
             self.bank_account_number = str(self.bank_account_number).zfill(7)
-        self.branch_name = '京橋'
+        self.branch_name = '京橋支店'
         self.subjects = '普通'
-        self.birthday = re.findall('[0-9]+', '1935/1/12')
-        self.address = '東京都中央区晴海二丁目5番16-1101号'
+        self.birthday = re.findall('[0-9]+', '1958/9/18')
+        self.address = '千葉県船橋市夏見台1-13-24'
         self.building = ''
-        self.passed_away_date = re.findall('[0-9]+', '2025/5/16')
-        self.heir_name = '水谷　昌代'
-        self.heir_name_kana = 'みずたに　まさよ'
-        self.heir_address = '東京都中央区晴海二丁目5番16-1101号'
+        self.passed_away_date = re.findall('[0-9]+', '2025-06-27')
+        self.deathday = '2025-06-27'
+        self.heir_name = '宇野　美穂'
+        self.heir_name_kana = 'うの　みほ'
+        self.heir_address = '千葉県船橋市夏見台1-13-24'
         self.heir_building = ''
 
         self.date = re.findall(r'\d+', datetime.now().strftime('%Y/%m/%d'))
@@ -65,6 +65,13 @@ class Mufg:
 
         self.heir_kana = re.findall(r'^(.*?)[ 　](.*)$', jaconv.hira2kata(self.heir_name_kana))[0]
         print('相続人カナ', self.heir_kana)
+
+        banks = utils.bank_search(name='三菱UFJ銀行')
+        self.branch_code = ''
+        for bank in banks:
+            if utils.branch_code_search(bank_code=bank[1], branch_name=self.branch_name):
+                self.branch_code = utils.branch_code_search(bank_code=bank[1], branch_name=self.branch_name)
+                print('self.branch_code:', self.branch_code)
 
 
     def account_freezing(self):
@@ -162,7 +169,7 @@ class Mufg:
             Select(self.proc.driver.find_element(By.ID, f'InheriteeAccountType1')).select_by_visible_text("外貨預金")
 
         # 口座番号
-        self.proc.driver.find_element(By.ID, f'InheriteeAccountType1').send_keys(str(self.bank_account_number).zfill(7))
+        self.proc.driver.find_element(By.ID, f'InheriteeAccountNumber1').send_keys(str(self.bank_account_number).zfill(7))
 
         # 次へ
         self.proc.driver.find_element(By.XPATH, '//*[@id="form0"]/nav/ul/li[2]/a').click()
@@ -261,15 +268,16 @@ class Mufg:
         pdf.draw_string(154, 240, '7034', 10)
         # 宮持
         # pdf.draw_string(154, 240, '7048', 10)
-        pdf.draw_string(26, 240, f'被相続人　{self.customer_name}　相続人　{self.heir_name}')
-        pdf.draw_string(26, 235, '代理人　行政書士法人チェスター　代表社員　清水　茜作')
+        pdf.draw_string(26, 241, f'被相続人　{self.customer_name}　相続人　{self.heir_name}')
+        pdf.draw_string(26, 236, '代理人　行政書士法人チェスター　代表社員　清水　茜作')
+        pdf.draw_string(26, 231.5, f'担当：森町（{self.code}）')
 
         pdf.draw_string(53, 220, self.customer_name, 16)
 
         # 証明日
         deathday = self.passed_away_date
-        pdf.draw_string(37.5, 194, str(deathday[0]).zfill(2)[0], 12)
-        pdf.draw_string(43.5, 194, str(deathday[0]).zfill(2)[1], 12)
+        pdf.draw_string(37.5, 194, re.findall(r'\d+', str(utils.convert_to_wareki2(self.deathday)))[0].zfill(2)[0], 12)
+        pdf.draw_string(43.5, 194, re.findall(r'\d+', str(utils.convert_to_wareki2(self.deathday)))[0].zfill(2)[1], 12)
         pdf.draw_string(37+18.5, 194, str(deathday[1]).zfill(2)[0], 12)
         pdf.draw_string(37+25, 194, str(deathday[1]).zfill(2)[1], 12)
         pdf.draw_string(37+37, 194, str(deathday[2]).zfill(2)[0], 12)
@@ -302,13 +310,14 @@ class Mufg:
             bool = 1
             rec_row.append(i)
 
-        pdf.draw_string(122, (182 - i * 7), str(self.bank_account_number).zfill(7)[0], 11)
-        pdf.draw_string(130, (182 - i * 7), str(self.bank_account_number).zfill(7)[1], 11)
-        pdf.draw_string(138, (182 - i * 7), str(self.bank_account_number).zfill(7)[2], 11)
-        pdf.draw_string(145.5, (182 - i * 7), str(self.bank_account_number).zfill(7)[3], 11)
-        pdf.draw_string(153, (182 - i * 7), str(self.bank_account_number).zfill(7)[4], 11)
-        pdf.draw_string(161, (182 - i * 7), str(self.bank_account_number).zfill(7)[5], 11)
-        pdf.draw_string(169, (182 - i * 7), str(self.bank_account_number).zfill(7)[6], 11)
+        if self.bank_account_number:
+            pdf.draw_string(122, (182 - i * 7), str(self.bank_account_number).zfill(7)[0], 11)
+            pdf.draw_string(130, (182 - i * 7), str(self.bank_account_number).zfill(7)[1], 11)
+            pdf.draw_string(138, (182 - i * 7), str(self.bank_account_number).zfill(7)[2], 11)
+            pdf.draw_string(145.5, (182 - i * 7), str(self.bank_account_number).zfill(7)[3], 11)
+            pdf.draw_string(153, (182 - i * 7), str(self.bank_account_number).zfill(7)[4], 11)
+            pdf.draw_string(161, (182 - i * 7), str(self.bank_account_number).zfill(7)[5], 11)
+            pdf.draw_string(169, (182 - i * 7), str(self.bank_account_number).zfill(7)[6], 11)
 
         pdf.draw_string(192, (182 - i * 7), '1', 11)
 
@@ -379,7 +388,7 @@ class Mufg:
 
         if os.name == 'nt':
             print('nt')
-            output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（スタンダードプラン）\04.残高証明書・取引履歴'
+            output_path = fr'\\192.168.11.20\行政書士法人チェスター\01.個別ＪＯＢ\{self.code}{self.heir_name.replace('　', '')}様（フルサポートプラン）\07.申請書類\01.残証申請書類'
 
         elif os.name == 'posix':
             print('posix')
@@ -429,6 +438,7 @@ class Mufg:
         # 新丸の内支店（徒歩１０分）
         url = 'https://airrsv.net/AKR2137240529/calendar'
         self.proc.web_open(url)
+
         messagebox.showinfo("待機中", "「予約するボタンを押下後」にOKボタンをクリックしてください。")
         self.proc.web_operation(self.proc.driver.current_url)
         self.proc.driver.implicitly_wait(10)
@@ -440,58 +450,65 @@ class Mufg:
         # --- 1. ご予約者様情報の入力 (必須) ---
 
         # フリガナ（セイ）(name="lastNmKn")
-        self.proc.driver.find_element(By.NAME, "lastNmKn").send_keys('ギョウセイショシホウジンチェスター　モリマチ')
+        self.proc.driver.find_element(By.NAME, "lastNmKn").send_keys('ギョウセイショシホウジンチェスター')
 
         # フリガナ（メイ）(name="firstNmKn")
-        self.proc.driver.find_element(By.NAME, "firstNmKn").send_keys(KANA_MEI)
+        self.proc.driver.find_element(By.NAME, "firstNmKn").send_keys('モリマチツバサ')
 
         # 名前（姓）(name="lastNm")
-        self.proc.driver.find_element(By.NAME, "lastNm").send_keys(KANJI_SEI)
+        self.proc.driver.find_element(By.NAME, "lastNm").send_keys('行政書士法人チェスター')
 
         # 名前（名）(name="firstNm")
-        self.proc.driver.find_element(By.NAME, "firstNm").send_keys(KANJI_MEI)
+        self.proc.driver.find_element(By.NAME, "firstNm").send_keys(f'森町翼（{mojimoji.han_to_zen(self.code)}）')
 
         # 電話番号 (name="tel1")
-        self.proc.driver.find_element(By.NAME, "tel1").send_keys(TEL_NUMBER)
+        self.proc.driver.find_element(By.NAME, "tel1").send_keys('05068647034')
 
         # メールアドレス (name="mailAddress1")
-        self.proc.driver.find_element(By.NAME, "mailAddress1").send_keys(EMAIL_ADDRESS)
+        self.proc.driver.find_element(By.NAME, "mailAddress1").send_keys('t.morimachi_gy@chester-tax.com')
 
         # メールアドレス（確認用）(name="mailAddress1ForCnfrm")
-        self.proc.driver.find_element(By.NAME, "mailAddress1ForCnfrm").send_keys(EMAIL_ADDRESS)
+        self.proc.driver.find_element(By.NAME, "mailAddress1ForCnfrm").send_keys('t.morimachi_gy@chester-tax.com')
 
         # --- 2. お亡くなりになった方の情報（生年月日とお客様番号）の入力 (必須) ---
 
         # 生年月日（年）(name="birthdayYyyy")
-        Select(self.proc.driver.find_element(By.NAME, "birthdayYyyy")).select_by_value(BIRTH_YEAR)
+        Select(self.proc.driver.find_element(By.NAME, "birthdayYyyy")).select_by_value(self.birthday[0])
 
         # 生年月日（月）(name="birthdayMm")
-        Select(self.proc.driver.find_element(By.NAME, "birthdayMm")).select_by_value(BIRTH_MONTH)
+        Select(self.proc.driver.find_element(By.NAME, "birthdayMm")).select_by_value(str(self.birthday[1]).zfill(2))
 
         # 生年月日（日）(name="birthdayDd")
-        Select(self.proc.driver.find_element(By.NAME, "birthdayDd")).select_by_value(BIRTH_DAY)
+        Select(self.proc.driver.find_element(By.NAME, "birthdayDd")).select_by_value(str(self.birthday[2]).zfill(2))
 
         # お客様番号 (name="cstmrNo")
-        self.proc.driver.find_element(By.NAME, "cstmrNo").send_keys(CSTMR_NO)
+        self.proc.driver.find_element(By.NAME, "cstmrNo").send_keys(f'{self.branch_code}{self.bank_account_number}')
 
         # --- 3. 備考欄の入力 (必須) ---
 
         # 備考欄 (name="exItem01", id="rmFreeEntry")
         textarea_field = self.proc.driver.find_element(By.ID, "rmFreeEntry")
         textarea_field.clear()  # 既存のテキストがあればクリア
-        textarea_field.send_keys(MEMO_DETAILS)
+        textarea_field.send_keys(f'故{self.customer_name}、残高証明書の発行')
+        # textarea_field.send_keys(f'故{self.customer_name}、相続届の提出')
 
         print("必須項目にデータを入力しました。")
-        print(f"備考欄の入力内容: {MEMO_DETAILS[:20]}...")
 
         # --- 4. フォームの送信 ---
 
         # 「次へ」ボタンを特定 (type="submit", class="btn is-primary")
         # フォームの送信機能はJavaScriptに依存しているため、クリックが確実です。
-        submit_button = self.proc.driver.find_element(By.XPATH, "//button[@type='submit' and text()='次へ']")
+        submit_button = self.proc.driver.find_element(By.XPATH, '//*[@id="frontStaffBookingEditForm"]/div[1]/button')
 
         # 実際にフォームを送信したい場合は、以下のコメントを外してください
-        # submit_button.click()
+        submit_button.click()
+        sleep(1)
+
+        self.proc.driver.find_element(By.XPATH, '//*[@id="js-accessibility"]/li[1]/ul/li/label/span').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="js-accessibility"]/li[2]/ul/li/label/span').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="js-accessibility"]/li[3]/ul/li/label/span').click()
+        self.proc.driver.find_element(By.XPATH, '//*[@id="frontStaffBookingEditForm"]/div[1]/button[2]').click()
+
 
     # 相続届
     def inheritance_notification(self):
@@ -524,8 +541,8 @@ class Mufg:
 def main():
     proc = Mufg()
     # proc.account_freezing()
-    proc.balance_certificate_create()
-    # proc.reservation()
+    # proc.balance_certificate_create()
+    proc.reservation()
     # proc.inheritance_notification()
 
 if __name__ == '__main__':

@@ -26,7 +26,7 @@ class TochigiBank:
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
-        self.bank_account_number = ''
+        self.bank_account_number = '1099427'
         if self.bank_account_number:
             mojimoji.han_to_zen(str(self.bank_account_number).zfill(7))
         self.branch_name = ''
@@ -243,31 +243,108 @@ class TochigiBank:
     def balance_certificate(self):
         pdf = PdfCreate("A4")
 
-        pdf.draw_string(23, 193, f'相続人　{self.heir_name}　代理人', 10)
-        pdf.draw_string(23, 188, f'行政書士法人チェスター　代表社員　清水　茜作', 10)
+        pdf.draw_string(111, 233, self.address)
+        pdf.draw_string(111, 226.3, self.customer_name, 12)
 
-        pdf.draw_string(63, 55, '東京都中央区八重洲1-7-20 八重洲口会館2階', 12)
-        pdf.draw_string(63, 37, f'行政書士法人チェスター　森町（{self.code}）', 12)
+        pdf.draw_string(111, 215, '東京都中央区八重洲1-7-20 八重洲口会館2階')
+        pdf.draw_string(111, 211, f'相続人　{self.heir_name}')
+        pdf.draw_string(111, 207, f'代理人　行政書士法人チェスター')
+        pdf.draw_string(111, 203, f'代表社員　清水　茜作')
+
+        pdf.draw_string(27, 185.5, self.customer_name, 14)
+        pdf.draw_rect(90, 194, 107, 189)
+        pdf.draw_string(135, 185.5, self.passed_away_date[0], 14)
+        pdf.draw_string(155, 185.5, self.passed_away_date[1], 14)
+        pdf.draw_string(169, 185.5, self.passed_away_date[2], 14)
+        pdf.draw_string(77, 172.7, '1', 14)
+
+        pdf.draw_string(72, 145, '全取引', 12)
 
         path1 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_SBI申請銀行_残高証明書依頼書.pdf')
+                             f'{self.code}{self.heir[0]}様_栃木銀行_残高証明書依頼書.pdf')
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         'SBI新生銀行_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
+                                         '栃木銀行_残高証明書依頼書.pdf'), page=2, open_bool=True)
 
+        pdf = PdfCreate("A4")
         path2 = os.path.join(self.output_path,
-                             f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書2.pdf')
+                             f'{self.code}{self.heir[0]}様_栃木銀行_残高証明書依頼書_経理依頼用.pdf')
         pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
-                                         '三菱UFJモルガン・スタンレー証券_相続に関する届出書.pdf'), page=2, open_bool=False)
+                                         '栃木銀行_残高証明書依頼書.pdf'), page=1, open_bool=True)
 
-        pdf.pdf_marge(
-            os.path.join(self.output_path,
-                         f'{self.code}{self.heir[0]}様_三菱UFJモルガン・スタンレー証券_相続に関する届出書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf'),
-            path1, path2)
+
+    def trading_item(self):
+        pdf = PdfCreate("A4")
+
+        pdf.draw_string(102, 248, '東京都中央区八重洲1-7-20 八重洲口会館2階')
+        pdf.draw_string(102, 244, f'相続人　{self.heir_name}　代理人　行政書士法人チェスター')
+        pdf.draw_string(102, 240, f'代表社員　清水　茜作')
+
+        pdf.draw_string(68, 172, self.customer_name, 12)
+        pdf.draw_string(140, 172, self.passed_away_date[0], 12)
+        pdf.draw_string(160, 172, self.passed_away_date[1], 12)
+        pdf.draw_string(176, 172, self.passed_away_date[2], 12)
+
+        pdf.draw_string(64, 162, '〇', 16)
+
+        if self.bank_account_number:
+            pdf.draw_string(130, 162, self.bank_account_number, 12)
+
+        pdf.draw_rect(66, 153, 85, 158.5)
+
+        pdf.draw_string(68, 136, '通帳紛失により履歴が確認できないため。', 12)
+        pdf.draw_string(102.5, 126, '〇', 18)
+
+        pdf.draw_string(116, 43, '東京都中央区八重洲1-7-20 八重洲口会館2階', 8)
+        pdf.draw_string(116, 39, f'相続人　{self.heir_name}　代理人', 8)
+        pdf.draw_string(116, 35, f'行政書士法人チェスター　代表社員　清水　茜作', 8)
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir[0]}様_栃木銀行_取引明細申請書.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         '栃木銀行_取引明細申請書.pdf'), page=1, open_bool=True)
+
+        ### 定期　※今回のみ
+        pdf = PdfCreate("A4")
+
+        pdf.draw_string(102, 248, '東京都中央区八重洲1-7-20 八重洲口会館2階')
+        pdf.draw_string(102, 244, f'相続人　{self.heir_name}　代理人　行政書士法人チェスター')
+        pdf.draw_string(102, 240, f'代表社員　清水　茜作')
+
+        pdf.draw_string(68, 172, self.customer_name, 12)
+        pdf.draw_string(140, 172, self.passed_away_date[0], 12)
+        pdf.draw_string(160, 172, self.passed_away_date[1], 12)
+        pdf.draw_string(176, 172, self.passed_away_date[2], 12)
+
+        pdf.draw_rect(85, 162, 98, 167)
+        pdf.draw_string(105, 163, '定期', 12)
+        pdf.draw_string(130, 162, '1052464', 12)
+
+        pdf.draw_rect(66, 153, 85, 158.5)
+
+        pdf.draw_string(68, 136, '通帳紛失により履歴が確認できないため。', 12)
+        pdf.draw_string(102.5, 126, '〇', 18)
+
+        pdf.draw_string(116, 43, '東京都中央区八重洲1-7-20 八重洲口会館2階', 8)
+        pdf.draw_string(116, 39, f'相続人　{self.heir_name}　代理人', 8)
+        pdf.draw_string(116, 35, f'行政書士法人チェスター　代表社員　清水　茜作', 8)
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir[0]}様_栃木銀行_取引明細申請書_定期.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         '栃木銀行_取引明細申請書.pdf'), page=1, open_bool=True)
+
+        # pdf = PdfCreate("A4")
+        # path2 = os.path.join(self.output_path,
+        #                      f'{self.code}{self.heir[0]}様_栃木銀行_取引明細申請書_経理依頼用.pdf')
+        # pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+        #                                  '栃木銀行_取引明細申請書.pdf'), page=1, open_bool=True)
+
 
 if __name__ == '__main__':
     cl = TochigiBank()
-    cl.account_freezing()
+    # cl.account_freezing()
     # cl.balance_certificate()
+    cl.trading_item()
     # cl.inheritance_notification_create()
 
 

@@ -18,9 +18,12 @@ class JohokuBank:
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
-        self.bank_account_number = mojimoji.han_to_zen(str('').zfill(7))
-        self.branch_name = ''
-        self.subjects = ''
+        self.bank_account_number = '6134734'
+        if self.bank_account_number:
+            self.bank_account_number = str(self.bank_account_number).zfill(7)
+            # self.bank_account_number = mojimoji.han_to_zen(str(self.bank_account_number).zfill(7))
+        self.branch_name = '南千住支店'
+        self.subjects = '普通'
         self.birthday = '1958/9/18'
         # self.birthday = re.findall('[0-9]+', '1958/9/18')
         self.address = '千葉県船橋市夏見台1-13-24'
@@ -46,9 +49,12 @@ class JohokuBank:
         print('utils.get_zipcode_from_address(address):', utils.get_zipcode_from_address(address))
 
         heir_address = re.findall(pattern, self.heir_address)[0]
-        self.heir_zipcode = re.findall('[0-9]+', utils.get_zipcode_from_address(heir_address))
-        print('heir_address:', re.findall(pattern, self.heir_address)[0])
-        print('utils.get_zipcode_from_address(address):', self.heir_zipcode)
+        try:
+            self.heir_zipcode = re.findall('[0-9]+', utils.get_zipcode_from_address(heir_address))
+            print('heir_address:', re.findall(pattern, self.heir_address)[0])
+            print('utils.get_zipcode_from_address(address):', self.heir_zipcode)
+        except:
+            pass
 
         match = re.search(r'([^\d]+)(\d.*)', address[2])
         if match:
@@ -116,10 +122,51 @@ class JohokuBank:
         pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
                                          '城北信用金庫_残高証明書発行依頼書.pdf'), page=1, open_bool=True)
 
+    def trading_item(self):
+        pdf = PdfCreate("A4")
+        pdf.draw_string(25, 243, '東京都中央区八重洲1-7-20 八重洲口会館2階')
+        pdf.draw_string(25, 228, f'被相続人　{self.customer_name}')
+        pdf.draw_string(25, 224, f'相続人　{self.heir_name}　代理人')
+        pdf.draw_string(25, 220, '行政書士法人チェスター')
+        pdf.draw_string(25, 216, '代表社員　清水　茜作')
+        pdf.draw_string(18, 207, '✓', 12)
+        pdf.draw_string(95, 196.3, 1, 12)
+        pdf.draw_string(36.5, 161.5, '〇', 16)
+
+        if '普通' in self.subjects:
+            pdf.draw_string(46.5, 147, '0', 12)
+            pdf.draw_string(57, 147, '1', 12)
+
+        if self.bank_account_number:
+            pdf.draw_string(64, 147, self.bank_account_number[0], 12)
+            pdf.draw_string(71, 147, self.bank_account_number[1], 12)
+            pdf.draw_string(78, 147, self.bank_account_number[2], 12)
+            pdf.draw_string(84, 147, self.bank_account_number[3], 12)
+            pdf.draw_string(90, 147, self.bank_account_number[4], 12)
+            pdf.draw_string(96, 147, self.bank_account_number[5], 12)
+            pdf.draw_string(103, 147, self.bank_account_number[6], 12)
+
+            # 口座2つ目
+            pdf.draw_string(46.5+67, 147, '0', 12)
+            pdf.draw_string(57+67, 147, '1', 12)
+            pdf.draw_string(64+67, 147, 0, 12)
+            pdf.draw_string(71+67, 147, 0, 12)
+            pdf.draw_string(78+67, 147, 5, 12)
+            pdf.draw_string(84+67, 147, 5, 12)
+            pdf.draw_string(90+67, 147, 0, 12)
+            pdf.draw_string(96+67, 147, 5, 12)
+            pdf.draw_string(103+67, 147, 5, 12)
+
+        pdf.draw_string(30, 109, '通帳紛失のため', 12)
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir[0]}様_城北信用金庫_取引履歴発行依頼書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         '城北信用金庫_取引履歴発行依頼書.pdf'), page=2, open_bool=True)
 
 def main():
     proc = JohokuBank()
-    proc.balance_certificate()
+    # proc.balance_certificate()
+    proc.trading_item()
 
 
 if __name__ == '__main__':

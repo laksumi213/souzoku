@@ -23,8 +23,10 @@ class Sevenbank:
         self.code = 'G1967'
         self.customer_name = '宇野　正名'
         self.customer_name_kana = 'うの　まさな'
-        self.bank_account_number = mojimoji.han_to_zen(str('').zfill(7))
-        self.branch_name = ''
+        self.bank_account_number = '0809126'
+        if self.bank_account_number:
+            self.bank_account_number = mojimoji.han_to_zen(str(self.bank_account_number).zfill(7))
+        self.branch_name = 'チューリップ支店'
         self.subjects = ''
         self.birthday = re.findall('[0-9]+', '1958/9/18')
         self.address = '千葉県船橋市夏見台1-13-24'
@@ -41,7 +43,13 @@ class Sevenbank:
             print('posix')
             self.output_path = os.path.dirname(os.path.dirname(os.getcwd()))
 
-
+        banks = utils.bank_search(name='セブン銀行')
+        self.branch_code = ''
+        for bank in banks:
+            if utils.branch_code_search(bank_code=bank[1], branch_name=self.branch_name):
+                self.branch_code = mojimoji.han_to_zen(
+                    utils.branch_code_search(bank_code=bank[1], branch_name=self.branch_name))
+                print('self.branch_code:', self.branch_code)
 
     def account_freezing(self):
         pattern = '(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村)市|.+?郡(?:玉村|大町|.+?)[町村]|.+?市.+?区|.+?[市区町村])(.+)'
@@ -170,10 +178,108 @@ class Sevenbank:
                          f'{self.code}{self.heir_name[0]}様_セブン銀行_残高証明書の振込情報（経理用）.pdf'),
             path2, path3)
 
+    def accrued_interest(self):
+        pdf = PdfCreate("A4")
+
+        pdf.draw_string(65, 243, self.customer_name)
+        pdf.draw_string(65, 236, f'相続人　{self.heir_name}　代理人')
+        pdf.draw_string(65, 232, f'行政書士法人チェスター　代表社員　清水　茜作')
+        pdf.draw_string(65, 224, '中央区八重洲一丁目7-20 八重洲口会館2階')
+        pdf.draw_string(65, 220, f'宛先　担当：森町（{self.code}）')
+        pdf.draw_string(65, 212, '050')
+        pdf.draw_string(87, 212, '6864')
+        pdf.draw_string(109, 212, '7034')
+
+        if self.branch_code:
+            pdf.draw_string(61, 204, self.branch_code[0], 12)
+            pdf.draw_string(68, 204, self.branch_code[1], 12)
+            pdf.draw_string(75, 204, self.branch_code[2], 12)
+
+        if self.bank_account_number:
+            pdf.draw_string(101, 204, self.bank_account_number[0], 12)
+            pdf.draw_string(108, 204, self.bank_account_number[1], 12)
+            pdf.draw_string(115, 204, self.bank_account_number[2], 12)
+            pdf.draw_string(122, 204, self.bank_account_number[3], 12)
+            pdf.draw_string(129, 204, self.bank_account_number[4], 12)
+            pdf.draw_string(136, 204, self.bank_account_number[5], 12)
+            pdf.draw_string(143, 204, self.bank_account_number[6], 12)
+
+        # 証明基準日
+        pdf.draw_string(49, 139, self.passed_away_date[0], 12)
+        pdf.draw_string(79, 139, self.passed_away_date[1], 12)
+        pdf.draw_string(105, 139, self.passed_away_date[2], 12)
+
+        pdf.draw_string(38, 115.5, '〇', 18)
+        # pdf.draw_string(38, 108, '〇', 18)
+        # pdf.draw_string(50.7, 89.5, '〇', 14)
+        # pdf.draw_string(54, 81, '次の期間の取引明細')
+        # pdf.draw_string(54, 77, '・2020/6/27から2025/7/31')
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir_name[0]}様_セブン銀行_定期預金経過利息申請書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'セブン銀行_定期預金経過利息申請書.pdf'), page=2, open_bool=True)
+
+        # # 経理への振込依頼時の添付ファイル
+        # pdf = PdfCreate("A4")
+        # pdf.draw_string(72, 144, f'故 {self.customer_name}さま 代理人 行政書士法人チェスター 代表社員 清水 茜作さま')
+        # path2 = os.path.join(self.output_path,
+        #                      f'{self.code}{self.heir_name[0]}様_セブン銀行_定期預金経過利息申請書_経理送付用_{self.date[0]}{self.date[2]}{self.date[2]}.pdf')
+        # pdf.pdf_save(path2, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+        #                                  'セブン銀行_定期預金経過利息申請書.pdf'), page=1, open_bool=True)
+
+    def trading_item(self):
+        pdf = PdfCreate("A4")
+        pdf.draw_string(45, 204.5, jaconv.hira2kata(self.customer_name_kana), 8)
+        pdf.draw_string(45, 195, self.customer_name,12)
+
+        if self.branch_code:
+            pdf.draw_string(34, 186, self.branch_code[0], 12)
+            pdf.draw_string(43, 186, self.branch_code[1], 12)
+            pdf.draw_string(52, 186, self.branch_code[2], 12)
+
+        if self.bank_account_number:
+            pdf.draw_string(93, 186, self.bank_account_number[0], 12)
+            pdf.draw_string(102, 186, self.bank_account_number[1], 12)
+            pdf.draw_string(111, 186, self.bank_account_number[2], 12)
+            pdf.draw_string(120, 186, self.bank_account_number[3], 12)
+            pdf.draw_string(129.5, 186, self.bank_account_number[4], 12)
+            pdf.draw_string(137.5, 186, self.bank_account_number[5], 12)
+            pdf.draw_string(146.5, 186, self.bank_account_number[6], 12)
+
+        pdf.draw_string(45, 181.5,
+                        f'ｿｳｿﾞｸﾆﾝ　{mojimoji.zen_to_han(jaconv.hira2kata(self.heir_name_kana))} ﾀﾞｲﾘﾆﾝ ｷﾞｮｳｾｲｼｮｼﾎｳｼﾞﾝﾁｪｽﾀｰ ﾀﾞｲﾋｮｳｼｬｲﾝ ｼﾐｽﾞ ｾﾝｻｸ',
+                        8)
+
+        pdf.draw_string(45, 175, f'相続人　{self.heir_name}　代理人')
+        pdf.draw_string(45, 171, f'行政書士法人チェスター　代表社員　清水　茜作')
+        pdf.draw_string(39, 165, f'代理人', 8)
+
+        pdf.draw_string(45, 161, 'ﾄｳｷｮｳﾄﾁｭｳｵｳｸﾔｴｽ1-7-20 ﾔｴｽｸﾞﾁｶｲｶﾝ2ｶｲ ﾀﾝﾄｳ:ﾓﾘﾏﾁ', 8)
+
+        pdf.draw_string(34, 157, '1  0  3    0  0  2  8', 8)
+        pdf.draw_string(37, 147, '東京', 12)
+        pdf.draw_string(49.1, 151, '〇', 12)
+        pdf.draw_string(64, 154, '中央区八重洲一丁目7-20 八重洲口会館2階')
+        pdf.draw_string(64, 145, f'宛先　担当：森町（{self.code}）')
+
+        pdf.draw_string(41, 138, '050')
+        pdf.draw_string(59, 138, '6864')
+        pdf.draw_string(76, 138, '7034')
+
+        pdf.draw_string(78, 116, '✓', 12)
+
+        path1 = os.path.join(self.output_path,
+                             f'{self.code}{self.heir_name[0]}様_セブン銀行_取引明細申請書_{self.date[0]}{self.date[1]}{self.date[2]}.pdf')
+        pdf.pdf_save(path1, os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'assets/pdf',
+                                         'セブン銀行_取引明細申請書.pdf'), page=1, open_bool=True)
+
 def main():
     proc = Sevenbank()
     # proc.account_freezing()
-    proc.balance_certificate()
+    # proc.balance_certificate()
+    # proc.accrued_interest()  # 定期預金経過利息
+    proc.trading_item()  # 取引明細
 
 
 if __name__ == '__main__':

@@ -1,45 +1,77 @@
-import pytesseract
-from PIL import Image
-import pandas as pd  # 結果をデータフレームとして扱うため
+from google import genai
+from google.genai.errors import APIError
+import os
+import pathlib
+import shutil  # ファイルのコピー/移動に使用
 
-# 1. Tesseractの実行ファイルのパスを設定（Windowsユーザー向け）
-# 🚨 注意: Tesseractをインストールした場所に合わせてパスを変更してください
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-# 2. 画像ファイルを読み込む
-# 🚨 注意: 'input_document.png' を実際のファイル名に置き換えてください
 try:
-    img = Image.open('input_document.png')
-except FileNotFoundError:
-    print("エラー: 'input_document.png' が見つかりません。ファイル名を確認してください。")
+    # 1. クライアントの初期化
+    # APIキーが環境変数に設定されていれば、引数なしでOK
+    client = genai.Client()
+
+except Exception as e:
+    print("エラー: Gemini APIキーが正しく設定されていません。")
+    print(f"詳細: {e}")
+    # プログラムを終了
     exit()
 
-# 3. 座標情報を含むOCR結果を取得
-# output_type.DATAFRAME を指定することで、結果がデータフレームとして返されます
-data = pytesseract.image_to_data(
-    img,
-    lang='jpn',  # 認識言語を日本語に設定
-    output_type=pytesseract.Output.DATAFRAME
-)
+# 処理するファイル名
+ORIGINAL_FILE_PATH = r"C:\Users\Gy488chester-PC\souzoku\G2203【飯野紀一様】横浜市青葉区すみよし台９－３３不動産登記（土地全部事項）2025110500538755.PDF"
 
-# 4. 認識結果と座標情報を表示
-print("--- データフレームの最初の5行 ---")
-print(data.head())
+# コピー先の安全なファイル名 (英数字のみ)
+TEMP_FILE_NAME = "temp_upload_file.pdf"
 
-# 5. 必要な情報（認識された単語とその座標）を抽出
-# 'level' 5 は通常、認識された「単語」を指します
-words_data = data[data.conf != -1]  # 信頼度（conf）が-1でない行（認識された行）のみを抽出
-words_data = words_data[words_data.text.str.strip().astype(bool)]  # 空白行を除外
+# 実行ディレクトリのパス
+CURRENT_DIR = pathlib.Path(__file__).parent
+TEMP_FILE_PATH = CURRENT_DIR / TEMP_FILE_NAME
 
-print("\n--- 抽出された単語とその座標 ---")
-for index, row in words_data.iterrows():
-    text = row['text']
-    # 座標情報
-    x = row['left']
-    y = row['top']
-    w = row['width']
-    h = row['height']
-    conf = row['conf']  # 信頼度 (0-100)
 
-    # 抽出された情報
-    print(f"テキスト: {text}, 信頼度: {conf}, 座標 (x, y, w, h): ({x}, {y}, {w}, {h})")
+def upload_and_extract_info(original_path: str, temp_path: pathlib.Path, prompt: str):
+    """ファイルを一時的にコピー・リネームしてアップロードし、情報抽出を行う関数"""
+    uploaded_file = None
+
+    try:
+        # --- ステップ A: ファイルのコピーとリネーム ---
+        print(f"元のファイル '{original_path}' を安全なパス '{temp_path}' へコピー中...")
+        # shutil.copy2 はメタデータもコピーします
+        shutil.copy2(original_path, temp_path)
+        print("コピー完了。")
+
+        # --- ステップ B: コピーしたファイルをアップロード ---
+        # Pathオブジェクトを渡すことで、エンコーディングエラーを回避しやすい
+        print(f"ファイル '{TEMP_FILE_NAME}' のアップロードを開始します...")
+        uploaded_file = client.files.upload(file=temp_path)
+        print(f"アップロード完了。File Name: {uploaded_file.name}")
+
+        # --- ステップ C: AIモデルによる情報抽出 ---
+        # ... (以前の generate_content 処理を続ける) ...
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[uploaded_file, prompt]
+        )
+
+        print("\n--- 抽出結果 ---")
+        print(response.text)
+        print("----------------\n")
+
+    # ... (APIError やその他の例外処理) ...
+
+    finally:
+        # --- ステップ D: クリーンアップ（最重要） ---
+        # 1. アップロードしたファイルをサーバーから削除
+        if uploaded_file:
+            print(f"アップロードされたファイルをサーバーから削除しています: {uploaded_file.name}")
+            client.files.delete(name=uploaded_file.name)
+            print("サーバー上のファイル削除完了。")
+
+        # 2. 一時的に作成したローカルファイルを削除
+        if temp_path.exists():
+            print(f"一時ローカルファイル '{TEMP_FILE_NAME}' を削除しています...")
+            os.remove(temp_path)
+            print("ローカルファイル削除完了。")
+
+
+if __name__ == "__main__":
+    client = genai.Client()  # クライアント初期化
+    PROMPT = "この不動産登記簿に記載されている土地の所在、地番、地積（面積）をMarkdown形式の表にして取り出してください。"
+    upload_and_extract_info(ORIGINAL_FILE_PATH, TEMP_FILE_PATH, PROMPT)

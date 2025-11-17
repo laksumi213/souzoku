@@ -96,25 +96,34 @@ def launch_and_activate_app(title_part, max_wait):
         print("出勤ボタンをクリックしました。")
         time.sleep(1)
 
-        for _ in range(5):
-            pyautogui.press('tab')
-            time.sleep(.2)
-
-        pyperclip.copy('森町 翼')
-        time.sleep(.2)
-        pyautogui.hotkey('ctrl', 'v')
-        time.sleep(.2)
-
-        pyautogui.press('tab')
-        time.sleep(.1)
-        pyperclip.copy('XX@ZjKt49DuY')
-        pyautogui.hotkey('ctrl', 'v')
+        # for _ in range(5):
+        #     pyautogui.press('tab')
+        #     time.sleep(.2)
 
         path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'souzoku', 'assets', 'png',
-                            'ninsyou.png')
+                            'simei_sentaku.png')
+        time.sleep(.5)
         button_location = pyautogui.locateOnScreen(path)
+
         if button_location is not None:
+            # 見つかったボタンの中央をクリック
             pyautogui.click(button_location)
+
+            pyperclip.copy('森町 翼')
+            time.sleep(.2)
+            pyautogui.hotkey('ctrl', 'v')
+            time.sleep(.2)
+
+            pyautogui.press('tab')
+            time.sleep(.1)
+            pyperclip.copy('XX@ZjKt49DuY')
+            pyautogui.hotkey('ctrl', 'v')
+
+            path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'souzoku', 'assets', 'png',
+                                'ninsyou.png')
+            button_location = pyautogui.locateOnScreen(path)
+            if button_location is not None:
+                pyautogui.click(button_location)
 
         # path = os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), 'souzoku', 'assets', 'png',
         #                     'simei_sentaku.png')

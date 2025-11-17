@@ -204,12 +204,12 @@ class TrMufg:
         pdf.draw_string(106, 152, self.passed_away_date[2], 14)
 
         # 評価証明書
-        # pdf.draw_string(178, 148.5, 1, 14)
-        # pdf.draw_string(85, 90.5, '✓', 14)
+        pdf.draw_string(178, 148.5, 1, 14)
+        pdf.draw_string(85, 90.5, '✓', 14)
 
         # 残高証明書
-        pdf.draw_string(178, 141, 1, 14)
-        pdf.draw_string(111, 90.5, '✓', 14)
+        # pdf.draw_string(178, 141, 1, 14)
+        # pdf.draw_string(111, 90.5, '✓', 14)
 
         path1 = os.path.join(self.output_path,
                              f'{self.code}{self.heir[0]}様_三菱UFJ信託_証明書等発行依頼書_預金1.pdf')
